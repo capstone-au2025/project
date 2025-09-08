@@ -1,0 +1,35 @@
+services:
+  backend:
+    ports:
+      - 3001:3001
+    build:
+      context: ./backend
+    develop:
+      watch:
+        - action: sync
+          path: ./backend
+          target: /app
+        - action: rebuild
+          path: go.mod
+        - action: rebuild
+          path: go.sum
+  frontend:
+    ports:
+      - 5173:5173
+    build:
+      context: ./frontend
+    depends_on:
+      - backend
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend
+          target: /app
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: frontend/package.json
+        - action: rebuild
+          path: frontend/package-lock.json
+        - action: rebuild
+          path: frontend/vite.config.ts
