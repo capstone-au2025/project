@@ -29,3 +29,12 @@ docker run --rm -p 3001:3001 project
 ```
 
 Then it will be available at [http://localhost:3001](http://localhost:3001).
+
+## Testing on mobile with Tailscale
+
+Create a free [Tailscale](https://tailscale.com/) account.
+Install and login to Tailscale on both your laptop and your phone.
+Make sure to run `sudo tailscale up` on your laptop and enable
+Tailscale in the app on your phone.
+Then you should be able to navigate to `yourlaptophostname:5173/` on your phone
+to see the website in its mobile glory.
