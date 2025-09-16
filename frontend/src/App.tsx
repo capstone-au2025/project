@@ -41,7 +41,7 @@ function testSendMail() {
       city: "Los Angeles",
       state: "CA",
       zip: "90001",
-    }
+    },
   });
 }
 
