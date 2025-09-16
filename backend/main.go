@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -8,27 +9,73 @@ import (
 	"net/http"
 	"path/filepath"
 	"strings"
+
+	_ "embed"
 )
 
 type Router struct {
 	ip InferenceProvider
 }
 
-func (rt *Router) hello(w http.ResponseWriter, r *http.Request) {
-	question := "sink broke AGAIN. I'm don paying rent if it isn't fixed for real this time!"
-	resp, err := rt.ip.Infer(r.Context(), question)
+type PdfRequest struct {
+	Message string `json:"message"`
+}
+
+type PdfResponseSuccess struct {
+	Status string `json:"status"`
+	// Base64 encoded content of a PDF file
+	PdfContent string `json:"content"`
+}
+
+type PdfResponseError struct {
+	Status  string `json:"status"`
+	Message string `json:"message"`
+}
+
+const (
+	StatusSuccess = "success"
+	StatusError   = "error"
+)
+
+// TODO: replace with actual PDF generation
+//
+//go:embed example.pdf
+var examplePdfContent []byte
+
+// Given an initial message, return a fully typeset and rendered PDF
+func (rt *Router) pdf(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var req PdfRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		http.Error(w, "failed to run inference", http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(PdfResponseError{Status: StatusError, Message: "failed to decode body"})
+		slog.ErrorContext(r.Context(), "failed to decode body", "err", err)
+		return
+	}
+
+	resp, err := rt.ip.Infer(r.Context(), req.Message)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(PdfResponseError{Status: StatusError, Message: "failed to run inference"})
 		slog.ErrorContext(r.Context(), "failed to run inference", "err", err)
 		return
 	}
 
+	// TODO: replace with actual PDF generation
+	slog.Info("Infer", "resp", resp)
+	pdfContent := base64.StdEncoding.EncodeToString(examplePdfContent)
+
+	json.NewEncoder(w).Encode(PdfResponseSuccess{Status: StatusSuccess, PdfContent: pdfContent})
+}
+
+func healthcheck(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	type Response struct {
-		Question string `json:"question"`
-		Response string `json:"response"`
+		Status string `json:"status"`
 	}
-	response := Response{Question: question, Response: resp}
+	response := Response{Status: "ok"}
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -48,7 +95,8 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /api/hello", rt.hello)
+	mux.HandleFunc("POST /api/pdf", rt.pdf)
+	mux.HandleFunc("GET /healthz", healthcheck)
 
 	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ext := filepath.Ext(r.URL.Path)
