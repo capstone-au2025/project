@@ -27,7 +27,7 @@ function testSendMail() {
     pdfBytes: bytes,
     duplex: false,
     sender: {
-      name: "Tom Cruise",
+      name: "John Sender",
       address: "1234 Main St",
       city: "Anchorage",
       company: undefined,
@@ -35,9 +35,9 @@ function testSendMail() {
       zip: "99513",
     },
     destination: {
-      name: "Bilbo Baggins",
-      address: "1 Bag End",
-      company: "Hobbit Inc",
+      name: "Bob Receiver",
+      address: "4321 High St",
+      company: "Bob's Company, Inc.",
       city: "Los Angeles",
       state: "CA",
       zip: "90001",
