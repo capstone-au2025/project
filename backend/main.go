@@ -14,7 +14,7 @@ import (
 )
 
 type Router struct {
-	ip InferenceProvider
+	Ip InferenceProvider
 }
 
 type PdfRequest struct {
@@ -43,7 +43,7 @@ const (
 var examplePdfContent []byte
 
 // Given an initial message, return a fully typeset and rendered PDF
-func (rt *Router) pdf(w http.ResponseWriter, r *http.Request) {
+func (rt *Router) Pdf(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var req PdfRequest
@@ -55,7 +55,7 @@ func (rt *Router) pdf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := rt.ip.Infer(r.Context(), req.Message)
+	resp, err := rt.Ip.Infer(r.Context(), req.Message)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(PdfResponseError{Status: StatusError, Message: "failed to run inference"})
@@ -70,7 +70,7 @@ func (rt *Router) pdf(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(PdfResponseSuccess{Status: StatusSuccess, PdfContent: pdfContent})
 }
 
-func healthcheck(w http.ResponseWriter, _ *http.Request) {
+func Healthcheck(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	type Response struct {
 		Status string `json:"status"`
@@ -91,12 +91,12 @@ func main() {
 	}
 
 	rt := Router{
-		ip: ip,
+		Ip: ip,
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("POST /api/pdf", rt.pdf)
-	mux.HandleFunc("GET /healthz", healthcheck)
+	mux.HandleFunc("POST /api/pdf", rt.Pdf)
+	mux.HandleFunc("GET /healthz", Healthcheck)
 
 	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ext := filepath.Ext(r.URL.Path)
