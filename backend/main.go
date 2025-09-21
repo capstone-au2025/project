@@ -11,6 +11,8 @@ import (
 	"strings"
 
 	_ "embed"
+
+	_ "embed"
 )
 
 type Router struct {
@@ -59,6 +61,8 @@ func (rt *Router) Pdf(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(PdfResponseError{Status: StatusError, Message: "failed to run inference"})
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(PdfResponseError{Status: StatusError, Message: "failed to run inference"})
 		slog.ErrorContext(r.Context(), "failed to run inference", "err", err)
 		return
 	}
@@ -74,7 +78,9 @@ func Healthcheck(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	type Response struct {
 		Status string `json:"status"`
+		Status string `json:"status"`
 	}
+	response := Response{Status: "ok"}
 	response := Response{Status: "ok"}
 	json.NewEncoder(w).Encode(response)
 }
