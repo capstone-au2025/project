@@ -5,22 +5,24 @@
 
 #set par(justify: true)
 
+#let params = json(bytes(sys.inputs.params))
+
 #show: letterloom.with(
   // Sender's contact information (name and address)
-  from-name: sys.inputs.sender_name,
-  from-address: [#sys.inputs.sender_address],
+  from-name: params.sender_name,
+  from-address: [#params.sender_address],
 
   // Recipient's contact information (name and address)
-  to-name: sys.inputs.receiver_name,
-  to-address: [#sys.inputs.receiver_address],
+  to-name: params.receiver_name,
+  to-address: [#params.receiver_address],
 
-  date: sys.inputs.date,
+  date: params.date,
 
   // Opening greeting
-  salutation: "Dear " + sys.inputs.receiver_name + ",",
+  salutation: "Dear " + params.receiver_name + ",",
 
   // Letter subject line
-  subject: text(weight: "bold")[#smallcaps(sys.inputs.complaint_summary)],
+  subject: text(weight: "bold")[#smallcaps(params.complaint_summary)],
 
   // Closing phrase
   closing: "Sincerely,",
@@ -28,9 +30,9 @@
   // List of signatures with their name, optional signature image, title and affiliation
   signatures: (
     (
-      name: sys.inputs.sender_address,
+      name: params.sender_address,
     ),
   ),
 )
 
-#sys.inputs.letter_content
+#params.letter_content

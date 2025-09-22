@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"context"
 	_ "embed"
+	"encoding/json"
 	"log/slog"
+	"os"
 	"os/exec"
-	"strings"
-	"text/template"
 )
 
 type LetterParams struct {
@@ -20,26 +20,15 @@ type LetterParams struct {
 	Date             string `json:"date"`
 }
 
-//go:embed input-template.txt
-var inputTemplateContent string
-var inputTemplate *template.Template
-
 //go:embed letter-template.typst
 var letterTemplate string
 
-func init() {
-	t, err := template.New("input-template.txt").Parse(inputTemplateContent)
-	inputTemplate = t
-	if err != nil {
-		panic(err.Error())
-	}
-}
-
 func RenderPdf(ctx context.Context, params LetterParams) ([]byte, error) {
-	input_buf := &strings.Builder{}
-	inputTemplate.Execute(input_buf, params)
-	inputs := strings.Split(input_buf.String(), "\n")
-	cmd := exec.Command("typst", inputs...)
+	p, err := json.Marshal(params)
+	if err != nil {
+		return nil, err
+	}
+	cmd := exec.Command("typst", "compile", "-", "-", "--input=params="+string(p))
 
 	in, err := cmd.StdinPipe()
 	if err != nil {
@@ -64,4 +53,25 @@ func RenderPdf(ctx context.Context, params LetterParams) ([]byte, error) {
 	}
 
 	return buf.Bytes(), nil
+}
+
+func main() {
+	params := LetterParams{
+		SenderName:       "Sender Name",
+		SenderAddress:    "Sender Address",
+		ReceiverName:     "Receiver Name",
+		ReceiverAddress:  "Receiver Address",
+		ComplaintSummary: "Complaint Summary",
+		LetterContent:    "Letter Content\nLetter Content line 2",
+		Date:             "Date",
+	}
+	pdf, err := RenderPdf(context.Background(), params)
+	if err != nil {
+		panic(err)
+	}
+	f, err := os.Create("out.pdf")
+	f.Write(pdf)
+	if err != nil {
+		panic(err)
+	}
 }
