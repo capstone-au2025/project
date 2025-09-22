@@ -20,7 +20,7 @@ type LetterParams struct {
 }
 
 //go:embed letter-template.typst
-var letterTemplate string
+var letterTemplate []byte
 
 func RenderPdf(ctx context.Context, params LetterParams) ([]byte, error) {
 	p, err := json.Marshal(params)
@@ -33,7 +33,7 @@ func RenderPdf(ctx context.Context, params LetterParams) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	_, err = in.Write([]byte(letterTemplate))
+	_, err = in.Write(letterTemplate)
 	if err != nil {
 		return nil, err
 	}
