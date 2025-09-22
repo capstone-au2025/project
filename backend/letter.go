@@ -6,7 +6,6 @@ import (
 	_ "embed"
 	"encoding/json"
 	"log/slog"
-	"os"
 	"os/exec"
 )
 
@@ -53,25 +52,4 @@ func RenderPdf(ctx context.Context, params LetterParams) ([]byte, error) {
 	}
 
 	return buf.Bytes(), nil
-}
-
-func main() {
-	params := LetterParams{
-		SenderName:       "Sender Name",
-		SenderAddress:    "Sender Address",
-		ReceiverName:     "Receiver Name",
-		ReceiverAddress:  "Receiver Address",
-		ComplaintSummary: "Complaint Summary",
-		LetterContent:    "Letter Content\nLetter Content line 2",
-		Date:             "Date",
-	}
-	pdf, err := RenderPdf(context.Background(), params)
-	if err != nil {
-		panic(err)
-	}
-	f, err := os.Create("out.pdf")
-	f.Write(pdf)
-	if err != nil {
-		panic(err)
-	}
 }
