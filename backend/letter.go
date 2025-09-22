@@ -2,8 +2,9 @@ package main
 
 import (
 	"bytes"
+	"context"
 	_ "embed"
-	"fmt"
+	"log/slog"
 	"os/exec"
 	"strings"
 	"text/template"
@@ -34,7 +35,7 @@ func init() {
 	}
 }
 
-func GetPdf(params LetterParams) ([]byte, error) {
+func RenderPdf(ctx context.Context, params LetterParams) ([]byte, error) {
 	input_buf := &strings.Builder{}
 	inputTemplate.Execute(input_buf, params)
 	inputs := strings.Split(input_buf.String(), "\n")
@@ -53,13 +54,12 @@ func GetPdf(params LetterParams) ([]byte, error) {
 	buf := bytes.Buffer{}
 	cmd.Stdout = &buf
 
-	err_buf := bytes.Buffer{}
-	cmd.Stderr = &err_buf
+	errBuf := bytes.Buffer{}
+	cmd.Stderr = &errBuf
 
 	err = cmd.Run()
 	if err != nil {
-		fmt.Println("typst failed")
-		fmt.Println(err_buf.String())
+		slog.ErrorContext(ctx, "failed to run typst", "stderr", errBuf.String(), "err", err)
 		return nil, err
 	}
 

@@ -24,7 +24,6 @@
 # misc
 .DS_Store
 *.pem
-backend/tmp
 
 # debug
 npm-debug.log*
