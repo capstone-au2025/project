@@ -20,5 +20,4 @@ COPY --from=ghcr.io/typst/typst:v0.13.1 /lib/ld-musl-x86_64.so.1 /lib/ld-musl-x8
 ENV PATH=/bin
 COPY --from=frontend /app/dist /app/frontend
 COPY --from=backend /app/main /app/main
-RUN mkdir tmp
 CMD ["./main"]

@@ -2,10 +2,10 @@ package main
 
 import (
 	"bytes"
-	"encoding/json"
+	_ "embed"
 	"fmt"
-	"os"
 	"os/exec"
+	"strings"
 	"text/template"
 )
 
@@ -19,28 +19,32 @@ type LetterParams struct {
 	Date             string `json:"date"`
 }
 
+//go:embed input-template.txt
+var inputTemplateContent string
+var inputTemplate *template.Template
+
+//go:embed letter-template.typst
+var letterTemplate string
+
+func init() {
+	t, err := template.New("input-template.txt").Parse(inputTemplateContent)
+	inputTemplate = t
+	if err != nil {
+		panic(err.Error())
+	}
+}
+
 func GetPdf(params LetterParams) ([]byte, error) {
-	file, err := os.CreateTemp("tmp", "test*.json")
-	if err != nil {
-		return nil, err
-	}
+	input_buf := &strings.Builder{}
+	inputTemplate.Execute(input_buf, params)
+	inputs := strings.Split(input_buf.String(), "\n")
+	cmd := exec.Command("typst", inputs...)
 
-	j, err := json.Marshal(params)
-	if err != nil {
-		return nil, err
-	}
-	file.Write(j)
-	cmd := exec.Command("typst", "compile", "-", "-")
-
-	t, err := template.ParseFiles("letter-template.typst")
-	if err != nil {
-		return nil, err
-	}
 	in, err := cmd.StdinPipe()
 	if err != nil {
 		return nil, err
 	}
-	err = t.Execute(in, file.Name())
+	_, err = in.Write([]byte(letterTemplate))
 	if err != nil {
 		return nil, err
 	}
@@ -59,34 +63,5 @@ func GetPdf(params LetterParams) ([]byte, error) {
 		return nil, err
 	}
 
-	if err != nil {
-		return nil, err
-	}
-
-	file.Close()
-	os.Remove(file.Name())
-
 	return buf.Bytes(), nil
 }
-
-// Temporary code for testing until we have a proper test framework
-// func main() {
-// params := LetterParams{
-// SenderName:       "Sender Name",
-// SenderAddress:    "Sender Address",
-// ReceiverName:     "Receiver Name",
-// ReceiverAddress:  "Receiver Address",
-// ComplaintSummary: "Complaint Summary",
-// LetterContent:    "Letter Content",
-// Date:             "Date",
-// }
-// pdf, err := GetPdf(params)
-// if err != nil {
-// panic(err)
-// }
-// f, err := os.Create("out.pdf")
-// f.Write(pdf)
-// if err != nil {
-// panic(err)
-// }
-// }
