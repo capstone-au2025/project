@@ -14,7 +14,7 @@ import (
 )
 
 type router struct {
-	Ip InferenceProvider
+	ip InferenceProvider
 }
 
 type pdfRequest struct {
@@ -55,7 +55,7 @@ func (rt *router) pdf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := rt.Ip.Infer(r.Context(), req.Message)
+	resp, err := rt.ip.Infer(r.Context(), req.Message)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(PdfResponseError{Status: statusError, Message: "failed to run inference"})
@@ -91,7 +91,7 @@ func main() {
 	}
 
 	rt := router{
-		Ip: ip,
+		ip: ip,
 	}
 
 	mux := http.NewServeMux()

@@ -26,7 +26,7 @@ func TestHealthcheck(t *testing.T) {
 
 func TestPDFHandlerSuccess(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
-		r := router{Ip: NewMockInferenceProvider()}
+		r := router{ip: NewMockInferenceProvider()}
 
 		reqBody := strings.NewReader(`{"message":"hello"}`)
 		req := httptest.NewRequest(http.MethodPost, "/api/pdf", reqBody)
@@ -66,7 +66,7 @@ func TestPDFHandlerSuccess(t *testing.T) {
 }
 
 func TestPDFHandlerBadRequest(t *testing.T) {
-	r := router{Ip: NewMockInferenceProvider()}
+	r := router{ip: NewMockInferenceProvider()}
 
 	req := httptest.NewRequest(http.MethodPost, "/api/pdf", bytes.NewBufferString("not-json"))
 	w := httptest.NewRecorder()
@@ -83,8 +83,8 @@ func TestPDFHandlerBadRequest(t *testing.T) {
 func TestPDFHandlerInferenceError(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		mockProvider := NewMockInferenceProvider()
-		mockProvider.ShouldError = true
-		r := router{Ip: mockProvider}
+		mockProvider.shouldError = true
+		r := router{ip: mockProvider}
 
 		reqBody := strings.NewReader(`{"message":"hello"}`)
 		req := httptest.NewRequest(http.MethodPost, "/api/pdf", reqBody)
