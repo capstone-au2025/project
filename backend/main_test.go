@@ -25,6 +25,7 @@ func TestHealthcheck(t *testing.T) {
 }
 
 func TestPDFHandlerSuccess(t *testing.T) {
+
 	synctest.Test(t, func(t *testing.T) {
 		r := router{ip: NewMockInferenceProvider()}
 
