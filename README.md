@@ -36,7 +36,7 @@ Build and run with
 
 docker compose up --watch --build
 
-Then run tests using
+Run tests using
 docker compose run backend go test -v ./
 
 

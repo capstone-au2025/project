@@ -71,7 +71,7 @@ func (rt *router) pdf(w http.ResponseWriter, r *http.Request) {
 	pdf, err := RenderPdf(r.Context(), params)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(PdfResponseError{Status: StatusError, Message: "failed to generate pdf"})
+		json.NewEncoder(w).Encode(PdfResponseError{Status: statusError, Message: "failed to generate pdf"})
 		slog.ErrorContext(r.Context(), "failed to generate pdf", "err", err)
 		return
 	}
