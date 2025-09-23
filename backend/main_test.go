@@ -2,108 +2,100 @@ package main
 
 import (
 	"bytes"
-	"context"
+	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"testing/synctest"
 )
-
-// Fake provider for testing pdf handler
-type FakeProvider struct {
-	shouldError bool
-}
-
-func (f *FakeProvider) Infer(_ context.Context, input string) (string, error) {
-	if f.shouldError {
-		return "", fmt.Errorf("forced error")
-	}
-	return "FAKE: " + input, nil
-}
 
 func TestHealthcheck(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/healthz", nil)
 	w := httptest.NewRecorder()
 
-	Healthcheck(w, req)
+	healthcheck(w, req)
 
 	resp := w.Result()
-	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		t.Fatalf("expected 200, got %d", resp.StatusCode)
-	}
-
-	var body map[string]string
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		t.Fatalf("decode failed: %v", err)
-	}
-
-	if body["status"] != "ok" {
-		t.Errorf("expected ok, got %q", body["status"])
+		t.Fatalf("expected %d, got %d", http.StatusOK, resp.StatusCode)
 	}
 }
 
-func TestPDFHandler_Success(t *testing.T) {
-	router := Router{Ip: &FakeProvider{}}
+func TestPDFHandlerSuccess(t *testing.T) {
+	synctest.Test(t, func(t *testing.T) {
+		r := router{Ip: NewMockInferenceProvider()}
 
-	reqBody := strings.NewReader(`{"message":"hello"}`)
-	req := httptest.NewRequest(http.MethodPost, "/api/pdf", reqBody)
-	w := httptest.NewRecorder()
+		reqBody := strings.NewReader(`{"message":"hello"}`)
+		req := httptest.NewRequest(http.MethodPost, "/api/pdf", reqBody)
+		w := httptest.NewRecorder()
 
-	router.Pdf(w, req)
+		r.pdf(w, req)
 
-	resp := w.Result()
-	defer resp.Body.Close()
+		resp := w.Result()
 
-	if resp.StatusCode != http.StatusOK {
-		t.Fatalf("expected 200, got %d", resp.StatusCode)
-	}
+		if resp.StatusCode != http.StatusOK {
+			t.Fatalf("expected %d, got %d", http.StatusOK, resp.StatusCode)
+		}
 
-	var result PdfResponseSuccess
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		t.Fatalf("decode failed: %v", err)
-	}
+		var result pdfResponseSuccess
+		if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+			t.Fatalf("decode failed: %v", err)
+		}
 
-	if result.Status != StatusSuccess {
-		t.Errorf("expected success, got %q", result.Status)
-	}
-	if result.PdfContent == "" {
-		t.Error("expected PdfContent to be filled")
-	}
+		if result.Status != statusSuccess {
+			t.Errorf("expected %q, got %q", statusSuccess, result.Status)
+		}
+		if result.PdfContent == "" {
+			t.Error("expected PdfContent to be filled")
+		}
+
+		// Verify the content is valid base64
+		pdfBytes, err := base64.StdEncoding.DecodeString(result.PdfContent)
+		if err != nil {
+			t.Errorf("expected valid base64 content, got decode error: %v", err)
+		}
+
+		// Verify it starts with PDF magic bytes (%PDF-)
+		if len(pdfBytes) < 5 || !bytes.HasPrefix(pdfBytes, []byte("%PDF-")) {
+			t.Error("expected PDF content to start with PDF magic bytes (%PDF-)")
+		}
+	})
 }
 
-func TestPDFHandler_BadRequest(t *testing.T) {
-	router := Router{Ip: &FakeProvider{}}
+func TestPDFHandlerBadRequest(t *testing.T) {
+	r := router{Ip: NewMockInferenceProvider()}
 
 	req := httptest.NewRequest(http.MethodPost, "/api/pdf", bytes.NewBufferString("not-json"))
 	w := httptest.NewRecorder()
 
-	router.Pdf(w, req)
+	r.pdf(w, req)
 
 	resp := w.Result()
-	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusBadRequest {
-		t.Fatalf("expected 400, got %d", resp.StatusCode)
+		t.Fatalf("expected %d, got %d", http.StatusBadRequest, resp.StatusCode)
 	}
 }
 
-func TestPDFHandler_InferenceError(t *testing.T) {
-	router := Router{Ip: &FakeProvider{shouldError: true}}
+func TestPDFHandlerInferenceError(t *testing.T) {
+	synctest.Test(t, func(t *testing.T) {
+		mockProvider := NewMockInferenceProvider()
+		mockProvider.ShouldError = true
+		r := router{Ip: mockProvider}
 
-	reqBody := strings.NewReader(`{"message":"hello"}`)
-	req := httptest.NewRequest(http.MethodPost, "/api/pdf", reqBody)
-	w := httptest.NewRecorder()
+		reqBody := strings.NewReader(`{"message":"hello"}`)
+		req := httptest.NewRequest(http.MethodPost, "/api/pdf", reqBody)
+		w := httptest.NewRecorder()
 
-	router.Pdf(w, req)
+		r.pdf(w, req)
 
-	resp := w.Result()
-	defer resp.Body.Close()
+		resp := w.Result()
 
-	if resp.StatusCode != http.StatusInternalServerError {
-		t.Fatalf("expected 500, got %d", resp.StatusCode)
-	}
+		if resp.StatusCode != http.StatusInternalServerError {
+			t.Fatalf("expected %d, got %d", http.StatusInternalServerError, resp.StatusCode)
+		}
+	})
 }

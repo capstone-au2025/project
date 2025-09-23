@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 
@@ -11,6 +12,13 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime"
 	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime/types"
 	"github.com/aws/aws-sdk-go-v2/service/sts"
+)
+
+// Error variables for AWS configuration validation
+var (
+	ErrAWSRegionNotDefined  = errors.New("environment variable AWS_REGION is not defined")
+	ErrAWSRoleArnNotDefined = errors.New("environment variable AWS_BEDROCK_ROLE_ARN is not defined")
+	ErrAWSModelIdNotDefined = errors.New("environment variable AWS_BEDROCK_MODEL_ID is not defined")
 )
 
 type AWS struct {
@@ -23,17 +31,17 @@ var _ InferenceProvider = (*AWS)(nil)
 func NewAWS() (*AWS, error) {
 	region := os.Getenv("AWS_REGION")
 	if region == "" {
-		return nil, fmt.Errorf("environment variable AWS_REGION is not defined")
+		return nil, ErrAWSRegionNotDefined
 	}
 
 	bedrockRoleArn := os.Getenv("AWS_BEDROCK_ROLE_ARN")
 	if bedrockRoleArn == "" {
-		return nil, fmt.Errorf("environment variable AWS_BEDROCK_ROLE_ARN is not defined")
+		return nil, ErrAWSRoleArnNotDefined
 	}
 
 	bedrockModelId := os.Getenv("AWS_BEDROCK_MODEL_ID")
 	if bedrockModelId == "" {
-		return nil, fmt.Errorf("environment variable AWS_BEDROCK_MODEL_ID is not defined")
+		return nil, ErrAWSModelIdNotDefined
 	}
 
 	ctx := context.Background()
