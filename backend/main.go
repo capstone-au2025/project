@@ -37,11 +37,6 @@ const (
 	statusError   = "error"
 )
 
-// TODO: replace with actual PDF generation
-//
-//go:embed example.pdf
-var examplePdfContent []byte
-
 // Given an initial message, return a fully typeset and rendered PDF
 func (rt *router) pdf(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -63,9 +58,25 @@ func (rt *router) pdf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: replace with actual PDF generation
-	slog.Info("Infer", "resp", resp)
-	pdfContent := base64.StdEncoding.EncodeToString(examplePdfContent)
+	params := LetterParams{
+		SenderName:       "Sender Name",
+		SenderAddress:    "Sender Address",
+		ReceiverName:     "Receiver Name",
+		ReceiverAddress:  "Receiver Address",
+		ComplaintSummary: "Notice of Rental Property Problems",
+		LetterContent:    resp,
+		Date:             "Date",
+	}
+
+	pdf, err := RenderPdf(r.Context(), params)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(PdfResponseError{Status: StatusError, Message: "failed to generate pdf"})
+		slog.ErrorContext(r.Context(), "failed to generate pdf", "err", err)
+		return
+	}
+
+	pdfContent := base64.StdEncoding.EncodeToString(pdf)
 
 	json.NewEncoder(w).Encode(pdfResponseSuccess{Status: statusSuccess, PdfContent: pdfContent})
 }
