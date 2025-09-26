@@ -107,7 +107,9 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /api/pdf", rt.pdf)
-	mux.HandleFunc("GET /healthz", healthcheck)
+		mux.HandleFunc("GET /healthz", healthcheck)
+
+	json.NewEncoder(nil).Encode(nil)
 
 	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ext := filepath.Ext(r.URL.Path)

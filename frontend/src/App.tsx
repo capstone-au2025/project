@@ -17,6 +17,7 @@ function base64ToUint8Array(base64: string): Uint8Array {
 
 function testSendMail() {
   const bytes = base64ToUint8Array(EXAMPLE_PDF_BASE64);
+  const myunusedvar = 1
 
   sendMail({
     letterName: "Test Letter",
