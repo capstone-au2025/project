@@ -7,7 +7,7 @@ AU2025 JusticeTech
 In a terminal, run the following command to launch development servers for both the frontend and backend:
 
 ```
-docker compose up --watch
+docker compose up --watch --build --remove-orphans
 ```
 
 Then go to [http://localhost:5173](http://localhost:5173) for the frontend.

@@ -43,10 +43,7 @@ function testSendMail() {
 }
 
 function App() {
-  return (
-    <button onClick={testSendMail}>Test Send Mail</button>
-  );
+  return <button onClick={testSendMail}>Test Send Mail</button>;
 }
 
 export default App;
-

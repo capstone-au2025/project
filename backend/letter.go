@@ -37,7 +37,9 @@ func RenderPdf(ctx context.Context, params LetterParams) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	in.Close()
+	if err := in.Close(); err != nil {
+		return nil, err
+	}
 
 	buf := bytes.Buffer{}
 	cmd.Stdout = &buf

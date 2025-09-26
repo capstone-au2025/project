@@ -45,7 +45,7 @@ func (rt *router) pdf(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(PdfResponseError{Status: statusError, Message: "failed to decode body"})
+		_ = json.NewEncoder(w).Encode(PdfResponseError{Status: statusError, Message: "failed to decode body"})
 		slog.ErrorContext(r.Context(), "failed to decode body", "err", err)
 		return
 	}
@@ -53,7 +53,7 @@ func (rt *router) pdf(w http.ResponseWriter, r *http.Request) {
 	resp, err := rt.ip.Infer(r.Context(), req.Message)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(PdfResponseError{Status: statusError, Message: "failed to run inference"})
+		_ = json.NewEncoder(w).Encode(PdfResponseError{Status: statusError, Message: "failed to run inference"})
 		slog.ErrorContext(r.Context(), "failed to run inference", "err", err)
 		return
 	}
@@ -71,14 +71,14 @@ func (rt *router) pdf(w http.ResponseWriter, r *http.Request) {
 	pdf, err := RenderPdf(r.Context(), params)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(PdfResponseError{Status: statusError, Message: "failed to generate pdf"})
+		_ = json.NewEncoder(w).Encode(PdfResponseError{Status: statusError, Message: "failed to generate pdf"})
 		slog.ErrorContext(r.Context(), "failed to generate pdf", "err", err)
 		return
 	}
 
 	pdfContent := base64.StdEncoding.EncodeToString(pdf)
 
-	json.NewEncoder(w).Encode(pdfResponseSuccess{Status: statusSuccess, PdfContent: pdfContent})
+	_ = json.NewEncoder(w).Encode(pdfResponseSuccess{Status: statusSuccess, PdfContent: pdfContent})
 }
 
 func healthcheck(w http.ResponseWriter, _ *http.Request) {
@@ -87,7 +87,7 @@ func healthcheck(w http.ResponseWriter, _ *http.Request) {
 		Status string `json:"status"`
 	}
 	response := Response{Status: "ok"}
-	json.NewEncoder(w).Encode(response)
+	_ = json.NewEncoder(w).Encode(response)
 }
 
 func main() {
