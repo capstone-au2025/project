@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"text/template"
 	"time"
 
@@ -15,7 +16,9 @@ type InferenceProvider interface {
 	Infer(ctx context.Context, input string) (string, error)
 }
 
-type MockInferenceProvider struct{}
+type MockInferenceProvider struct {
+	shouldError bool
+}
 
 var _ InferenceProvider = (*MockInferenceProvider)(nil)
 
@@ -25,6 +28,9 @@ func NewMockInferenceProvider() *MockInferenceProvider {
 
 func (m *MockInferenceProvider) Infer(ctx context.Context, input string) (string, error) {
 	time.Sleep(2 * time.Second)
+	if m.shouldError {
+		return "", fmt.Errorf("mocked inference error")
+	}
 	return "MOCKED INFERENCE PROVIDER\n\n" + input + "\n\nMOCKED INFERENCE PROVIDER", nil
 }
 

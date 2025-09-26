@@ -13,15 +13,15 @@ import (
 	_ "embed"
 )
 
-type Router struct {
+type router struct {
 	ip InferenceProvider
 }
 
-type PdfRequest struct {
+type pdfRequest struct {
 	Message string `json:"message"`
 }
 
-type PdfResponseSuccess struct {
+type pdfResponseSuccess struct {
 	Status string `json:"status"`
 	// Base64 encoded content of a PDF file
 	PdfContent string `json:"content"`
@@ -33,19 +33,19 @@ type PdfResponseError struct {
 }
 
 const (
-	StatusSuccess = "success"
-	StatusError   = "error"
+	statusSuccess = "success"
+	statusError   = "error"
 )
 
 // Given an initial message, return a fully typeset and rendered PDF
-func (rt *Router) pdf(w http.ResponseWriter, r *http.Request) {
+func (rt *router) pdf(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var req PdfRequest
+	var req pdfRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(PdfResponseError{Status: StatusError, Message: "failed to decode body"})
+		json.NewEncoder(w).Encode(PdfResponseError{Status: statusError, Message: "failed to decode body"})
 		slog.ErrorContext(r.Context(), "failed to decode body", "err", err)
 		return
 	}
@@ -53,7 +53,7 @@ func (rt *Router) pdf(w http.ResponseWriter, r *http.Request) {
 	resp, err := rt.ip.Infer(r.Context(), req.Message)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(PdfResponseError{Status: StatusError, Message: "failed to run inference"})
+		json.NewEncoder(w).Encode(PdfResponseError{Status: statusError, Message: "failed to run inference"})
 		slog.ErrorContext(r.Context(), "failed to run inference", "err", err)
 		return
 	}
@@ -71,14 +71,14 @@ func (rt *Router) pdf(w http.ResponseWriter, r *http.Request) {
 	pdf, err := RenderPdf(r.Context(), params)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(PdfResponseError{Status: StatusError, Message: "failed to generate pdf"})
+		json.NewEncoder(w).Encode(PdfResponseError{Status: statusError, Message: "failed to generate pdf"})
 		slog.ErrorContext(r.Context(), "failed to generate pdf", "err", err)
 		return
 	}
 
 	pdfContent := base64.StdEncoding.EncodeToString(pdf)
 
-	json.NewEncoder(w).Encode(PdfResponseSuccess{Status: StatusSuccess, PdfContent: pdfContent})
+	json.NewEncoder(w).Encode(pdfResponseSuccess{Status: statusSuccess, PdfContent: pdfContent})
 }
 
 func healthcheck(w http.ResponseWriter, _ *http.Request) {
@@ -101,7 +101,7 @@ func main() {
 		ip = aws
 	}
 
-	rt := Router{
+	rt := router{
 		ip: ip,
 	}
 

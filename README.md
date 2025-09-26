@@ -30,6 +30,16 @@ docker run --rm -p 3001:3001 project
 
 Then it will be available at [http://localhost:3001](http://localhost:3001).
 
+## Running GO Test Cases Locally
+
+Build and run with 
+
+docker compose up --watch --build
+
+Run tests using, need typst installed as well
+docker compose run backend go test -v ./
+
+
 ## Testing on mobile with Tailscale
 
 Create a free [Tailscale](https://tailscale.com/) account.
