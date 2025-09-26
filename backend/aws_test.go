@@ -8,10 +8,9 @@ import (
 )
 
 func TestNewAWSMissingRegion(t *testing.T) {
-	// Test missing AWS_REGION
 	t.Setenv("AWS_BEDROCK_ROLE_ARN", "arn:aws:iam::123456789012:role/test-role")
 	t.Setenv("AWS_BEDROCK_MODEL_ID", "test-model")
-	// AWS_REGION is left unset
+	t.Setenv("AWS_REGION", "")
 
 	aws, err := NewAWS()
 	if err == nil {
@@ -27,10 +26,9 @@ func TestNewAWSMissingRegion(t *testing.T) {
 }
 
 func TestNewAWSMissingRoleArn(t *testing.T) {
-	// Test missing AWS_BEDROCK_ROLE_ARN
 	t.Setenv("AWS_REGION", "us-east-1")
 	t.Setenv("AWS_BEDROCK_MODEL_ID", "test-model")
-	// AWS_BEDROCK_ROLE_ARN is left unset
+	t.Setenv("AWS_BEDROCK_ROLE_ARN", "")
 
 	aws, err := NewAWS()
 	if err == nil {
@@ -46,10 +44,9 @@ func TestNewAWSMissingRoleArn(t *testing.T) {
 }
 
 func TestNewAWSMissingModelId(t *testing.T) {
-	// Test missing AWS_BEDROCK_MODEL_ID
 	t.Setenv("AWS_REGION", "us-east-1")
 	t.Setenv("AWS_BEDROCK_ROLE_ARN", "arn:aws:iam::123456789012:role/test-role")
-	// AWS_BEDROCK_MODEL_ID is left unset
+	t.Setenv("AWS_BEDROCK_MODEL_ID", "")
 
 	aws, err := NewAWS()
 	if err == nil {
