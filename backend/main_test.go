@@ -81,6 +81,7 @@ func TestPDFHandlerBadRequest(t *testing.T) {
 }
 
 func TestPDFHandlerInferenceError(t *testing.T) {
+	t.Fatalf("mock fail")
 	synctest.Test(t, func(t *testing.T) {
 		mockProvider := NewMockInferenceProvider()
 		mockProvider.shouldError = true
