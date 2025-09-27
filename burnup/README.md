@@ -1,5 +1,12 @@
 # Burnup
 
+Script to create a burnup chart.
+
+This should work for both frontend and backend teams because both of our
+story point label formats are supported.
+
+The start and end date as well as the fall break date are hardcoded currently.
+
 ## Installation
 
 Install [uv](https://docs.astral.sh/uv/getting-started/installation/)
