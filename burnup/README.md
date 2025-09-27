@@ -29,14 +29,16 @@ This script takes:
   This makes a flat line for the scope, if we need to in the future we can add support for
   scope that changes over time.
 
+- `-t`: Chart title, eg `Frontend Team Burnup Chart`
+
 - `-o`: Output path, eg `burnup.png`
 
 Example:
 
 ```sh
-uv run main.py "tkvH0QHf - escrow-navigator-website-compatibility.json" -o burnup.png -s 388
+uv run main.py "tkvH0QHf - escrow-navigator-website-compatibility.json" -t "Frontend Team Burnup Chart" -o burnup.png -s 388
 ```
 
 Example output:
 
-![example burnup chart](https://github.com/user-attachments/assets/ff3c8d4e-9d15-459e-8a2a-9126c4622a7d)
+![example burnup chart](https://github.com/user-attachments/assets/05ad92a1-beb7-4f59-8bbb-941dcc7648f1)

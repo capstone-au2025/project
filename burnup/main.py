@@ -111,6 +111,7 @@ def main():
     parser.add_argument("trello_export", type=Path)
     parser.add_argument("--out", "-o", type=Path, required=True)
     parser.add_argument("--story-points", "-s", type=int, required=True)
+    parser.add_argument("--title", "-t", type=str, default="Burnup Chart")
     args = parser.parse_args()
 
     total_scope = args.story_points
@@ -162,7 +163,7 @@ def main():
     plt.plot(completed_x, completed_y, label="Actual")
     plt.axhline(total_scope, label="Scope", color="red", linestyle=":")
     plt.plot(projected_x, projected_y, label="Projected", color="green", linestyle="--")
-    plt.title("Burnup Chart")
+    plt.title(args.title)
     plt.xlabel("Day")
     plt.ylabel("Story Points")
     plt.xticks(range(start_day, end_day + 1, 7))
