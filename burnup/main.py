@@ -89,6 +89,7 @@ def parse_cards(trello_export: Path) -> list[Card]:
         print(
             f"{card.completion_time.strftime('%m/%d')} {card.story_points:2}  {card.name}"
         )
+    print()
 
     return [card for card in cards.values() if not card.closed and card.story_points]
 
@@ -168,6 +169,7 @@ def main():
     plt.legend()
     plt.grid(True, linestyle="--", alpha=0.6)
     plt.savefig(args.out)
+    print(f"Wrote {args.out}")
 
 
 if __name__ == "__main__":
