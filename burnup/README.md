@@ -31,7 +31,7 @@ or `XMw7FaHx - escrow-navigator-complaint-generator.json`.
 This script takes:
 
 - Exported json path
-- `-s`: Total story points, eg `388` (frontend team release plan total)
+- `-s`: Total story points, eg `388` (frontend team release plan total) or `147` (backend)
 
   This makes a flat line for the scope, if we need to in the future we can add support for
   scope that changes over time.
@@ -46,6 +46,12 @@ Example:
 uv run main.py "tkvH0QHf - escrow-navigator-website-compatibility.json" -t "Frontend Team Burnup Chart" -o burnup.png -s 388
 ```
 
+```sh
+uv run main.py "XMw7FaHx - escrow-navigator-complaint-generator.json" -t "Backend Team Burnup Chart" -o burnup.png -s 147
+```
+
 Example output:
 
-![example burnup chart](https://github.com/user-attachments/assets/05ad92a1-beb7-4f59-8bbb-941dcc7648f1)
+![frontend team burnup chart](https://github.com/user-attachments/assets/05ad92a1-beb7-4f59-8bbb-941dcc7648f1)
+
+![backend team burnup chart](https://github.com/user-attachments/assets/5024d533-446f-4163-bdd2-fef9b66aca1a)
