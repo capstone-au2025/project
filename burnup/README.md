@@ -54,4 +54,4 @@ Example output:
 
 ![frontend team burnup chart](https://github.com/user-attachments/assets/05ad92a1-beb7-4f59-8bbb-941dcc7648f1)
 
-![backend team burnup chart](https://github.com/user-attachments/assets/5024d533-446f-4163-bdd2-fef9b66aca1a)
+![backend team burnup chart](https://github.com/user-attachments/assets/0b480643-dc7b-4521-95ed-721467ce892c)
