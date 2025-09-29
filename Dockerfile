@@ -13,6 +13,14 @@ RUN go mod tidy
 ENV CGO_ENABLED=0
 RUN go build
 
+FROM golang:latest AS typst-wrapper
+WORKDIR /app
+COPY backend/typst-wrapper /app
+RUN go get -u
+RUN go mod tidy
+ENV CGO_ENABLED=0
+RUN go build
+
 FROM scratch
 WORKDIR /app
 COPY --from=ghcr.io/typst/typst:v0.13.1 /bin/typst /bin/typst
@@ -20,4 +28,5 @@ COPY --from=ghcr.io/typst/typst:v0.13.1 /lib/ld-musl-x86_64.so.1 /lib/ld-musl-x8
 ENV PATH=/bin
 COPY --from=frontend /app/dist /app/frontend
 COPY --from=backend /app/backend /app/backend
+COPY --from=typst-wrapper /app/typst-wrapper /bin/typst-wrapper
 CMD ["./backend"]
