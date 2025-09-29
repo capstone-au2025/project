@@ -1,5 +1,3 @@
-#import "@preview/letterloom:1.0.0": *
-
 #set page(paper: "us-letter")
 #set text(14pt)
 
@@ -7,32 +5,31 @@
 
 #let params = json(bytes(sys.inputs.params))
 
-#show: letterloom.with(
-  // Sender's contact information (name and address)
-  from-name: params.sender_name,
-  from-address: [#params.sender_address],
 
-  // Recipient's contact information (name and address)
-  to-name: params.receiver_name,
-  to-address: [#params.receiver_address],
+#align(right, block[
+    #set align(left)
+    #params.sender_name
+    #linebreak()
+    #params.sender_address
+    #linebreak()
+    #v(2pt)
+    #params.date
+  ])
 
-  date: params.date,
+#align(left, block[
+    #set align(left)
+    #params.receiver_name
+    #linebreak()
+    #params.receiver_address
+    #linebreak()
+])
 
-  // Opening greeting
-  salutation: "Dear " + params.receiver_name + ",",
+Dear #params.receiver_name,
 
-  // Letter subject line
-  subject: text(weight: "bold")[#smallcaps(params.complaint_summary)],
-
-  // Closing phrase
-  closing: "Sincerely,",
-
-  // List of signatures with their name, optional signature image, title and affiliation
-  signatures: (
-    (
-      name: params.sender_address,
-    ),
-  ),
-)
+#text(weight: "bold")[#smallcaps(params.complaint_summary)]
 
 #params.letter_content
+
+Sincerely,
+
+#params.sender_name
