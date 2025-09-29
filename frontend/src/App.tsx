@@ -6,7 +6,7 @@ function App() {
     <div className="App">
       <FormPage />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
