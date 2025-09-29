@@ -28,7 +28,7 @@ func RenderPdf(ctx context.Context, params LetterParams) ([]byte, error) {
 		return nil, err
 	}
 
-	cmd := exec.Command("typst-wrapper", string(p))
+	cmd := exec.CommandContext(ctx, "typst-wrapper", string(p))
 
 	in, err := cmd.StdinPipe()
 	if err != nil {
