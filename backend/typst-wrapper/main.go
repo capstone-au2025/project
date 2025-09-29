@@ -27,7 +27,8 @@ func main() {
 		os.Exit(1)
 	}
 	// the passes in parameters in argv[1]
-	cmd := exec.Command("typst", "compile", "-", "-", "--input=params="+string(os.Args[1]))
+	cmd := exec.Command("typst", "compile", "-", "-", "--input=params="+os.Args[1])
+	cmd.Env = make([]string, 0)
 
 	// connect Typst's stdio to the wrapper's
 	cmd.Stdin = os.Stdin
