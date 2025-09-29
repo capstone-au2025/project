@@ -35,7 +35,7 @@ jobs:
 
       - name: Test
         working-directory: .
-        run: docker build -t backend backend && docker run -it backend go test -v
+        run: docker build -t backend backend && docker run backend go test -v
 
   lint:
     name: Lint
