@@ -21,9 +21,7 @@ func main() {
 		os.Exit(1)
 	}
 	// prevent typst from opening network connections
-	err = landlock.V5.BestEffort().RestrictNet(
-		landlock.ConnectTCP(8080),
-	)
+	err = landlock.V5.BestEffort().RestrictNet()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
