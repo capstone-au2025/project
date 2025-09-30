@@ -1,10 +1,10 @@
 import "./App.css";
-import FormPage from "./components/FormPage";
+import FormContainer from "./components/FormContainer";
 
 function App() {
   return (
     <div className="App">
-      <FormPage />
+      <FormContainer />
     </div>
   );
 }

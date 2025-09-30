@@ -44,5 +44,4 @@ Create a free [Tailscale](https://tailscale.com/) account.
 Install and login to Tailscale on both your laptop and your phone.
 Make sure to run `sudo tailscale up` on your laptop and enable
 Tailscale in the app on your phone.
-Then you should be able to navigate to `yourlaptophostname:5173/` on your phone
-to see the website in its mobile glory.
+Then you should be able to navigate to `yourlaptophostname:5173/` on your phone to see the website in its mobile glory.
