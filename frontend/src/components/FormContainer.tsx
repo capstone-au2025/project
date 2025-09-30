@@ -42,48 +42,17 @@ const FormContainer = () => {
   // Show confirmation page if submitted
   if (isSubmitted) {
     return (
-      <div
-        style={{
-          maxWidth: "500px",
-          margin: "0 auto",
-          padding: "40px 20px",
-          backgroundColor: "white",
-          textAlign: "center",
-        }}
-      >
-        <div style={{ fontSize: "48px", marginBottom: "20px" }}></div>
-        <h1
-          style={{
-            fontSize: "28px",
-            fontWeight: "bold",
-            marginBottom: "20px",
-            color: "#4CAF50",
-          }}
-        >
+      <div className="w-full max-w-md px-5 py-10 bg-white text-center">
+        <h1 className="text-3xl font-bold mb-5 text-green-600">
           Submission Received!
         </h1>
-        <p
-          style={{
-            fontSize: "16px",
-            color: "#666",
-            marginBottom: "30px",
-            lineHeight: "1.5",
-          }}
-        >
+        <p className="text-base text-gray-600 mb-8 leading-relaxed">
           Thank you for submitting your information. We have received your
           responses and will process them shortly.
         </p>
         <button
           onClick={() => setIsSubmitted(false)}
-          style={{
-            padding: "12px 24px",
-            backgroundColor: "#f0f0f0",
-            border: "2px solid #000",
-            borderRadius: "4px",
-            fontSize: "14px",
-            fontWeight: "bold",
-            cursor: "pointer",
-          }}
+          className="px-6 py-3 bg-gray-100 border-2 border-black rounded font-bold text-sm cursor-pointer hover:bg-gray-200 transition-colors"
         >
           Submit Another Form
         </button>

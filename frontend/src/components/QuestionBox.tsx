@@ -16,15 +16,8 @@ const QuestionBox: React.FC<QuestionBoxProps> = ({
   placeholder,
 }) => {
   return (
-    <div style={{ marginBottom: "30px" }}>
-      <label
-        style={{
-          display: "block",
-          marginBottom: "10px",
-          fontWeight: "bold",
-          fontSize: "16px",
-        }}
-      >
+    <div className="mb-6">
+      <label className="block mb-2 font-bold text-base">
         {label}
       </label>
       <textarea
@@ -32,17 +25,7 @@ const QuestionBox: React.FC<QuestionBoxProps> = ({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        style={{
-          width: "100%",
-          height: "120px",
-          padding: "15px",
-          border: "2px solid #000",
-          borderRadius: "4px",
-          fontSize: "16px",
-          fontFamily: "inherit",
-          resize: "vertical",
-          outline: "none",
-        }}
+        className="w-full h-32 p-4 border-2 border-black rounded text-base font-sans resize-y focus:outline-none focus:ring-2 focus:ring-black"
       />
     </div>
   );

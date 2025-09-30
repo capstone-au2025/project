@@ -21,15 +21,8 @@ const FormPage: React.FC<FormPageProps> = ({
   onSubmit,
 }) => {
   return (
-    <div
-      style={{
-        maxWidth: "500px",
-        margin: "0 auto",
-        padding: "20px",
-        backgroundColor: "white",
-      }}
-    >
-      <h1 style={{ textAlign: "center", marginBottom: "30px" }}>
+    <div className="w-full max-w-md px-5 py-5 bg-white">
+      <h1 className="text-center text-2xl font-bold mb-8">
         Tell Us About Your Issues
       </h1>
 
@@ -69,18 +62,7 @@ const FormPage: React.FC<FormPageProps> = ({
 
         <button
           type="submit"
-          style={{
-            width: "100%",
-            padding: "15px",
-            backgroundColor: "#000",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            fontSize: "16px",
-            fontWeight: "bold",
-            cursor: "pointer",
-            marginTop: "20px",
-          }}
+          className="w-full py-4 px-4 bg-black text-white rounded font-bold text-base cursor-pointer mt-5 hover:bg-gray-800 transition-colors"
         >
           Submit
         </button>

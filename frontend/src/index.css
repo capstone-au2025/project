@@ -1,36 +1,13 @@
-:root {
-  font-family: sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  background-color: white;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+@import "tailwindcss";
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  font-family: sans-serif;
+  background-color: white;
 }
 
-button {
-  border-radius: 300px;
-  border: none;
-  padding: 0.6em 1.2em;
-  font-size: 1.25em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: rgb(255, 200, 68);
-  cursor: pointer;
-  color: black;
-}
-
-button:hover {
-  background-color: rgb(255, 216, 122);
+#root {
+  min-height: 100vh;
 }
