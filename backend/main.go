@@ -7,8 +7,11 @@ import (
 	"log"
 	"log/slog"
 	"net/http"
+	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
+	"time"
 
 	_ "embed"
 )
@@ -37,12 +40,25 @@ const (
 	statusError   = "error"
 )
 
+// This should be set on any route which attempts to read the request body. Golang's net/http
+// server does not set a maximum limit. We are only passing around small JSON so this can be small
+const MaxRequestBodySize = 4 * 1024
+
+// Golang's net/http server adds an extra 4096 bytes to this value as a buffer. The total buffer
+// includes the request line, as well as all headers. The default value is 1MB which is clearly too
+// large for the kinds of requests we need to handle
+const MaxRequestHeaderSize = 4 * 1024
+
+// Golang's net/http server has an infinite read/write timeout by default. We want to set it to a
+// lower value to reduce load on the server
+const ServerTimeout = 30 * time.Second
+
 // Given an initial message, return a fully typeset and rendered PDF
 func (rt *router) pdf(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var req pdfRequest
-	err := json.NewDecoder(r.Body).Decode(&req)
+	err := json.NewDecoder(http.MaxBytesReader(w, r.Body, MaxRequestBodySize)).Decode(&req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		_ = json.NewEncoder(w).Encode(PdfResponseError{Status: statusError, Message: "failed to decode body"})
@@ -91,9 +107,35 @@ func healthcheck(w http.ResponseWriter, _ *http.Request) {
 }
 
 func main() {
+	slog.SetLogLoggerLevel(slog.LevelDebug)
+
+	maxInputTokens := uint64(1000)
+	if val := os.Getenv("MAX_INPUT_TOKENS"); val != "" {
+		if parsed, err := strconv.ParseUint(val, 10, 0); err != nil {
+			slog.Warn("Invalid MAX_INPUT_TOKENS. Using default value", "err", err)
+		} else {
+			maxInputTokens = parsed
+		}
+	} else {
+		slog.Info("environment variable MAX_INPUT_TOKENS is not defined. Using default value")
+	}
+
+	maxOutputTokens := uint64(500)
+	if val := os.Getenv("MAX_OUTPUT_TOKENS"); val != "" {
+		if parsed, err := strconv.ParseUint(val, 10, 0); err != nil {
+			slog.Warn("Invalid MAX_OUTPUT_TOKENS. Using default value", "err", err)
+		} else {
+			maxOutputTokens = parsed
+		}
+	} else {
+		slog.Info("environment variable MAX_OUTPUT_TOKENS is not defined. Using default value")
+	}
+
+	slog.Info("Using configuration", "maxInputTokens", maxInputTokens, "maxOutputTokens", maxOutputTokens)
+
 	var ip InferenceProvider
 
-	aws, err := NewAWS()
+	aws, err := NewAWS(maxInputTokens, maxOutputTokens)
 	if err != nil {
 		slog.Warn("AWS did not initialize. Falling back to mock provider")
 		ip = NewMockInferenceProvider()
@@ -122,5 +164,12 @@ func main() {
 	}))
 
 	fmt.Println("Listening on :3001")
-	log.Fatal(http.ListenAndServe(":3001", mux))
+	server := &http.Server{
+		Handler:        mux,
+		Addr:           ":3001",
+		MaxHeaderBytes: MaxRequestHeaderSize,
+		ReadTimeout:    ServerTimeout,
+		WriteTimeout:   ServerTimeout,
+	}
+	log.Fatal(server.ListenAndServe())
 }
