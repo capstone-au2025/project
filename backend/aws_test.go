@@ -12,7 +12,7 @@ func TestNewAWSMissingRegion(t *testing.T) {
 	t.Setenv("AWS_BEDROCK_MODEL_ID", "test-model")
 	t.Setenv("AWS_REGION", "")
 
-	aws, err := NewAWS()
+	aws, err := NewAWS(1000, 1000)
 	if err == nil {
 		t.Fatal("expected error when AWS_REGION is missing")
 	}
@@ -30,7 +30,7 @@ func TestNewAWSMissingRoleArn(t *testing.T) {
 	t.Setenv("AWS_BEDROCK_MODEL_ID", "test-model")
 	t.Setenv("AWS_BEDROCK_ROLE_ARN", "")
 
-	aws, err := NewAWS()
+	aws, err := NewAWS(1000, 1000)
 	if err == nil {
 		t.Fatal("expected error when AWS_BEDROCK_ROLE_ARN is missing")
 	}
@@ -48,7 +48,7 @@ func TestNewAWSMissingModelId(t *testing.T) {
 	t.Setenv("AWS_BEDROCK_ROLE_ARN", "arn:aws:iam::123456789012:role/test-role")
 	t.Setenv("AWS_BEDROCK_MODEL_ID", "")
 
-	aws, err := NewAWS()
+	aws, err := NewAWS(1000, 1000)
 	if err == nil {
 		t.Fatal("expected error when AWS_BEDROCK_MODEL_ID is missing")
 	}
