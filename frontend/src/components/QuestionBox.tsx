@@ -17,9 +17,7 @@ const QuestionBox: React.FC<QuestionBoxProps> = ({
 }) => {
   return (
     <div className="mb-6">
-      <label className="block mb-2 font-bold text-base">
-        {label}
-      </label>
+      <label className="block mb-2 font-bold text-base">{label}</label>
       <textarea
         name={name}
         value={value}
