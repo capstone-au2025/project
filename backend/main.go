@@ -107,8 +107,6 @@ func healthcheck(w http.ResponseWriter, _ *http.Request) {
 }
 
 func main() {
-	slog.SetLogLoggerLevel(slog.LevelDebug)
-
 	maxInputTokens := uint64(1000)
 	if val := os.Getenv("MAX_INPUT_TOKENS"); val != "" {
 		if parsed, err := strconv.ParseUint(val, 10, 0); err != nil {
