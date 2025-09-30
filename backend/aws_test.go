@@ -68,7 +68,7 @@ func TestNewAWSWithValidConfig(t *testing.T) {
 		t.Skip("AWS not configured")
 	}
 
-	aws, err := NewAWS()
+	aws, err := NewAWS(1000, 1000)
 	if err != nil {
 		t.Skipf("AWS credentials not available: %v", err)
 	}
@@ -85,7 +85,7 @@ func TestAWSInfer(t *testing.T) {
 		t.Skip("AWS not configured")
 	}
 
-	aws, err := NewAWS()
+	aws, err := NewAWS(1000, 1000)
 	if err != nil {
 		t.Skipf("AWS credentials not available: %v", err)
 	}
