@@ -20,7 +20,6 @@ const FormPage: React.FC<FormPageProps> = ({
   onInputChange,
   onSubmit,
 }) => {
-
   return (
     <div
       style={{
