@@ -5,9 +5,13 @@ body {
   min-width: 320px;
   min-height: 100vh;
   font-family: sans-serif;
-  background-color: white;
+  background-color: #f9fafb;
 }
 
 #root {
   min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Staatliches', sans-serif;
 }

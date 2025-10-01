@@ -21,51 +21,69 @@ const FormPage: React.FC<FormPageProps> = ({
   onSubmit,
 }) => {
   return (
-    <div className="w-full max-w-md px-5 py-5 bg-white">
-      <h1 className="text-center text-2xl font-bold mb-8">
-        Tell Us About Your Issues
-      </h1>
+    <div className="w-full max-w-2xl px-6 py-8 bg-white rounded-lg shadow-lg border border-gray-100">
+      <div className="mb-8">
+        <h1 className="text-center text-4xl md:text-5xl font-bold mb-3 text-gray-900 tracking-wide">
+          Tell Us About Your Concerns
+        </h1>
+        <p className="text-center text-gray-600 text-lg">
+          Please provide details about your housing situation below
+        </p>
+      </div>
 
-      <form onSubmit={onSubmit}>
-        {/* Repeat QuestionBox components */}
+      <div className="bg-[#FF4D00]/5 border-l-4 border-[#FF4D00] p-4 mb-8 rounded-r-lg">
+        <p className="text-sm text-gray-700">
+          <strong>Tip:</strong> Be as specific as possible. Include dates,
+          locations, and any relevant documentation if available. Please do not Include
+          any personal information in your answers.
+        </p>
+      </div>
+
+      <form onSubmit={onSubmit} className="space-y-6">
         <QuestionBox
-          label="Briefly Describe your first issue:"
+          label="What problems are occuring with your house/apartment?"
           name="issue1"
           value={formData.issue1}
           onChange={onInputChange}
-          placeholder="Enter your first issue here..."
+          placeholder="Examples: no running water, no heat or A/C, lock is broken, etc"
+          required
         />
 
         <QuestionBox
-          label="Briefly Describe your second issue:"
+          label="Where is each problem described happening? "
           name="issue2"
           value={formData.issue2}
           onChange={onInputChange}
-          placeholder="Enter your second issue here..."
+          placeholder="Example: The bathroom sink is broken..."
         />
 
         <QuestionBox
-          label="Briefly Describe your third issue:"
+          label="When did each problem start?"
           name="issue3"
           value={formData.issue3}
           onChange={onInputChange}
-          placeholder="Enter your third issue here..."
+          placeholder="Provide the date or time that the problem started"
         />
 
         <QuestionBox
-          label="Any additional concerns:"
+          label="Additional Information"
           name="issue4"
           value={formData.issue4}
           onChange={onInputChange}
-          placeholder="Enter any additional concerns..."
+          placeholder="Any other details you'd like your landlord to know..."
         />
 
-        <button
-          type="submit"
-          className="w-full py-4 px-4 bg-black text-white rounded font-bold text-base cursor-pointer mt-5 hover:bg-gray-800 transition-colors"
-        >
-          Submit
-        </button>
+        <div className="pt-4">
+          <button
+            type="submit"
+            className="w-full py-4 px-6 bg-[#FF4D00] text-white rounded-md font-bold text-lg cursor-pointer hover:bg-[#E64400] transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-[1.02]"
+          >
+            Submit Your Information
+          </button>
+          <p className="text-center text-sm text-gray-500 mt-3">
+            Your information will be sent to an AI tool and transformed into a letter.
+          </p>
+        </div>
       </form>
     </div>
   );
