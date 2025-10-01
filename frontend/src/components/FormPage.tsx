@@ -34,8 +34,8 @@ const FormPage: React.FC<FormPageProps> = ({
       <div className="bg-[#FF4D00]/5 border-l-4 border-[#FF4D00] p-4 mb-8 rounded-r-lg">
         <p className="text-sm text-gray-700">
           <strong>Tip:</strong> Be as specific as possible. Include dates,
-          locations, and any relevant documentation if available. Please do not Include
-          any personal information in your answers.
+          locations, and any relevant documentation if available. Please do not
+          Include any personal information in your answers.
         </p>
       </div>
 
@@ -81,7 +81,8 @@ const FormPage: React.FC<FormPageProps> = ({
             Submit Your Information
           </button>
           <p className="text-center text-sm text-gray-500 mt-3">
-            Your information will be sent to an AI tool and transformed into a letter.
+            Your information will be sent to an AI tool and transformed into a
+            letter.
           </p>
         </div>
       </form>

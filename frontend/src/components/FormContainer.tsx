@@ -88,8 +88,8 @@ const FormContainer = () => {
           </h1>
         </div>
         <p className="text-lg text-gray-600 mb-10 leading-relaxed max-w-xl mx-auto">
-          Thank you for submitting your information. We are generating a letter for you now. Please review this letter to
-          ensure correctness!
+          Thank you for submitting your information. We are generating a letter
+          for you now. Please review this letter to ensure correctness!
         </p>
         <button
           onClick={handleRestart}

@@ -24,8 +24,8 @@ const IntroPage: React.FC<IntroPageProps> = ({ onGetStarted }) => {
           <p className="text-lg text-gray-600 leading-relaxed">
             This tool helps tenants communicate issues and concerns to their
             landlords in a clear and organized way. By answering a few simple
-            questions, we'll help facilitate better communication and understanding
-            between you and your landlord.
+            questions, we'll help facilitate better communication and
+            understanding between you and your landlord.
           </p>
         </div>
 
