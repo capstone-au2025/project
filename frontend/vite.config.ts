@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
@@ -10,5 +11,9 @@ export default defineConfig({
       "/api": "http://localhost:3001",
     },
     allowedHosts: true,
+  },
+  test: {
+    environment: "happy-dom",
+    globals: true,
   },
 });
