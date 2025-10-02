@@ -26,26 +26,21 @@ export const formPages: PageConfig[] = [
     tipType: "default",
     questions: [
       {
-        name: "issue1",
+        name: "mainProblem",
         label: "What problems are occuring with your house/apartment?",
         placeholder:
           "Examples: no running water, no heat or A/C, lock is broken, etc",
         required: true,
       },
       {
-        name: "issue2",
+        name: "problemLocations",
         label: "Where is each problem described happening?",
         placeholder: "Example: The bathroom sink is broken...",
       },
       {
-        name: "issue3",
+        name: "startOfProblem",
         label: "When did each problem start?",
         placeholder: "Provide the date or time that the problem started",
-      },
-      {
-        name: "issue4",
-        label: "Additional Information",
-        placeholder: "Any other details you'd like your landlord to know...",
       },
     ],
     submitButtonText: "Continue",
@@ -60,35 +55,30 @@ export const formPages: PageConfig[] = [
     tipType: "default",
     questions: [
       {
-        name: "issue5",
-        label: "Have you notified your landlord about these issues before?",
+        name: "problemAffect",
+        label: "How are these problems affecting your living situation?",
         placeholder:
-          "Example: Yes, I called on [date] and sent an email on [date]...",
+          "Example: I can't take a shower, I feel unsafe, the apartment is too cold for my kids, etc. ",
         required: true,
       },
       {
-        name: "issue6",
-        label: "If yes, what was their response?",
-        placeholder: "Example: They said they would send someone to fix it...",
-      },
-      {
-        name: "issue7",
+        name: "whatTheyTried",
         label:
-          "Are there any health or safety concerns related to these issues?",
+          "Have you informed your landlord about these problems and have they replied?",
         placeholder:
-          "Example: The lack of heat is affecting my family's health...",
+          "Please include details about communications and replies from your landlord...",
       },
       {
-        name: "issue8",
-        label: "Do you have any documentation? (photos, emails, texts)",
+        name: "solutionToProblem",
+        label: "What would you like your landlord to do to fix these problems?",
         placeholder:
-          "Example: Yes, I have photos of the damage and email correspondence...",
+          "Provide details about what your landlord can do to fix this problem...",
       },
       {
-        name: "issue9",
-        label: "How have these issues affected your daily life?",
+        name: "solutionDate",
+        label: "When would you like to have a solution to these problems?",
         placeholder:
-          "Example: We can't cook meals or the cold is keeping us up at night...",
+          "Example: I would like this fixed as soon as possible, etc.",
       },
     ],
     submitButtonText: "Continue",
@@ -99,15 +89,14 @@ export const formPages: PageConfig[] = [
     title: "Final Question",
     subtitle: "One last thing before we generate your letter",
     tipText:
-      "Almost done! This final question helps us understand your desired outcome so we can craft an effective communication.",
+      "Almost done! This final question helps us add context and information to your letter!",
     tipType: "success",
     questions: [
       {
         name: "issue10",
-        label: "What would you like to happen? What is your desired outcome?",
-        placeholder:
-          "Example: I would like the landlord to fix the heating system within the next week and provide temporary heating in the meantime...",
-        required: true,
+        label: "Do you have any additional information?",
+        placeholder: "Example: Any other details you'd like to include...",
+        required: false,
       },
     ],
     submitButtonText: "Generate Letter",
