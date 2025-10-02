@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func requireTypst(t *testing.T) string{
+func requireTypst(t *testing.T) string {
 	t.Helper()
 	path, err := exec.LookPath("typst")
 	if err != nil {
