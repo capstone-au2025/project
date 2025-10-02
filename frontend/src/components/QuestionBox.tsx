@@ -18,10 +18,10 @@ const QuestionBox: React.FC<QuestionBoxProps> = ({
   required = false,
 }) => {
   return (
-    <div className="mb-5">
+    <div className="mb-4">
       <label
         htmlFor={name}
-        className="block mb-3 font-semibold text-lg text-gray-800"
+        className="block mb-2 md:mb-3 font-semibold text-base md:text-lg text-gray-800 leading-relaxed"
       >
         {label}
         {required && <span className="text-[#FF4D00] ml-1">*</span>}
@@ -33,7 +33,8 @@ const QuestionBox: React.FC<QuestionBoxProps> = ({
         onChange={onChange}
         placeholder={placeholder}
         required={required}
-        className="w-full min-h-[120px] p-4 border-2 border-gray-300 rounded-md text-base font-sans resize-y focus:outline-none focus:border-[#FF4D00] focus:ring-2 focus:ring-[#FF4D00]/20 transition-colors duration-200 placeholder:text-gray-400 hover:border-gray-400"
+        rows={4}
+        className="w-full p-3 md:p-4 border-2 border-gray-300 rounded-md text-base leading-relaxed font-sans resize-y focus:outline-none focus:border-[#FF4D00] focus:ring-2 focus:ring-[#FF4D00]/20 transition-colors duration-200 placeholder:text-gray-400 hover:border-gray-400"
       />
     </div>
   );

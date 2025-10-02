@@ -10,7 +10,7 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
   totalSteps,
 }) => {
   return (
-    <div className="flex items-center justify-center mb-8 gap-4">
+    <div className="flex items-center justify-center mb-4 md:mb-8 gap-2 md:gap-4">
       {Array.from({ length: totalSteps }, (_, index) => {
         const stepNumber = index + 1;
         const isCompleted = stepNumber < currentStep;
@@ -20,17 +20,17 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
           <React.Fragment key={stepNumber}>
             <div className="flex flex-col items-center">
               <div
-                className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg transition-all duration-300 ${
+                className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center font-bold text-base md:text-lg transition-all duration-300 ${
                   isCompleted
                     ? "bg-[#FF4D00] text-white"
                     : isCurrent
-                      ? "bg-[#FF4D00] text-white ring-4 ring-[#FF4D00]/30"
+                      ? "bg-[#FF4D00] text-white ring-2 md:ring-4 ring-[#FF4D00]/30"
                       : "bg-gray-200 text-gray-400"
                 }`}
               >
                 {isCompleted ? (
                   <svg
-                    className="w-6 h-6"
+                    className="w-5 h-5 md:w-6 md:h-6"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -46,13 +46,13 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
                   stepNumber
                 )}
               </div>
-              <span className="text-xs text-gray-600 mt-2">
+              <span className="text-xs text-gray-600 mt-1 md:mt-2 hidden sm:block">
                 Page {stepNumber}
               </span>
             </div>
             {stepNumber < totalSteps && (
               <div
-                className={`h-1 w-16 transition-all duration-300 ${
+                className={`h-0.5 md:h-1 w-8 md:w-16 transition-all duration-300 ${
                   isCompleted ? "bg-[#FF4D00]" : "bg-gray-200"
                 }`}
               />
