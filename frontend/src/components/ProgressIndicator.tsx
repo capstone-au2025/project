@@ -22,9 +22,9 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
               <div
                 className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center font-bold text-base md:text-lg transition-all duration-300 ${
                   isCompleted
-                    ? "bg-[#FF4D00] text-white"
+                    ? "bg-primary text-white"
                     : isCurrent
-                      ? "bg-[#FF4D00] text-white ring-2 md:ring-4 ring-[#FF4D00]/30"
+                      ? "bg-primary text-white ring-2 md:ring-4 ring-primary-ring"
                       : "bg-gray-200 text-gray-400"
                 }`}
               >
@@ -53,7 +53,7 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
             {stepNumber < totalSteps && (
               <div
                 className={`h-0.5 md:h-1 w-8 md:w-16 transition-all duration-300 ${
-                  isCompleted ? "bg-[#FF4D00]" : "bg-gray-200"
+                  isCompleted ? "bg-primary" : "bg-gray-200"
                 }`}
               />
             )}

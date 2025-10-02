@@ -14,7 +14,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({ onRestart }) => {
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
             {CheckmarkIcon}
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-[#FF4D00] tracking-wide">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-primary tracking-wide">
             Submission Received!
           </h1>
         </div>

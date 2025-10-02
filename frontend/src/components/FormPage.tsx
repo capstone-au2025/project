@@ -71,7 +71,7 @@ const FormPage: React.FC<FormPageProps> = ({
           className={`mx-6 mb-6 border-l-4 p-4 rounded-r-lg ${
             tipType === "success"
               ? "bg-green-50 border-green-500"
-              : "bg-[#FF4D00]/5 border-[#FF4D00]"
+              : "bg-primary-light border-primary"
           }`}
         >
           <p className="text-sm md:text-base text-gray-700">
@@ -103,14 +103,14 @@ const FormPage: React.FC<FormPageProps> = ({
                 <button
                   type="button"
                   onClick={handleMobileNext}
-                  className="w-full py-4 px-6 bg-[#FF4D00] text-white rounded-md font-bold text-lg hover:bg-[#E64400] transition-all duration-200 shadow-md"
+                  className="w-full py-4 px-6 bg-primary text-white rounded-md font-bold text-lg hover:bg-primary-hover transition-all duration-200 shadow-md"
                 >
                   Next Question
                 </button>
               ) : (
                 <button
                   type="submit"
-                  className="w-full py-4 px-6 bg-[#FF4D00] text-white rounded-md font-bold text-lg hover:bg-[#E64400] transition-all duration-200 shadow-md"
+                  className="w-full py-4 px-6 bg-primary text-white rounded-md font-bold text-lg hover:bg-primary-hover transition-all duration-200 shadow-md"
                 >
                   {submitButtonText}
                 </button>
@@ -170,7 +170,7 @@ const FormPage: React.FC<FormPageProps> = ({
                 )}
                 <button
                   type="submit"
-                  className="flex-1 py-4 px-8 bg-[#FF4D00] text-white rounded-md font-bold text-lg hover:bg-[#E64400] transition-all duration-200 shadow-md hover:shadow-lg"
+                  className="flex-1 py-4 px-8 bg-primary text-white rounded-md font-bold text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg"
                 >
                   {submitButtonText}
                 </button>

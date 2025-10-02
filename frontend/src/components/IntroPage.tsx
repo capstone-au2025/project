@@ -24,7 +24,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
   description,
 }) => (
   <div className="p-6 bg-gray-50 rounded-lg">
-    <div className="w-12 h-12 bg-[#FF4D00] rounded-full flex items-center justify-center mb-4">
+    <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mb-4">
       {icon}
     </div>
     <h3 className="text-xl font-bold mb-2 text-gray-800">{title}</h3>
@@ -71,7 +71,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ onGetStarted }) => {
         </div>
 
         <div className="space-y-8 mb-12">
-          <div className="bg-gradient-to-r from-[#FF4D00]/10 to-transparent p-6 rounded-lg border-l-4 border-[#FF4D00]">
+          <div className="bg-gradient-to-r from-primary-light to-transparent p-6 rounded-lg border-l-4 border-primary">
             <h2 className="text-2xl font-bold mb-3 text-gray-800">
               What is this tool?
             </h2>
@@ -105,7 +105,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ onGetStarted }) => {
         <div className="text-center">
           <button
             onClick={onGetStarted}
-            className="px-12 py-4 bg-[#FF4D00] text-white rounded-md font-bold text-xl cursor-pointer hover:bg-[#E64400] transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+            className="px-12 py-4 bg-primary text-white rounded-md font-bold text-xl cursor-pointer hover:bg-primary-hover transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
           >
             Get Started
           </button>
