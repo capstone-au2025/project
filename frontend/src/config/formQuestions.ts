@@ -93,7 +93,7 @@ export const formPages: PageConfig[] = [
     tipType: "success",
     questions: [
       {
-        name: "issue10",
+        name: "additionalInformation",
         label: "Do you have any additional information?",
         placeholder: "Example: Any other details you'd like to include...",
         required: false,

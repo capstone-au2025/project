@@ -6,16 +6,14 @@ import SubmittedPage from "./SubmittedPage";
 import { formPages } from "../config/formQuestions";
 
 export interface FormData extends Record<string, string> {
-  issue1: string;
-  issue2: string;
-  issue3: string;
-  issue4: string;
-  issue5: string;
-  issue6: string;
-  issue7: string;
-  issue8: string;
-  issue9: string;
-  issue10: string;
+  mainProblem: string;
+  problemLocations: string;
+  startOfProblem: string;
+  problemAffect: string;
+  whatTheyTried: string;
+  solutionToProblem: string;
+  solutionDate: string;
+  additionalInformation: string;
 }
 
 type PageState = "intro" | "form1" | "form2" | "form3" | "submitted";
@@ -24,16 +22,14 @@ const STORAGE_KEY = "justiceFormData";
 const PAGE_STATE_KEY = "justiceFormPageState";
 
 const INITIAL_FORM_DATA: FormData = {
-  issue1: "",
-  issue2: "",
-  issue3: "",
-  issue4: "",
-  issue5: "",
-  issue6: "",
-  issue7: "",
-  issue8: "",
-  issue9: "",
-  issue10: "",
+  mainProblem: "",
+  problemLocations: "",
+  startOfProblem: "",
+  problemAffect: "",
+  whatTheyTried: "",
+  solutionToProblem: "",
+  solutionDate: "",
+  additionalInformation: "",
 };
 
 const loadFromLocalStorage = <T,>(key: string, fallback: T): T => {
