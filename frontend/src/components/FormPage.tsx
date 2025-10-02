@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import QuestionBox from "./QuestionBox";
 import ProgressIndicator from "./ProgressIndicator";
@@ -31,25 +31,6 @@ const FormPage: React.FC<FormPageProps> = ({
     pageInfoText,
   } = pageConfig;
 
-  const [mobileQuestionIndex, setMobileQuestionIndex] = useState(0);
-  const totalQuestions = questions.length;
-  const currentQuestion = questions[mobileQuestionIndex];
-  const isLastQuestion = mobileQuestionIndex === totalQuestions - 1;
-
-  const handleMobileNext = () => {
-    if (mobileQuestionIndex < totalQuestions - 1) {
-      setMobileQuestionIndex((prev) => prev + 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  };
-
-  const handleMobilePrevious = () => {
-    if (mobileQuestionIndex > 0) {
-      setMobileQuestionIndex((prev) => prev - 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  };
-
   return (
     <PageLayout>
       <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg border border-gray-100">
@@ -81,69 +62,8 @@ const FormPage: React.FC<FormPageProps> = ({
         </div>
 
         <form onSubmit={onSubmit}>
-          {/* Mobile: Single Question */}
-          <div className="md:hidden px-6 pb-6">
-            <div className="mb-4">
-              <p className="text-sm text-gray-500 font-medium">
-                Question {mobileQuestionIndex + 1} of {totalQuestions}
-              </p>
-            </div>
-            <QuestionBox
-              label={currentQuestion.label}
-              name={currentQuestion.name}
-              value={formData[currentQuestion.name] || ""}
-              onChange={onInputChange}
-              placeholder={currentQuestion.placeholder}
-              required={currentQuestion.required}
-            />
-
-            {/* Mobile Buttons */}
-            <div className="space-y-3 mt-6">
-              {!isLastQuestion ? (
-                <button
-                  type="button"
-                  onClick={handleMobileNext}
-                  className="w-full py-4 px-6 bg-primary text-white rounded-md font-bold text-lg hover:bg-primary-hover transition-all duration-200 shadow-md"
-                >
-                  Next Question
-                </button>
-              ) : (
-                <button
-                  type="submit"
-                  className="w-full py-4 px-6 bg-primary text-white rounded-md font-bold text-lg hover:bg-primary-hover transition-all duration-200 shadow-md"
-                >
-                  {submitButtonText}
-                </button>
-              )}
-
-              <div className="flex gap-3">
-                {mobileQuestionIndex > 0 && (
-                  <button
-                    type="button"
-                    onClick={handleMobilePrevious}
-                    className="flex-1 py-3 px-4 bg-gray-100 border-2 border-gray-300 rounded-md font-semibold hover:bg-gray-200 transition-all duration-200"
-                  >
-                    Previous
-                  </button>
-                )}
-                {onBack && mobileQuestionIndex === 0 && (
-                  <button
-                    type="button"
-                    onClick={onBack}
-                    className="flex-1 py-3 px-4 bg-gray-100 border-2 border-gray-300 rounded-md font-semibold hover:bg-gray-200 transition-all duration-200"
-                  >
-                    Back
-                  </button>
-                )}
-              </div>
-              <p className="text-center text-sm text-gray-500 mt-2">
-                {pageInfoText}
-              </p>
-            </div>
-          </div>
-
-          {/* Desktop: All Questions */}
-          <div className="hidden md:block px-6 pb-6 space-y-4">
+          {/* All Questions */}
+          <div className="px-6 pb-6 space-y-4">
             {questions.map((question) => (
               <QuestionBox
                 key={question.name}
@@ -156,7 +76,7 @@ const FormPage: React.FC<FormPageProps> = ({
               />
             ))}
 
-            {/* Desktop Buttons */}
+            {/* Buttons */}
             <div className="pt-4">
               <div className="flex gap-4">
                 {onBack && (
