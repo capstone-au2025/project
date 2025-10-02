@@ -3,7 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
-	"fmt"
+	"errors"
 	"text/template"
 	"time"
 
@@ -15,6 +15,11 @@ type InferenceProvider interface {
 	// A system prompt may be included on creation of the inference provider.
 	Infer(ctx context.Context, input string) (string, error)
 }
+
+var (
+	ErrTooManyInputTokens  = errors.New("too many input tokens")
+	ErrTooManyOutputTokens = errors.New("too many output tokens")
+)
 
 type MockInferenceProvider struct {
 	shouldError bool
@@ -29,7 +34,7 @@ func NewMockInferenceProvider() *MockInferenceProvider {
 func (m *MockInferenceProvider) Infer(ctx context.Context, input string) (string, error) {
 	time.Sleep(2 * time.Second)
 	if m.shouldError {
-		return "", fmt.Errorf("mocked inference error")
+		return "", ErrTooManyInputTokens
 	}
 	return "MOCKED INFERENCE PROVIDER\n\n" + input + "\n\nMOCKED INFERENCE PROVIDER", nil
 }
