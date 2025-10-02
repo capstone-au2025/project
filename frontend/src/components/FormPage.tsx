@@ -1,6 +1,7 @@
 import React from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import QuestionBox from "./QuestionBox";
+import ProgressIndicator from "./ProgressIndicator";
 
 export interface FormData {
   issue1: string;
@@ -22,6 +23,8 @@ const FormPage: React.FC<FormPageProps> = ({
 }) => {
   return (
     <div className="w-full max-w-2xl px-6 py-8 bg-white rounded-lg shadow-lg border border-gray-100">
+      <ProgressIndicator currentStep={1} totalSteps={3} />
+
       <div className="mb-8">
         <h1 className="text-center text-4xl md:text-5xl font-bold mb-3 text-gray-900 tracking-wide">
           Tell Us About Your Concerns
@@ -78,11 +81,10 @@ const FormPage: React.FC<FormPageProps> = ({
             type="submit"
             className="w-full py-4 px-6 bg-[#FF4D00] text-white rounded-md font-bold text-lg cursor-pointer hover:bg-[#E64400] transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-[1.02]"
           >
-            Submit Your Information
+            Continue
           </button>
           <p className="text-center text-sm text-gray-500 mt-3">
-            Your information will be sent to an AI tool and transformed into a
-            letter.
+            Page 1 of 3 - Let's get started!
           </p>
         </div>
       </form>
