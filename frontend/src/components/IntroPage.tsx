@@ -60,7 +60,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ onGetStarted }) => {
 
   return (
     <PageLayout>
-      <div className="w-full max-w-3xl px-6 py-12 bg-white rounded-lg shadow-lg border border-gray-100">
+      <div className="w-full max-w-3xl px-6 py-12 bg-white lg:rounded-lg lg:shadow-lg lg:border lg:border-gray-100">
         <div className="text-center mb-10">
           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 tracking-wide">
             Landlord-Tenant Communication Tool

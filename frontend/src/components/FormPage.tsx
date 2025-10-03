@@ -33,7 +33,7 @@ const FormPage: React.FC<FormPageProps> = ({
 
   return (
     <PageLayout>
-      <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg border border-gray-100">
+      <div className="w-full max-w-2xl bg-white lg:rounded-lg lg:shadow-lg lg:border lg:border-gray-100">
         {/* Progress Indicator */}
         <div className="p-6 pb-4">
           <ProgressIndicator currentStep={pageNumber} totalSteps={3} />
