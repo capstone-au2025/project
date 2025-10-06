@@ -30,6 +30,15 @@ docker run --rm -p 3001:3001 project
 
 Then it will be available at [http://localhost:3001](http://localhost:3001).
 
+## Deployment
+A deployment for the project can be created using Terraform.
+```
+backend_bucket = "my-s3-bucket"
+region = "my-aws-region"
+availability_zone = "my-aws-availability-zone"
+ssh-key = "ssh-ed25519 AAAAMySshPublicKeyNotThePrivateKeyOnlyThePublicKey whoever@wherever"
+```
+
 ## Unit Tests
 
 Run the following command from the root of the repository to test the backend:
