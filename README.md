@@ -32,6 +32,7 @@ Then it will be available at [http://localhost:3001](http://localhost:3001).
 
 ## Deployment
 A deployment for the project can be created using Terraform.
+Create a terraform.tfvars file with the following format:
 ```
 backend_bucket = "my-s3-bucket"
 region = "my-aws-region"
