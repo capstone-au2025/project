@@ -29,10 +29,6 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - uses: actions/setup-go@v6
-        with:
-          go-version-file: backend/go.mod
-
       - name: Test
         run: docker build -t backend backend && docker run backend go test -v
 
