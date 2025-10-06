@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"os"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -22,13 +23,15 @@ var (
 )
 
 type AWS struct {
-	brc     *bedrockruntime.Client
-	modelId string
+	brc             *bedrockruntime.Client
+	modelId         string
+	maxInputTokens  int
+	maxOutputTokens *int32
 }
 
 var _ InferenceProvider = (*AWS)(nil)
 
-func NewAWS() (*AWS, error) {
+func NewAWS(maxInputTokens, maxOutputTokens uint64) (*AWS, error) {
 	region := os.Getenv("AWS_REGION")
 	if region == "" {
 		return nil, ErrAWSRegionNotDefined
@@ -59,13 +62,23 @@ func NewAWS() (*AWS, error) {
 	brc := bedrockruntime.NewFromConfig(assumedCfg)
 
 	return &AWS{
-		brc:     brc,
-		modelId: bedrockModelId,
+		brc:             brc,
+		modelId:         bedrockModelId,
+		maxInputTokens:  int(maxInputTokens),
+		maxOutputTokens: aws.Int32(int32(maxOutputTokens)),
 	}, nil
 }
 
 func (b *AWS) Infer(ctx context.Context, input string) (string, error) {
 	systemPrompt := RenderSystemPrompt()
+
+	// Bedrock does not expose an API to count the number of tokens that a particular model would
+	// tokenize to. Therefore we have to be conservative by assuming each character in the user
+	// input is one token. The system prompt however is trusted so we can use a simple heuristic
+	estimatedSystemPromptTokens := len(systemPrompt) / 3
+	if len(input)+estimatedSystemPromptTokens > b.maxInputTokens {
+		return "", ErrTooManyInputTokens
+	}
 
 	response, err := b.brc.Converse(ctx, &bedrockruntime.ConverseInput{
 		ModelId: aws.String(b.modelId),
@@ -80,10 +93,18 @@ func (b *AWS) Infer(ctx context.Context, input string) (string, error) {
 		System: []types.SystemContentBlock{
 			&types.SystemContentBlockMemberText{Value: systemPrompt},
 		},
+		InferenceConfig: &types.InferenceConfiguration{
+			// The AWS inference provider never returns ErrTooOutputTokens. Instead, the Converse
+			// api allows us to set the maximum number of output tokens. It will simply be
+			// truncated if it is too long.
+			MaxTokens: b.maxOutputTokens,
+		},
 	})
 	if err != nil {
 		return "", fmt.Errorf("failed to converse with Bedrock: %v", err)
 	}
+
+	slog.DebugContext(ctx, "AWS inference", "inputTokens", *response.Usage.InputTokens, "outputTokens", *response.Usage.OutputTokens)
 
 	responseText, _ := response.Output.(*types.ConverseOutputMemberMessage)
 	responseContentBlock := responseText.Value.Content[0]

@@ -1,36 +1,29 @@
-:root {
-  font-family: sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@import "tailwindcss";
 
-  background-color: white;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@theme {
+  --color-primary: #ff4d00;
+  --color-primary-hover: #e64400;
+  --color-primary-light: rgb(255 77 0 / 0.05);
+  --color-primary-ring: rgb(255 77 0 / 0.3);
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
+  min-height: 100vh;
+  font-family: sans-serif;
+  background-color: #f9fafb;
+}
+
+#root {
   min-height: 100vh;
 }
 
-button {
-  border-radius: 300px;
-  border: none;
-  padding: 0.6em 1.2em;
-  font-size: 1.25em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: rgb(255, 200, 68);
-  cursor: pointer;
-  color: black;
-}
-
-button:hover {
-  background-color: rgb(255, 216, 122);
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Staatliches", sans-serif;
 }
