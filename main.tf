@@ -65,8 +65,8 @@ resource "aws_instance" "complaint_generator" {
 
   user_data = <<-EOF
     #!/bin/bash
-    apt update
-    apt install -y docker.io
+    apt-get update
+    apt-get install -y docker.io
   EOF
 
   user_data_replace_on_change = true
