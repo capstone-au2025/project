@@ -6,14 +6,34 @@ terraform {
     }
   }
   backend "s3" {
-    bucket = "capstone2025-tf-config-bucket"
+    bucket = var.backend_bucket
     key = "terraform.tfstate"
-    region = "us-east-2"
+    region = var.region
   }
 }
 
+variable "backend_bucket" {
+  description = "The name of the AWS S3 bucket to use as the terraform backend (where terraform's information will be stored)"
+  type = string
+}
+
+variable "region" {
+  description = "AWS region to use"
+  type = string
+}
+
+variable "availability_zone" {
+  description = "AWS availability zone to use"
+  type = string
+}
+
+variable "ssh-key" {
+  description = "The SSH public key to add to the server"
+  type = string
+}
+
 provider "aws" {
-  region = "us-east-2"
+  region = var.region
 }
 
 data "aws_vpc" "default" {
@@ -22,7 +42,7 @@ data "aws_vpc" "default" {
 
 data "aws_subnet" "default" {
   vpc_id            = data.aws_vpc.default.id
-  availability_zone = "us-east-2a"
+  availability_zone = var.availability_zone
   default_for_az    = true
 }
 
