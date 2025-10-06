@@ -27,7 +27,7 @@ variable "availability_zone" {
   type = string
 }
 
-variable "ssh-key" {
+variable "ssh_key" {
   description = "The SSH public key to add to the server"
   type = string
 }
@@ -103,5 +103,5 @@ resource "aws_eip" "ip" {
 
 resource "aws_key_pair" "key" {
     key_name = "ssh-key"
-    public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP4YHG9nx4eoRb5C/X/yINL6cKZmo3hcd/EjHQo/K+RJ admin@fedora"
+    public_key = var.ssh_key
 }
