@@ -66,16 +66,14 @@ const IntroPage: React.FC<IntroPageProps> = ({ onGetStarted }) => {
             Landlord-Tenant Communication Tool
           </h1>
           <p className="text-left text-md text-gray-600 leading-relaxed">
-              This tool helps tenants communicate issues and concerns to their
-              landlords in a clear and organized way. By answering a few simple
-              questions, we'll help facilitate better communication and
-              understanding between you and your landlord.
-            </p>
+            This tool helps tenants communicate issues and concerns to their
+            landlords in a clear and organized way. By answering a few simple
+            questions, we'll help facilitate better communication and
+            understanding between you and your landlord.
+          </p>
         </header>
 
-        <main className="flex lg:flex-col flex-col-reverse"> 
-
-        
+        <main className="flex lg:flex-col flex-col-reverse">
           {/* Feature Cards */}
           <section className="grid md:grid-cols-2 gap-6">
             {features.map((feature, index) => (
@@ -86,31 +84,31 @@ const IntroPage: React.FC<IntroPageProps> = ({ onGetStarted }) => {
           {/* Button and Disclaimer */}
           <section className="flex flex-col gap-4">
             <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
-                <h3 className="text-lg font-bold mb-2 text-gray-800 flex items-center">
+              <h3 className="text-lg font-bold mb-2 text-gray-800 flex items-center">
                 {InfoIcon}
                 What you'll need
-                </h3>
-                <p className="text-gray-700">
+              </h3>
+              <p className="text-gray-700">
                 Have information about your rental property and any specific
                 issues or concerns ready. Include dates, documentation, and any
                 relevant details about your housing situation.
-                </p>
+              </p>
             </div>
 
             <div className="text-center">
-                <button
-                    onClick={onGetStarted}
-                    className="px-12 py-4 bg-primary text-white rounded-md font-bold text-xl cursor-pointer hover:bg-primary-hover transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
-                >
-                    Get Started
-                </button>
-                <p className="mt-4 text-sm text-gray-500">
-                    Takes approximately 3-5 minutes to complete
-                </p>
+              <button
+                onClick={onGetStarted}
+                className="px-12 py-4 bg-primary text-white rounded-md font-bold text-xl cursor-pointer hover:bg-primary-hover transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                Get Started
+              </button>
+              <p className="mt-4 text-sm text-gray-500">
+                Takes approximately 3-5 minutes to complete
+              </p>
             </div>
           </section>
-      </main>
-    </div>
+        </main>
+      </div>
     </PageLayout>
   );
 };
