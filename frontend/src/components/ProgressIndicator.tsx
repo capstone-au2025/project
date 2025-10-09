@@ -52,7 +52,7 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
             </div>
             {stepNumber < totalSteps && (
               <div
-                className={`h-0.5 md:h-1 w-8 md:w-16 transition-all duration-300 ${
+                className={`h-0.5 md:h-1 w-8 md:w-16 transition-all duration-300 self-start mt-5 md:mt-6 ${
                   isCompleted ? "bg-primary" : "bg-gray-200"
                 }`}
               />
