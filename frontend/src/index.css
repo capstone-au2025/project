@@ -43,7 +43,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   font-family: var(--font-secondary);
-  background-color: #f9fafb;
+  background-color: white;
 }
 
 #root {
