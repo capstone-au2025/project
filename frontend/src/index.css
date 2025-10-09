@@ -1,12 +1,41 @@
 @import "tailwindcss";
 
 @theme {
+  /* Rentful Brand Colors */
   --color-primary: #ff4d00;
-  --color-primary-hover: #e64400;
+  /* Saffron Orange */
+  --color-primary-hover: #283745;
+  /* Indigo Blue for hover states */
   --color-primary-light: rgb(255 77 0 / 0.05);
   --color-primary-ring: rgb(255 77 0 / 0.3);
   --font-primary: "Staatliches", "Tahoma Bold", sans-serif;
   --font-secondary: "Merriweather", serif;
+
+  /* Brand Palette */
+  --color-indigo: #283745;
+  /* Indigo Blue - Main text */
+  --color-sky: #bed7e9;
+  /* Sky Blue - Borders & accents */
+  --color-sky-light: #d5e7f1;
+  /* Light Sky Blue - Backgrounds */
+  --color-butterscotch: #f8c85e;
+  /* Butterscotch - Success/accent */
+  --color-indigo-dark: #121c29;
+  /* Dark Indigo - Graphics */
+
+  /* Semantic colors using brand palette */
+  --color-text-primary: #283745;
+  /* Indigo Blue */
+  --color-text-muted: rgb(40 55 69 / 0.7);
+  /* Indigo Blue 70% opacity */
+  --color-border: #bed7e9;
+  /* Sky Blue */
+  --color-border-hover: #283745;
+  /* Indigo Blue */
+  --color-bg-light: #d5e7f1;
+  /* Light Sky Blue */
+  --color-success: #f8c85e;
+  /* Butterscotch */
 }
 
 body {

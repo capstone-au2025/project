@@ -41,21 +41,20 @@ const FormPage: React.FC<FormPageProps> = ({
 
         {/* Header */}
         <div className="px-6 pb-6">
-          <h1 className="text-3xl md:text-4xl font-bold mb-3 text-gray-900 text-center">
+          <h1 className="text-3xl md:text-4xl font-bold mb-3 text-primary text-center uppercase">
             {title}
           </h1>
-          <p className="text-lg text-gray-600 text-center">{subtitle}</p>
+          <p className="text-lg text-text-primary text-center">{subtitle}</p>
         </div>
 
         {/* Tip Box */}
         <div
-          className={`mx-6 mb-6 border-l-4 p-4 rounded-r-lg ${
-            tipType === "success"
-              ? "bg-green-50 border-green-500"
+          className={`mx-6 mb-6 border-l-4 p-4 rounded-r-lg ${tipType === "success"
+              ? "bg-sky-light border-butterscotch"
               : "bg-primary-light border-primary"
-          }`}
+            }`}
         >
-          <p className="text-sm md:text-base text-gray-700">
+          <p className="text-sm md:text-base text-text-primary">
             <strong>{tipType === "success" ? "Almost done!" : "Tip:"}</strong>{" "}
             {tipText}
           </p>
@@ -83,19 +82,19 @@ const FormPage: React.FC<FormPageProps> = ({
                   <button
                     type="button"
                     onClick={onBack}
-                    className="px-8 py-3 bg-gray-100 border-2 border-gray-300 rounded-md font-semibold hover:bg-gray-200 hover:border-gray-400 transition-all duration-200"
+                    className="px-8 py-3 bg-white border-2 border-border rounded-md font-semibold hover:bg-sky-light hover:border-border-hover transition-all duration-200 uppercase"
                   >
                     Back
                   </button>
                 )}
                 <button
                   type="submit"
-                  className="flex-1 py-4 px-8 bg-primary text-white rounded-md font-bold text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg"
+                  className="flex-1 py-4 px-8 bg-primary text-white rounded-md font-bold text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase"
                 >
                   {submitButtonText}
                 </button>
               </div>
-              <p className="text-center text-sm text-gray-500 mt-3">
+              <p className="text-center text-sm text-text-muted mt-3">
                 {pageInfoText}
               </p>
             </div>
