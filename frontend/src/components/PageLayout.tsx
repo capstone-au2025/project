@@ -6,7 +6,7 @@ interface PageLayoutProps {
 
 const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 py-8">
+    <div className="min-h-screen bg-gray-50 flex lg:items-center sm:items-start justify-center lg:p-4 py-8 md:p-0">
       {children}
     </div>
   );
