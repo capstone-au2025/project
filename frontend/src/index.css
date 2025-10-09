@@ -1,6 +1,10 @@
 @import "tailwindcss";
 
 @theme {
+  /* Rentful Brand Fonts */
+  --font-family-primary: "Staatliches", "Tahoma Bold", sans-serif;
+  --font-family-secondary: "Merriweather", serif;
+
   /* Rentful Brand Colors */
   --color-primary: #ff4d00;
   /* Saffron Orange */
@@ -8,8 +12,6 @@
   /* Indigo Blue for hover states */
   --color-primary-light: rgb(255 77 0 / 0.05);
   --color-primary-ring: rgb(255 77 0 / 0.3);
-  --font-primary: "Staatliches", "Tahoma Bold", sans-serif;
-  --font-secondary: "Merriweather", serif;
 
   /* Brand Palette */
   --color-indigo: #283745;
@@ -42,7 +44,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  font-family: var(--font-secondary);
+  font-family: var(--font-family-secondary);
   background-color: white;
 }
 
@@ -56,5 +58,5 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-primary);
+  font-family: var(--font-family-primary);
 }

@@ -34,7 +34,7 @@ const QuestionBox: React.FC<QuestionBoxProps> = ({
         placeholder={placeholder}
         required={required}
         rows={4}
-        className="w-full p-3 sm:p-4 border-2 border-border rounded-md text-sm sm:text-base leading-relaxed font-['Merriweather'] resize-y focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-ring transition-colors duration-200 placeholder:text-text-muted hover:border-border-hover"
+        className="w-full p-3 sm:p-4 border-2 border-border rounded-md text-sm sm:text-base leading-relaxed font-secondary resize-y focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-ring transition-colors duration-200 placeholder:text-text-muted hover:border-border-hover"
       />
     </div>
   );
