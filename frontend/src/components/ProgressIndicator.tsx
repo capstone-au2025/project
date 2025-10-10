@@ -25,7 +25,7 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
                     ? "bg-primary text-white"
                     : isCurrent
                       ? "bg-primary text-white ring-2 md:ring-4 ring-primary-ring"
-                      : "bg-gray-200 text-gray-400"
+                      : "bg-sky text-indigo"
                 }`}
               >
                 {isCompleted ? (
@@ -46,14 +46,14 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
                   stepNumber
                 )}
               </div>
-              <span className="text-xs text-gray-600 mt-1 md:mt-2 hidden sm:block">
+              <span className="text-xs text-text-primary mt-1 md:mt-2 hidden sm:block">
                 Page {stepNumber}
               </span>
             </div>
             {stepNumber < totalSteps && (
               <div
-                className={`h-0.5 md:h-1 w-8 md:w-16 transition-all duration-300 ${
-                  isCompleted ? "bg-primary" : "bg-gray-200"
+                className={`h-0.5 md:h-1 w-8 md:w-16 transition-all duration-300 self-start mt-5 md:mt-6 ${
+                  isCompleted ? "bg-primary" : "bg-sky"
                 }`}
               />
             )}
