@@ -94,11 +94,6 @@ const FormContainer = () => {
     setCurrentPage("intro");
   };
 
-  const handleRestart = () => {
-    setFormData(INITIAL_FORM_DATA);
-    setCurrentPage("intro");
-  };
-
   // Page routing
   const pageRoutes: Record<PageState, React.ReactElement | null> = {
     intro: <IntroPage onGetStarted={handleGetStarted} />,
