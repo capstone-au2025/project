@@ -51,6 +51,18 @@ The available inference provider for production can be configured with a build a
 docker build --build-arg BUILD_TAGS=aws,ollama -t project .
 ```
 
+## Deployment
+
+A deployment for the project can be created using Terraform.
+Create a terraform.tfvars file with the following format:
+
+```
+backend_bucket = "my-s3-bucket"
+region = "my-aws-region"
+availability_zone = "my-aws-availability-zone"
+ssh-key = "ssh-ed25519 AAAAMySshPublicKeyNotThePrivateKeyOnlyThePublicKey whoever@wherever"
+```
+
 ## Unit Tests
 
 Run the following command from the root of the repository to test the backend:

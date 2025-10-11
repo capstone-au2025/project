@@ -25,6 +25,8 @@
             go-tools
             air
             uv
+            opentofu
+            opentofu-ls
           ];
           GOFLAGS = "-tags=aws,ollama";
         };

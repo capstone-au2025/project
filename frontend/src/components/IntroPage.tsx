@@ -23,12 +23,12 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
   title,
   description,
 }) => (
-  <div className="p-6 bg-gray-50 rounded-lg">
+  <div className="p-6 bg-white rounded-lg shadow-md border-2 border-sky hover:border-primary transition-colors duration-200">
     <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mb-4">
       {icon}
     </div>
-    <h3 className="text-xl font-bold mb-2 text-gray-800">{title}</h3>
-    <p className="text-gray-600">{description}</p>
+    <h3 className="text-xl font-bold mb-2 text-primary uppercase">{title}</h3>
+    <p className="text-text-primary">{description}</p>
   </div>
 );
 
@@ -60,59 +60,54 @@ const IntroPage: React.FC<IntroPageProps> = ({ onGetStarted }) => {
 
   return (
     <PageLayout>
-      <div className="w-full max-w-3xl px-6 py-12 bg-white rounded-lg shadow-lg border border-gray-100">
-        <div className="text-center mb-10">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 tracking-wide">
+      <div className="w-full max-w-3xl px-4 sm:px-6 py-8 sm:py-12 bg-white lg:rounded-lg lg:shadow-lg lg:border lg:border-sky">
+        <header className="text-center mb-8 sm:mb-12">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-indigo tracking-wide uppercase leading-tight">
             Landlord-Tenant Communication Tool
           </h1>
-          <p className="text-xl md:text-2xl text-gray-600 font-light">
-            Connect with your landlord and resolve housing concerns
+          <p className="text-left text-sm sm:text-md text-text-primary leading-relaxed px-2 sm:px-0">
+            This tool helps tenants communicate issues and concerns to their
+            landlords in a clear and organized way. By answering a few simple
+            questions, we'll help facilitate better communication and
+            understanding between you and your landlord.
           </p>
-        </div>
+        </header>
 
-        <div className="space-y-8 mb-12">
-          <div className="bg-gradient-to-r from-primary-light to-transparent p-6 rounded-lg border-l-4 border-primary">
-            <h2 className="text-2xl font-bold mb-3 text-gray-800">
-              What is this tool?
-            </h2>
-            <p className="text-lg text-gray-600 leading-relaxed">
-              This tool helps tenants communicate issues and concerns to their
-              landlords in a clear and organized way. By answering a few simple
-              questions, we'll help facilitate better communication and
-              understanding between you and your landlord.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6">
+        <main className="flex flex-col gap-8 sm:gap-10">
+          {/* Feature Cards */}
+          <section className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {features.map((feature, index) => (
               <FeatureCard key={index} {...feature} />
             ))}
-          </div>
+          </section>
 
-          <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
-            <h3 className="text-lg font-bold mb-2 text-gray-800 flex items-center">
-              {InfoIcon}
-              What you'll need
-            </h3>
-            <p className="text-gray-700">
-              Have information about your rental property and any specific
-              issues or concerns ready. Include dates, documentation, and any
-              relevant details about your housing situation.
-            </p>
-          </div>
-        </div>
+          {/* Button and Disclaimer */}
+          <section className="flex flex-col gap-6 sm:gap-8">
+            <div className="bg-white p-4 sm:p-6 rounded-lg border-l-4 border-primary shadow-sm">
+              <h3 className="text-base sm:text-lg font-bold mb-2 text-indigo flex items-center gap-2 uppercase">
+                {InfoIcon}
+                What you'll need
+              </h3>
+              <p className="text-sm sm:text-base text-text-primary leading-relaxed">
+                Have information about your rental property and any specific
+                issues or concerns ready. Include dates, documentation, and any
+                relevant details about your housing situation.
+              </p>
+            </div>
 
-        <div className="text-center">
-          <button
-            onClick={onGetStarted}
-            className="px-12 py-4 bg-primary text-white rounded-md font-bold text-xl cursor-pointer hover:bg-primary-hover transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
-          >
-            Get Started
-          </button>
-          <p className="mt-4 text-sm text-gray-500">
-            Takes approximately 3-5 minutes to complete
-          </p>
-        </div>
+            <div className="text-center">
+              <button
+                onClick={onGetStarted}
+                className="w-full sm:w-auto px-8 sm:px-12 py-3 sm:py-4 bg-primary text-white rounded-md font-bold text-lg sm:text-xl cursor-pointer hover:bg-primary-hover transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 uppercase"
+              >
+                Get Started
+              </button>
+              <p className="mt-3 sm:mt-4 text-xs sm:text-sm text-text-muted">
+                Takes approximately 3-5 minutes to complete
+              </p>
+            </div>
+          </section>
+        </main>
       </div>
     </PageLayout>
   );

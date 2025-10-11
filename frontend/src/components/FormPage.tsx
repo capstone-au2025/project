@@ -33,37 +33,41 @@ const FormPage: React.FC<FormPageProps> = ({
 
   return (
     <PageLayout>
-      <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg border border-gray-100">
+      <div className="w-full max-w-2xl bg-white lg:rounded-lg lg:shadow-lg lg:border lg:border-sky">
         {/* Progress Indicator */}
-        <div className="p-6 pb-4">
+        <div className="p-4 sm:p-6 pb-3 sm:pb-4">
           <ProgressIndicator currentStep={pageNumber} totalSteps={3} />
         </div>
 
         {/* Header */}
-        <div className="px-6 pb-6">
-          <h1 className="text-3xl md:text-4xl font-bold mb-3 text-gray-900 text-center">
+        <div className="px-4 sm:px-6 pb-4 sm:pb-6">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3 text-primary text-center uppercase leading-tight">
             {title}
           </h1>
-          <p className="text-lg text-gray-600 text-center">{subtitle}</p>
+          <p className="text-base sm:text-lg text-text-primary text-center">
+            {subtitle}
+          </p>
         </div>
 
         {/* Tip Box */}
         <div
-          className={`mx-6 mb-6 border-l-4 p-4 rounded-r-lg ${
+          className={`mx-4 sm:mx-6 mb-4 sm:mb-6 border-l-4 p-3 sm:p-4 rounded-r-lg shadow-sm ${
             tipType === "success"
-              ? "bg-green-50 border-green-500"
-              : "bg-primary-light border-primary"
+              ? "bg-white border-butterscotch"
+              : "bg-white border-primary"
           }`}
         >
-          <p className="text-sm md:text-base text-gray-700">
-            <strong>{tipType === "success" ? "Almost done!" : "Tip:"}</strong>{" "}
+          <p className="text-xs sm:text-sm md:text-base text-text-primary">
+            <strong className="text-primary">
+              {tipType === "success" ? "Almost done!" : "Tip:"}
+            </strong>{" "}
             {tipText}
           </p>
         </div>
 
         <form onSubmit={onSubmit}>
           {/* All Questions */}
-          <div className="px-6 pb-6 space-y-4">
+          <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4 sm:space-y-5">
             {questions.map((question) => (
               <QuestionBox
                 key={question.name}
@@ -77,25 +81,25 @@ const FormPage: React.FC<FormPageProps> = ({
             ))}
 
             {/* Buttons */}
-            <div className="pt-4">
-              <div className="flex gap-4">
+            <div className="pt-4 sm:pt-6">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 {onBack && (
                   <button
                     type="button"
                     onClick={onBack}
-                    className="px-8 py-3 bg-gray-100 border-2 border-gray-300 rounded-md font-semibold hover:bg-gray-200 hover:border-gray-400 transition-all duration-200"
+                    className="px-6 sm:px-8 py-3 bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base"
                   >
                     Back
                   </button>
                 )}
                 <button
                   type="submit"
-                  className="flex-1 py-4 px-8 bg-primary text-white rounded-md font-bold text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg"
+                  className="flex-1 py-3 sm:py-4 px-6 sm:px-8 bg-primary text-white rounded-md font-bold text-base sm:text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase"
                 >
                   {submitButtonText}
                 </button>
               </div>
-              <p className="text-center text-sm text-gray-500 mt-3">
+              <p className="text-center text-xs sm:text-sm text-text-muted mt-3">
                 {pageInfoText}
               </p>
             </div>
