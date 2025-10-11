@@ -131,14 +131,27 @@ func main() {
 
 	slog.Info("Using configuration", "maxInputTokens", maxInputTokens, "maxOutputTokens", maxOutputTokens)
 
-	var ip InferenceProvider
+	ipNames := make([]string, 0, len(inferenceProviders))
+	for ipName := range inferenceProviders {
+		ipNames = append(ipNames, ipName)
+	}
+	slog.Info("Available inference providers", "values", ipNames)
 
-	aws, err := NewAWS(maxInputTokens, maxOutputTokens)
+	ipName := os.Getenv("INFERENCE_PROVIDER")
+	if ipName == "" {
+		ipName = "mock"
+		slog.Warn("environment variable INFERENCE_PROVIDER is not defined. Using default value")
+	}
+	if inferenceProviders[ipName] == nil {
+		slog.Error("Inference provider does not exist", "name", ipName)
+		os.Exit(1)
+	}
+
+	slog.Info("Using inference provider", "name", ipName)
+
+	ip, err := inferenceProviders[ipName](maxInputTokens, maxOutputTokens)
 	if err != nil {
-		slog.Warn("AWS did not initialize. Falling back to mock provider")
-		ip = NewMockInferenceProvider()
-	} else {
-		ip = aws
+		slog.Error("Failed to initialize inference provider", "name", ipName, "err", err)
 	}
 
 	rt := router{

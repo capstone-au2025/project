@@ -26,6 +26,7 @@
             air
             uv
           ];
+          GOFLAGS = "-tags=aws,ollama";
         };
       }
     );
