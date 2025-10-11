@@ -76,6 +76,17 @@ export type State = keyof typeof STATES;
 
 const ACTION_URL = "https://www.onlinecertifiedmail.com/step2.php";
 
+export function base64ToUint8Array(base64: string): Uint8Array {
+  const binary = atob(base64);
+
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+
+  return bytes;
+}
+
 export function sendMail(options: SendMailOptions) {
   const file = new File([options.pdfBytes], options.pdfName, {
     type: "application/pdf",

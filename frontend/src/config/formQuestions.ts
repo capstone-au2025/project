@@ -89,7 +89,7 @@ export const formPages: PageConfig[] = [
     title: "Final Question",
     subtitle: "One last thing before we generate your letter",
     tipText:
-      "Almost done! This final question helps us add context and information to your letter!",
+      "This final question helps us add context and information to your letter!",
     tipType: "success",
     questions: [
       {

@@ -59,6 +59,7 @@ const FormContainer = () => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get("reset") === "true") {
       localStorage.clear();
+      setFormData(INITIAL_FORM_DATA);
       return "intro";
     }
     return loadFromLocalStorage(PAGE_STATE_KEY, "intro" as PageState);
@@ -82,9 +83,6 @@ const FormContainer = () => {
   const handlePageSubmit =
     (nextPage: PageState) => (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      if (nextPage === "submitted") {
-        console.log("All form data:", formData);
-      }
       setCurrentPage(nextPage);
     };
 
@@ -93,11 +91,6 @@ const FormContainer = () => {
   };
 
   const handleBackToIntro = () => {
-    setCurrentPage("intro");
-  };
-
-  const handleRestart = () => {
-    setFormData(INITIAL_FORM_DATA);
     setCurrentPage("intro");
   };
 
@@ -131,7 +124,12 @@ const FormContainer = () => {
         pageConfig={formPages[2]}
       />
     ),
-    submitted: <SubmittedPage onRestart={handleRestart} />,
+    submitted: (
+      <SubmittedPage
+        formData={formData}
+        onBack={() => setCurrentPage("form3")}
+      />
+    ),
   };
 
   return pageRoutes[currentPage];
