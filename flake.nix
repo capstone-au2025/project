@@ -28,6 +28,7 @@
             opentofu
             opentofu-ls
           ];
+          GOFLAGS = "-tags=aws,ollama";
         };
       }
     );

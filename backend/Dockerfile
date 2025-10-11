@@ -19,4 +19,4 @@ RUN go mod download
 
 COPY . /app
 
-CMD ["air"]
+CMD ["air", "-build.cmd", "go build -tags=aws,ollama -o ./tmp/main ."]

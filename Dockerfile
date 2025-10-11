@@ -6,12 +6,13 @@ COPY frontend /app
 RUN npm run build
 
 FROM golang:latest AS backend
+ARG BUILD_TAGS="aws"
 WORKDIR /app
 COPY backend /app
 RUN go get -u
 RUN go mod tidy
 ENV CGO_ENABLED=0
-RUN go build
+RUN go build -tags=$BUILD_TAGS
 
 FROM golang:latest AS typst-wrapper
 WORKDIR /app
