@@ -20,21 +20,16 @@ type router struct {
 	ip InferenceProvider
 }
 
-<<<<<<< HEAD
-type pdfRequest struct {
-	Message string `json:"message"`
-=======
 type PdfRequest struct {
-	SenderName       string `json:"sender_name"`
-	SenderAddress    string `json:"sender_address"`
-	ReceiverName     string `json:"receiver_name"`
-	ReceiverAddress  string `json:"receiver_address"`
-	ComplaintSummary string `json:"complaint_summary"`
+	SenderName       string `json:"senderName"`
+	SenderAddress    string `json:"senderAddress"`
+	ReceiverName     string `json:"receiverName"`
+	ReceiverAddress  string `json:"receiverAddress"`
+	ComplaintSummary string `json:"complaintSummary"`
 	Body             string `json:"body"`
->>>>>>> 5b26cd6 (temp)
 }
 
-type pdfResponseSuccess struct {
+type PdfResponseSuccess struct {
 	Status string `json:"status"`
 	// Base64 encoded content of a PDF file
 	PdfContent string `json:"content"`
@@ -65,6 +60,29 @@ const (
 	statusError   = "error"
 )
 
+// Given a message, get the body of a letter from LLM inference
+func (rt *router) text(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var req TextRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "failed to decode body"})
+		slog.ErrorContext(r.Context(), "failed to decode body", "err", err)
+		return
+	}
+
+	resp, err := rt.ip.Infer(r.Context(), req.Message)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "failed to run inference"})
+		slog.ErrorContext(r.Context(), "failed to run inference", "err", err)
+		return
+	}
+	json.NewEncoder(w).Encode(TextResponseSuccess{Status: statusSuccess, Text: resp})
+}
+
 // This should be set on any route which attempts to read the request body. Golang's net/http
 // server does not set a maximum limit. We are only passing around small JSON so this can be small
 const MaxRequestBodySize = 4 * 1024
@@ -77,38 +95,16 @@ const MaxRequestHeaderSize = 4 * 1024
 // Golang's net/http server has an infinite read/write timeout by default. We want to set it to a
 // lower value to reduce load on the server
 const ServerTimeout = 30 * time.Second
+
 // Given a message, get the body of a letter from LLM inference
-func (rt *Router) text(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	var req TextRequest
-	err := json.NewDecoder(r.Body).Decode(&req)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(TextResponseError{Status: StatusError, Message: "failed to decode body"})
-		slog.ErrorContext(r.Context(), "failed to decode body", "err", err)
-		return
-	}
-
-	resp, err := rt.ip.Infer(r.Context(), req.Message)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(TextResponseError{Status: StatusError, Message: "failed to run inference"})
-		slog.ErrorContext(r.Context(), "failed to run inference", "err", err)
-		return
-	}
-	json.NewEncoder(w).Encode(TextResponseSuccess{Status: StatusSuccess, Text: resp})
-}
-
-// Given an initial message, return a fully typeset and rendered PDF
 func (rt *router) pdf(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var req pdfRequest
-	err := json.NewDecoder(http.MaxBytesReader(w, r.Body, MaxRequestBodySize)).Decode(&req)
+	var req PdfRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		_ = json.NewEncoder(w).Encode(PdfResponseError{Status: statusError, Message: "failed to decode body"})
+		json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "failed to decode body"})
 		slog.ErrorContext(r.Context(), "failed to decode body", "err", err)
 		return
 	}
@@ -133,7 +129,7 @@ func (rt *router) pdf(w http.ResponseWriter, r *http.Request) {
 
 	pdfContent := base64.StdEncoding.EncodeToString(pdf)
 
-	_ = json.NewEncoder(w).Encode(pdfResponseSuccess{Status: statusSuccess, PdfContent: pdfContent})
+	_ = json.NewEncoder(w).Encode(PdfResponseSuccess{Status: statusSuccess, PdfContent: pdfContent})
 }
 
 func healthcheck(w http.ResponseWriter, _ *http.Request) {
