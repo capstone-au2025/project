@@ -68,7 +68,7 @@ func (rt *router) text(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "failed to decode body"})
+		_ = json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "failed to decode body"})
 		slog.ErrorContext(r.Context(), "failed to decode body", "err", err)
 		return
 	}
@@ -76,11 +76,11 @@ func (rt *router) text(w http.ResponseWriter, r *http.Request) {
 	resp, err := rt.ip.Infer(r.Context(), req.Message)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "failed to run inference"})
+		_ = json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "failed to run inference"})
 		slog.ErrorContext(r.Context(), "failed to run inference", "err", err)
 		return
 	}
-	json.NewEncoder(w).Encode(TextResponseSuccess{Status: statusSuccess, Text: resp})
+	_ = json.NewEncoder(w).Encode(TextResponseSuccess{Status: statusSuccess, Text: resp})
 }
 
 // This should be set on any route which attempts to read the request body. Golang's net/http
@@ -104,7 +104,7 @@ func (rt *router) pdf(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "failed to decode body"})
+		_ = json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "failed to decode body"})
 		slog.ErrorContext(r.Context(), "failed to decode body", "err", err)
 		return
 	}
