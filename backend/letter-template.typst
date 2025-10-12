@@ -30,7 +30,7 @@
   // List of signatures with their name, optional signature image, title and affiliation
   signatures: (
     (
-      name: params.sender_address,
+      name: params.sender_name,
     ),
   ),
 )

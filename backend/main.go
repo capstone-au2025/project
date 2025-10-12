@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"strings"
+	"time"
 
 	_ "embed"
 )
@@ -18,7 +19,12 @@ type Router struct {
 }
 
 type PdfRequest struct {
-	Message string `json:"message"`
+	SenderName       string `json:"sender_name"`
+	SenderAddress    string `json:"sender_address"`
+	ReceiverName     string `json:"receiver_name"`
+	ReceiverAddress  string `json:"receiver_address"`
+	ComplaintSummary string `json:"complaint_summary"`
+	Body             string `json:"body"`
 }
 
 type PdfResponseSuccess struct {
@@ -32,10 +38,48 @@ type PdfResponseError struct {
 	Message string `json:"message"`
 }
 
+type TextRequest struct {
+	Message string `json:"message"`
+}
+
+type TextResponseSuccess struct {
+	Status string `json:"status"`
+	// The body of the letter
+	Text string `json:"content"`
+}
+
+type TextResponseError struct {
+	Status  string `json:"status"`
+	Message string `json:"message"`
+}
+
 const (
 	StatusSuccess = "success"
 	StatusError   = "error"
 )
+
+// Given a message, get the body of a letter from LLM inference
+func (rt *Router) text(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var req TextRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(TextResponseError{Status: StatusError, Message: "failed to decode body"})
+		slog.ErrorContext(r.Context(), "failed to decode body", "err", err)
+		return
+	}
+
+	resp, err := rt.ip.Infer(r.Context(), req.Message)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(TextResponseError{Status: StatusError, Message: "failed to run inference"})
+		slog.ErrorContext(r.Context(), "failed to run inference", "err", err)
+		return
+	}
+	json.NewEncoder(w).Encode(TextResponseSuccess{Status: StatusSuccess, Text: resp})
+}
 
 // Given an initial message, return a fully typeset and rendered PDF
 func (rt *Router) pdf(w http.ResponseWriter, r *http.Request) {
@@ -50,22 +94,14 @@ func (rt *Router) pdf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := rt.ip.Infer(r.Context(), req.Message)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(PdfResponseError{Status: StatusError, Message: "failed to run inference"})
-		slog.ErrorContext(r.Context(), "failed to run inference", "err", err)
-		return
-	}
-
 	params := LetterParams{
-		SenderName:       "Sender Name",
-		SenderAddress:    "Sender Address",
-		ReceiverName:     "Receiver Name",
-		ReceiverAddress:  "Receiver Address",
-		ComplaintSummary: "Notice of Rental Property Problems",
-		LetterContent:    resp,
-		Date:             "Date",
+		SenderName:       req.SenderName,
+		SenderAddress:    req.SenderAddress,
+		ReceiverName:     req.ReceiverName,
+		ReceiverAddress:  req.ReceiverAddress,
+		ComplaintSummary: req.ComplaintSummary,
+		LetterContent:    req.Body,
+		Date:             time.Now().Format("Mon, 02 Jan 2006"),
 	}
 
 	pdf, err := RenderPdf(r.Context(), params)
@@ -106,7 +142,8 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("POST /api/pdf", rt.pdf)
+	mux.HandleFunc("POST /api/render_pdf", rt.pdf)
+	mux.HandleFunc("POST /api/generate_text", rt.text)
 	mux.HandleFunc("GET /healthz", healthcheck)
 
 	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
