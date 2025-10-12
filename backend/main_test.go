@@ -24,12 +24,12 @@ func TestHealthcheck(t *testing.T) {
 	}
 }
 
-func TestPDFHandlerSuccess(t *testing.T) {
+func TestPdfHandlerSuccess(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		r := router{ip: NewMockInferenceProvider()}
 
-		reqBody := strings.NewReader(`{"message":"hello"}`)
-		req := httptest.NewRequest(http.MethodPost, "/api/pdf", reqBody)
+		reqBody := strings.NewReader(`{"senderName":"someone", "senderAddress": "somewhere", "receiverName": "someone else", "receiverAddress": "somewhere else", "complaintSummary": "Something Has Gone Wrong", "body": "Lorem ipsum dolor sit amet."}`)
+		req := httptest.NewRequest(http.MethodPost, "/api/text", reqBody)
 		w := httptest.NewRecorder()
 
 		r.pdf(w, req)
@@ -40,16 +40,13 @@ func TestPDFHandlerSuccess(t *testing.T) {
 			t.Fatalf("expected %d, got %d", http.StatusOK, resp.StatusCode)
 		}
 
-		var result pdfResponseSuccess
+		var result PdfResponseSuccess
 		if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 			t.Fatalf("decode failed: %v", err)
 		}
 
 		if result.Status != statusSuccess {
 			t.Errorf("expected %q, got %q", statusSuccess, result.Status)
-		}
-		if result.PdfContent == "" {
-			t.Error("expected PdfContent to be filled")
 		}
 
 		// Verify the content is valid base64
@@ -80,17 +77,60 @@ func TestPDFHandlerBadRequest(t *testing.T) {
 	}
 }
 
-func TestPDFHandlerInferenceError(t *testing.T) {
+func TestTextHandlerSuccess(t *testing.T) {
+	synctest.Test(t, func(t *testing.T) {
+		r := router{ip: NewMockInferenceProvider()}
+
+		reqBody := strings.NewReader(`{"message": "hello"}`)
+		req := httptest.NewRequest(http.MethodPost, "/api/text", reqBody)
+		w := httptest.NewRecorder()
+
+		r.text(w, req)
+
+		resp := w.Result()
+
+		if resp.StatusCode != http.StatusOK {
+			t.Fatalf("expected %d, got %d", http.StatusOK, resp.StatusCode)
+		}
+
+		var result PdfResponseSuccess
+		if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+			t.Fatalf("decode failed: %v", err)
+		}
+
+		if result.Status != statusSuccess {
+			t.Errorf("expected %q, got %q", statusSuccess, result.Status)
+		}
+
+	})
+}
+
+func TestTextHandlerBadRequest(t *testing.T) {
+	r := router{ip: NewMockInferenceProvider()}
+
+	req := httptest.NewRequest(http.MethodPost, "/api/text", bytes.NewBufferString("not-json"))
+	w := httptest.NewRecorder()
+
+	r.text(w, req)
+
+	resp := w.Result()
+
+	if resp.StatusCode != http.StatusBadRequest {
+		t.Fatalf("expected %d, got %d", http.StatusBadRequest, resp.StatusCode)
+	}
+}
+
+func TestTextHandlerInferenceError(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		mockProvider := NewMockInferenceProvider()
 		mockProvider.shouldError = true
 		r := router{ip: mockProvider}
 
 		reqBody := strings.NewReader(`{"message":"hello"}`)
-		req := httptest.NewRequest(http.MethodPost, "/api/pdf", reqBody)
+		req := httptest.NewRequest(http.MethodPost, "/api/text", reqBody)
 		w := httptest.NewRecorder()
 
-		r.pdf(w, req)
+		r.text(w, req)
 
 		resp := w.Result()
 
