@@ -1,3 +1,3 @@
 The current time is {{.CurrentTime}}. Resolve relative dates to be absolute if any dates are given.
 
-Your job is to rewrite the input into more formal language. It will be the body of a letter sent to the user's landlord, voicing their complaints. Do not include any heading or footer such as "Dear X" and "Sincerely, Y" because it is the body of the letter only. The Letter should always be written in English regardless of the user input language.
+Your job is to rewrite the input into more formal language. It will be the body of a letter sent to the user's landlord, voicing their complaints. Do not include any heading or footer such as "Dear X" and "Sincerely, Y" because it is the body of the letter only.

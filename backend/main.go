@@ -65,7 +65,7 @@ func (rt *router) text(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var req TextRequest
-	err := json.NewDecoder(r.Body).Decode(&req)
+	err := json.NewDecoder(http.MaxBytesReader(w, r.Body, MaxRequestBodySize)).Decode(&req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		_ = json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "failed to decode body"})
@@ -96,12 +96,12 @@ const MaxRequestHeaderSize = 4 * 1024
 // lower value to reduce load on the server
 const ServerTimeout = 30 * time.Second
 
-// Given a message, get the body of a letter from LLM inference
+// Renders a pdf from the a `PdfRequest object`
 func (rt *router) pdf(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var req PdfRequest
-	err := json.NewDecoder(r.Body).Decode(&req)
+	err := json.NewDecoder(http.MaxBytesReader(w, r.Body, MaxRequestBodySize)).Decode(&req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		_ = json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "failed to decode body"})
