@@ -74,6 +74,9 @@ func (rt *router) pdf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Track successful inference
+	analytics.IncrementInferences()
+
 	params := LetterParams{
 		SenderName:       "Sender Name",
 		SenderAddress:    "Sender Address",
@@ -92,6 +95,9 @@ func (rt *router) pdf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Track successful PDF generation
+	analytics.IncrementPDFs()
+
 	pdfContent := base64.StdEncoding.EncodeToString(pdf)
 
 	_ = json.NewEncoder(w).Encode(pdfResponseSuccess{Status: statusSuccess, PdfContent: pdfContent})
@@ -104,6 +110,12 @@ func healthcheck(w http.ResponseWriter, _ *http.Request) {
 	}
 	response := Response{Status: "ok"}
 	_ = json.NewEncoder(w).Encode(response)
+}
+
+func analyticsHandler(w http.ResponseWriter, _ *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	stats := analytics.GetStats()
+	_ = json.NewEncoder(w).Encode(stats)
 }
 
 func main() {
@@ -148,6 +160,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /api/pdf", rt.pdf)
 	mux.HandleFunc("GET /healthz", healthcheck)
+	mux.HandleFunc("GET /api/analytics", analyticsHandler)
 
 	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ext := filepath.Ext(r.URL.Path)
