@@ -213,7 +213,7 @@ components:
         content:
           type: string
           description: The generated letter content in text format
-          example: "Dear Landlor,\n\nI am writing to formally complain about..."
+          example: "Dear Landlord,\n\nI am writing to formally complain about..."
 
     TextResponseError:
       type: object
