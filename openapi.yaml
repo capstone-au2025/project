@@ -1,0 +1,235 @@
+openapi: 3.0.3
+info:
+  title: Letter Generation API
+  description: API for generating complaint letters in text and PDF formats
+  version: 1.0.0
+  contact:
+    name: API Support
+servers:
+  - url: http://localhost:3001/api
+    description: Production server
+  - url: http://localhost:5173/api
+    description: Development server
+
+paths:
+  /pdf:
+    post:
+      summary: Generate PDF Letter
+      description: Generates a complaint letter in PDF format based on provided details
+      operationId: renderPdf
+      tags:
+        - Letter Generation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PdfRequest'
+            example:
+              senderName: "John Doe"
+              senderAddress: "123 Main St, City, State 12345"
+              receiverName: "Customer Service Manager"
+              receiverAddress: "456 Business Ave, City, State 67890"
+              complaintSummary: "Rental Service Issue"
+              body: "I am writing to express my dissatisfaction with my rental unit"
+      responses:
+        '200':
+          description: PDF generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PdfResponseSuccess'
+              example:
+                status: "success"
+                content: "JVBERi0xLjQKJdPr6eEKMSAwIG9iago8PAovVHlwZSAvQ2F0YWxvZwov..."
+        '400':
+          description: Bad request - invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PdfResponseError'
+              example:
+                status: "error"
+                message: "failed to decode body"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PdfResponseError'
+              example:
+                status: "error"
+                message: "Failed to generate pdf"
+
+  /text:
+    post:
+      summary: Generate Text Letter
+      description: Generates a complaint letter in text format based on provided message
+      operationId: generateText
+      tags:
+        - Letter Generation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TextRequest'
+            example:
+              message: "I need help writing a complaint letter about a defective product"
+      responses:
+        '200':
+          description: Text letter generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TextResponseSuccess'
+              example:
+                status: "success"
+                content: "Dear Customer Service Manager,\n\nI am writing to formally complain about..."
+        '400':
+          description: Bad request - invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TextResponseError'
+              example:
+                status: "error"
+                message: "Invalid request data: message field is required"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TextResponseError'
+              example:
+                status: "error"
+                message: "Failed to generate text content"
+
+components:
+  schemas:
+    PdfRequest:
+      type: object
+      required:
+        - senderName
+        - senderAddress
+        - receiverName
+        - receiverAddress
+        - complaintSummary
+        - body
+      properties:
+        senderName:
+          type: string
+          description: Name of the person sending the complaint letter
+          example: "John Doe"
+          minLength: 1
+          maxLength: 100
+        senderAddress:
+          type: string
+          description: Address of the sender
+          example: "123 Main St, City, State 12345"
+          minLength: 1
+          maxLength: 500
+        receiverName:
+          type: string
+          description: Name of the person or organization receiving the complaint
+          example: "Customer Service Manager"
+          minLength: 1
+          maxLength: 100
+        receiverAddress:
+          type: string
+          description: Address of the receiver
+          example: "456 Business Ave, City, State 67890"
+          minLength: 1
+          maxLength: 500
+        complaintSummary:
+          type: string
+          description: Brief summary of the complaint
+          example: "Rental issue"
+          minLength: 1
+          maxLength: 200
+        body:
+          type: string
+          description: Main content of the complaint letter
+          example: "I am writing to express my dissatisfaction with my property rental"
+          minLength: 1
+          maxLength: 5000
+
+    PdfResponseSuccess:
+      type: object
+      required:
+        - status
+        - content
+      properties:
+        status:
+          type: string
+          enum: [success]
+          description: Status of the operation
+          example: "success"
+        content:
+          type: string
+          format: byte
+          description: Base64 encoded content of the generated PDF file
+          example: "JVBERi0xLjQKJdPr6eEKMSAwIG9iago8PAovVHlwZSAvQ2F0YWxvZwov..."
+
+    PdfResponseError:
+      type: object
+      required:
+        - status
+        - message
+      properties:
+        status:
+          type: string
+          enum: [error]
+          description: Status of the operation
+          example: "error"
+        message:
+          type: string
+          description: Error message describing what went wrong
+          example: "Invalid request data: missing required field 'senderName'"
+
+    TextRequest:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Message or prompt for generating the letter content
+          example: "The sink in my apartment is not functioning"
+          minLength: 1
+          maxLength: 1000
+
+    TextResponseSuccess:
+      type: object
+      required:
+        - status
+        - content
+      properties:
+        status:
+          type: string
+          enum: [success]
+          description: Status of the operation
+          example: "success"
+        content:
+          type: string
+          description: The generated letter content in text format
+          example: "Dear Landlord,\n\nI am writing to formally complain about..."
+
+    TextResponseError:
+      type: object
+      required:
+        - status
+        - message
+      properties:
+        status:
+          type: string
+          enum: [error]
+          description: Status of the operation
+          example: "error"
+        message:
+          type: string
+          description: Error message describing what went wrong
+          example: "Invalid request data: message field is required"
+
+tags:
+  - name: Letter Generation
