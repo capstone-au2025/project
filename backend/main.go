@@ -74,6 +74,9 @@ func (rt *router) pdf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Track successful inference
+	analytics.IncrementInferences()
+
 	params := LetterParams{
 		SenderName:       "Sender Name",
 		SenderAddress:    "Sender Address",
@@ -91,6 +94,9 @@ func (rt *router) pdf(w http.ResponseWriter, r *http.Request) {
 		slog.ErrorContext(r.Context(), "failed to generate pdf", "err", err)
 		return
 	}
+
+	// Track successful PDF generation
+	analytics.IncrementPDFs()
 
 	pdfContent := base64.StdEncoding.EncodeToString(pdf)
 
