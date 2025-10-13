@@ -1,3 +1,5 @@
+//go:build aws
+
 package main
 
 import (
@@ -67,6 +69,12 @@ func NewAWS(maxInputTokens, maxOutputTokens uint64) (*AWS, error) {
 		maxInputTokens:  int(maxInputTokens),
 		maxOutputTokens: aws.Int32(int32(maxOutputTokens)),
 	}, nil
+}
+
+func init() {
+	inferenceProviders["aws"] = func(maxInputTokens uint64, maxOutputTokens uint64) (InferenceProvider, error) {
+		return NewAWS(maxInputTokens, maxOutputTokens)
+	}
 }
 
 func (b *AWS) Infer(ctx context.Context, input string) (string, error) {
