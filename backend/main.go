@@ -80,6 +80,10 @@ func (rt *router) text(w http.ResponseWriter, r *http.Request) {
 		slog.ErrorContext(r.Context(), "failed to run inference", "err", err)
 		return
 	}
+
+	// Track successful inference
+	analytics.IncrementInferences()
+
 	_ = json.NewEncoder(w).Encode(TextResponseSuccess{Status: statusSuccess, Text: resp})
 }
 
@@ -108,9 +112,6 @@ func (rt *router) pdf(w http.ResponseWriter, r *http.Request) {
 		slog.ErrorContext(r.Context(), "failed to decode body", "err", err)
 		return
 	}
-
-	// Track successful inference
-	analytics.IncrementInferences()
 
 	params := LetterParams{
 		SenderName:       req.SenderName,
