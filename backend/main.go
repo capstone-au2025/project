@@ -181,8 +181,8 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("POST /api/render_pdf", rt.pdf)
-	mux.HandleFunc("POST /api/generate_text", rt.text)
+	mux.HandleFunc("POST /api/pdf", rt.pdf)
+	mux.HandleFunc("POST /api/text", rt.text)
 	mux.HandleFunc("GET /healthz", healthcheck)
 
 	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

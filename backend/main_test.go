@@ -29,7 +29,7 @@ func TestPdfHandlerSuccess(t *testing.T) {
 		r := router{ip: NewMockInferenceProvider()}
 
 		reqBody := strings.NewReader(`{"senderName":"someone", "senderAddress": "somewhere", "receiverName": "someone else", "receiverAddress": "somewhere else", "complaintSummary": "Something Has Gone Wrong", "body": "Lorem ipsum dolor sit amet."}`)
-		req := httptest.NewRequest(http.MethodPost, "/api/text", reqBody)
+		req := httptest.NewRequest(http.MethodPost, "/api/pdf", reqBody)
 		w := httptest.NewRecorder()
 
 		r.pdf(w, req)
@@ -46,18 +46,18 @@ func TestPdfHandlerSuccess(t *testing.T) {
 		}
 
 		if result.Status != statusSuccess {
-			t.Errorf("expected %q, got %q", statusSuccess, result.Status)
+			t.Fatalf("expected %q, got %q", statusSuccess, result.Status)
 		}
 
 		// Verify the content is valid base64
 		pdfBytes, err := base64.StdEncoding.DecodeString(result.PdfContent)
 		if err != nil {
-			t.Errorf("expected valid base64 content, got decode error: %v", err)
+			t.Fatalf("expected valid base64 content, got decode error: %v", err)
 		}
 
 		// Verify it starts with PDF magic bytes (%PDF-)
 		if len(pdfBytes) < 5 || !bytes.HasPrefix(pdfBytes, []byte("%PDF-")) {
-			t.Error("expected PDF content to start with PDF magic bytes (%PDF-)")
+			t.Fatal("expected PDF content to start with PDF magic bytes (%PDF-)")
 		}
 	})
 }
@@ -99,7 +99,7 @@ func TestTextHandlerSuccess(t *testing.T) {
 		}
 
 		if result.Status != statusSuccess {
-			t.Errorf("expected %q, got %q", statusSuccess, result.Status)
+			t.Fatalf("expected %q, got %q", statusSuccess, result.Status)
 		}
 
 	})
