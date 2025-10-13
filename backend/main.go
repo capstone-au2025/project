@@ -112,12 +112,6 @@ func healthcheck(w http.ResponseWriter, _ *http.Request) {
 	_ = json.NewEncoder(w).Encode(response)
 }
 
-func analyticsHandler(w http.ResponseWriter, _ *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	stats := analytics.GetStats()
-	_ = json.NewEncoder(w).Encode(stats)
-}
-
 func main() {
 	maxInputTokens := uint64(1000)
 	if val := os.Getenv("MAX_INPUT_TOKENS"); val != "" {
@@ -160,7 +154,6 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /api/pdf", rt.pdf)
 	mux.HandleFunc("GET /healthz", healthcheck)
-	mux.HandleFunc("GET /api/analytics", analyticsHandler)
 
 	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ext := filepath.Ext(r.URL.Path)
