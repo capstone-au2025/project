@@ -162,6 +162,10 @@ func main() {
 	mux.HandleFunc("POST /api/pdf", rt.pdf)
 	mux.HandleFunc("GET /healthz", healthcheck)
 
+	// Altcha routes
+	mux.HandleFunc("GET /altcha/challenge", altchaChallengeHandler)
+	mux.HandleFunc("POST /altcha/verify", altchaVerifyHandler)
+
 	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ext := filepath.Ext(r.URL.Path)
 
@@ -171,7 +175,7 @@ func main() {
 			r.URL.Path += ".html"
 		}
 
-		http.FileServer(http.Dir("frontend")).ServeHTTP(w, r)
+		http.FileServer(http.Dir("frontend/dist")).ServeHTTP(w, r)
 	}))
 
 	fmt.Println("Listening on :3001")
