@@ -75,7 +75,7 @@ paths:
             schema:
               $ref: '#/components/schemas/TextRequest'
             example:
-              message: "I need help writing a complaint letter about a defective product"
+              message: "My sink has stopped working"
       responses:
         '200':
           description: Text letter generated successfully
@@ -85,7 +85,7 @@ paths:
                 $ref: '#/components/schemas/TextResponseSuccess'
               example:
                 status: "success"
-                content: "Dear Customer Service Manager,\n\nI am writing to formally complain about..."
+                content: "I am writing to formally complain about..."
         '400':
           description: Bad request - invalid input data
           content:
@@ -152,7 +152,7 @@ components:
           description: Main content of the complaint letter
           example: "I am writing to express my dissatisfaction with my property rental"
           minLength: 1
-          maxLength: 5000
+          maxLength: 4000
 
     PdfResponseSuccess:
       type: object
