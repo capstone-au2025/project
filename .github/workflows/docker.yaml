@@ -49,8 +49,7 @@ jobs:
 
       - name: Healthcheck
         run: |
-          sleep 10
-          curl --fail http://localhost:3001/healthz
+          curl --retry 30 --retry-delay 10 --retry-all-errors --fail http://localhost:3001/healthz
 
       - name: Stop Services
         run: docker compose down
