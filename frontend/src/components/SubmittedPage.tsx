@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { base64ToUint8Array, sendMail } from "../certifiedmail";
+import {
+  base64ToUint8Array,
+  sendMail,
+  type NameAndAddress,
+} from "../certifiedmail";
 import z from "zod";
 import { GlobalWorkerOptions } from "pdfjs-dist";
 import "react-pdf/dist/Page/AnnotationLayer.css";
@@ -21,10 +25,38 @@ interface SubmittedPageProps {
   onBack: () => void;
 }
 
+type PdfRequest = {
+  senderName: string;
+  senderAddress: string;
+  receiverName: string;
+  receiverAddress: string;
+  body: string;
+};
+
+const pdfResponseSchema = z.object({
+  status: z.literal("success"),
+  content: z.base64(),
+});
+
 const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, onBack }) => {
-  const resultSchema = z.object({
-    content: z.base64(),
-  });
+
+  const destination: NameAndAddress = {
+    address: "Destination Address",
+    city: "Destination City",
+    company: undefined,
+    name: "Destination Name",
+    state: "OH",
+    zip: "12345",
+  };
+
+  const sender: NameAndAddress = {
+    address: "Sender Address",
+    city: "Sender City",
+    company: undefined,
+    name: "Sender Name",
+    state: "OH",
+    zip: "12345",
+  };
 
   const { data } = useQuery({
     queryKey: ["pdf", formData],
@@ -32,11 +64,17 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, onBack }) => {
     queryFn: () =>
       fetch("/api/pdf", {
         method: "POST",
-        body: JSON.stringify({ message: JSON.stringify(formData) }),
+        body: JSON.stringify({
+          senderName: sender.name,
+          senderAddress: `${sender.address}, ${sender.city}, ${sender.state} ${sender.zip}`,
+          receiverName: destination.address,
+          receiverAddress: `${destination.address}, ${destination.city}, ${destination.state} ${destination.zip}`,
+          body: `body here ${JSON.stringify(formData)}`
+        } satisfies PdfRequest),
         headers: { "Content-Type": "application/json" },
       })
         .then((resp) => resp.json())
-        .then((json) => resultSchema.parse(json)),
+        .then((json) => pdfResponseSchema.parse(json)),
   });
   const {
     width: pdfWidth,
@@ -48,11 +86,11 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, onBack }) => {
 
   let pdf:
     | {
-        dataUrl: string;
-        bytes: Uint8Array;
-        blobUrl: string;
-        handleCertifiedMail: () => void;
-      }
+      dataUrl: string;
+      bytes: Uint8Array;
+      blobUrl: string;
+      handleCertifiedMail: () => void;
+    }
     | undefined = undefined;
 
   if (data) {
@@ -65,22 +103,8 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, onBack }) => {
 
     const handleCertifiedMail = () => {
       sendMail({
-        destination: {
-          address: "Destination Address",
-          city: "Destination City",
-          company: undefined,
-          name: "Destination Name",
-          state: "OH",
-          zip: "12345",
-        },
-        sender: {
-          address: "Sender Address",
-          city: "Sender City",
-          company: undefined,
-          name: "Sender Name",
-          state: "OH",
-          zip: "12345",
-        },
+        sender,
+        destination,
         duplex: false,
         letterName: "Letter",
         pdfBytes: base64ToUint8Array(data.content),
