@@ -14,7 +14,7 @@ func main() {
 
 	// only allow Typst to access its binary and libc
 	err := landlock.V5.BestEffort().RestrictPaths(
-		landlock.ROFiles("/bin/typst", "/lib/ld-musl-x86_64.so.1"),
+		landlock.ROFiles("/bin/typst"),
 	)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
