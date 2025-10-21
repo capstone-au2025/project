@@ -167,7 +167,7 @@ describe("FormContainer", () => {
       await user.click(screen.getByRole("button", { name: /get started/i }));
       await user.type(
         screen.getByLabelText(
-          /What problems are occuring with your house\/apartment\?/i,
+          /What problems are occurring with your house\/apartment\?/i,
         ),
         "No heat",
       );
@@ -189,7 +189,7 @@ describe("FormContainer", () => {
       await user.click(screen.getByRole("button", { name: /get started/i }));
       await user.type(
         screen.getByLabelText(
-          /What problems are occuring with your house\/apartment\?/i,
+          /What problems are occurring with your house\/apartment\?/i,
         ),
         "No heat",
       );
@@ -219,7 +219,7 @@ describe("FormContainer", () => {
 
       // Type in field
       const mainProblemField = screen.getByLabelText(
-        /What problems are occuring with your house\/apartment\?/i,
+        /What problems are occurring with your house\/apartment\?/i,
       ) as HTMLTextAreaElement;
       await user.type(mainProblemField, "Broken window");
 
@@ -233,7 +233,7 @@ describe("FormContainer", () => {
       await user.click(screen.getByRole("button", { name: /get started/i }));
       await user.type(
         screen.getByLabelText(
-          /What problems are occuring with your house\/apartment\?/i,
+          /What problems are occurring with your house\/apartment\?/i,
         ),
         "No heat",
       );
@@ -254,7 +254,7 @@ describe("FormContainer", () => {
       await user.click(screen.getByRole("button", { name: /get started/i }));
       await user.type(
         screen.getByLabelText(
-          /What problems are occuring with your house\/apartment\?/i,
+          /What problems are occurring with your house\/apartment\?/i,
         ),
         "Broken heater",
       );
@@ -271,7 +271,7 @@ describe("FormContainer", () => {
 
       // Check that data persisted
       const mainProblemField = screen.getByLabelText(
-        /What problems are occuring with your house\/apartment\?/i,
+        /What problems are occurring with your house\/apartment\?/i,
       ) as HTMLTextAreaElement;
       const locationField = screen.getByLabelText(
         /Where is each problem described happening\?/i,
@@ -300,7 +300,7 @@ describe("FormContainer", () => {
 
       // Should render form1 with saved data
       const mainProblemField = screen.getByLabelText(
-        /What problems are occuring with your house\/apartment\?/i,
+        /What problems are occurring with your house\/apartment\?/i,
       ) as HTMLTextAreaElement;
 
       expect(mainProblemField.value).toBe("Saved problem");
@@ -380,7 +380,7 @@ describe("FormContainer", () => {
       await user.click(screen.getByRole("button", { name: /get started/i }));
       await user.type(
         screen.getByLabelText(
-          /What problems are occuring with your house\/apartment\?/i,
+          /What problems are occurring with your house\/apartment\?/i,
         ),
         "Test",
       );

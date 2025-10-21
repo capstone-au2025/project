@@ -34,7 +34,9 @@ describe("App", () => {
 
     expect(button).not.toBeInTheDocument();
     expect(
-      screen.getByText("What problems are occurring with your house/apartment?"),
+      screen.getByText(
+        "What problems are occurring with your house/apartment?",
+      ),
     ).toBeInTheDocument();
   });
 

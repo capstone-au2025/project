@@ -254,7 +254,7 @@ describe("FormPage", () => {
       );
 
       const textarea = screen.getByLabelText(
-        /What problems are occuring with your house\/apartment\?/i,
+        /What problems are occurring with your house\/apartment\?/i,
       );
       await user.type(textarea, "a");
 
@@ -309,7 +309,7 @@ describe("FormPage", () => {
       );
 
       const mainProblemTextarea = screen.getByLabelText(
-        /What problems are occuring with your house\/apartment\?/i,
+        /What problems are occurring with your house\/apartment\?/i,
       ) as HTMLTextAreaElement;
 
       expect(mainProblemTextarea.value).toBe("No heat");
@@ -327,7 +327,7 @@ describe("FormPage", () => {
       );
 
       const textarea = screen.getByLabelText(
-        /What problems are occuring with your house\/apartment\?/i,
+        /What problems are occurring with your house\/apartment\?/i,
       ) as HTMLTextAreaElement;
 
       expect(textarea.value).toBe("");
@@ -347,7 +347,7 @@ describe("FormPage", () => {
       );
 
       const requiredQuestion = screen.getByLabelText(
-        /What problems are occuring with your house\/apartment\?/i,
+        /What problems are occurring with your house\/apartment\?/i,
       );
       const label = requiredQuestion.closest("div")?.querySelector("label");
 
@@ -366,7 +366,7 @@ describe("FormPage", () => {
       );
 
       const requiredTextarea = screen.getByLabelText(
-        /What problems are occuring with your house\/apartment\?/i,
+        /What problems are occurring with your house\/apartment\?/i,
       );
 
       expect(requiredTextarea).toBeRequired();
