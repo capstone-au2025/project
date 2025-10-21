@@ -97,7 +97,7 @@ describe("FormContainer", () => {
 
       // Fill required field
       const mainProblemField = screen.getByLabelText(
-        /What problems are occuring with your house\/apartment\?/i,
+        /What problems are occurring with your house\/apartment\?/i,
       );
       await user.type(mainProblemField, "No heat");
 
@@ -120,7 +120,7 @@ describe("FormContainer", () => {
       // Fill and submit form1
       await user.type(
         screen.getByLabelText(
-          /What problems are occuring with your house\/apartment\?/i,
+          /What problems are occurring with your house\/apartment\?/i,
         ),
         "No heat",
       );
@@ -413,7 +413,7 @@ describe("FormContainer", () => {
       // Fill form1
       await user.type(
         screen.getByLabelText(
-          /What problems are occuring with your house\/apartment\?/i,
+          /What problems are occurring with your house\/apartment\?/i,
         ),
         "No heat",
       );

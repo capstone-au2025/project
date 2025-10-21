@@ -284,8 +284,7 @@ describe("certifiedmail", () => {
 
       stateKeys.forEach((key) => {
         expect(key).toBe(key.toUpperCase());
-        expect(key.length).toBeGreaterThanOrEqual(2);
-        expect(key.length).toBeLessThanOrEqual(2);
+        expect(key.length).toBe(2);
       });
     });
 

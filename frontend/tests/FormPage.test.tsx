@@ -71,7 +71,7 @@ describe("FormPage", () => {
 
       expect(
         screen.getByLabelText(
-          /What problems are occuring with your house\/apartment\?/i,
+          /What problems are occurring with your house\/apartment\?/i,
         ),
       ).toBeInTheDocument();
       expect(
