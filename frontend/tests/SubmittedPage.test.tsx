@@ -7,10 +7,20 @@ import "@testing-library/jest-dom";
 
 // Mock react-pdf
 vi.mock("react-pdf", () => ({
-  Document: ({ children, loading }: any) => (
-    <div data-testid="pdf-document">{loading || children}</div>
-  ),
-  Page: ({ onLoadSuccess, loading }: any) => {
+  Document: ({
+    children,
+    loading,
+  }: {
+    children: React.ReactNode;
+    loading?: React.ReactNode;
+  }) => <div data-testid="pdf-document">{loading || children}</div>,
+  Page: ({
+    onLoadSuccess,
+    loading,
+  }: {
+    onLoadSuccess?: () => void;
+    loading?: React.ReactNode;
+  }) => {
     // Simulate PDF load
     setTimeout(() => onLoadSuccess?.(), 0);
     return <div data-testid="pdf-page">{loading}</div>;
@@ -73,7 +83,7 @@ describe("SubmittedPage", () => {
             content: btoa("fake pdf content"),
           }),
       }),
-    ) as any;
+    ) as unknown as typeof fetch;
 
     // Mock URL.createObjectURL
     global.URL.createObjectURL = vi.fn(() => "blob:mock-url");
@@ -118,8 +128,9 @@ describe("SubmittedPage", () => {
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalled();
-      const callArgs = (global.fetch as any).mock.calls[0];
-      const body = JSON.parse(callArgs[1].body);
+      const mockFetch = global.fetch as ReturnType<typeof vi.fn>;
+      const callArgs = mockFetch.mock.calls[0];
+      const body = JSON.parse(callArgs[1].body as string);
 
       expect(body).toHaveProperty("senderName");
       expect(body).toHaveProperty("senderAddress");
@@ -241,7 +252,7 @@ describe("SubmittedPage", () => {
 
     global.fetch = vi.fn(() =>
       Promise.reject(new Error("Network error")),
-    ) as any;
+    ) as unknown as typeof fetch;
 
     renderWithQueryClient(
       <SubmittedPage formData={mockFormData} onBack={mockOnBack} />,

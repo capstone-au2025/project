@@ -103,7 +103,7 @@ describe("IntroPage", () => {
 
   it("should render info icon in 'What you'll need' section", () => {
     const mockOnGetStarted = vi.fn();
-    const { container } = render(<IntroPage onGetStarted={mockOnGetStarted} />);
+    render(<IntroPage onGetStarted={mockOnGetStarted} />);
 
     const infoSection = screen.getByText("What you'll need").parentElement;
     expect(infoSection?.querySelector("svg")).toBeInTheDocument();

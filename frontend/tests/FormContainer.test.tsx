@@ -11,8 +11,10 @@ describe("FormContainer", () => {
   beforeEach(() => {
     localStorage.clear();
     // Reset window.location.search
-    delete (window as any).location;
-    window.location = { search: "" } as any;
+    Object.defineProperty(window, "location", {
+      value: { search: "" },
+      writable: true,
+    });
 
     // Create a new QueryClient for each test
     queryClient = new QueryClient({
@@ -322,8 +324,10 @@ describe("FormContainer", () => {
       localStorage.setItem("justiceFormPageState", JSON.stringify("form2"));
 
       // Mock URL with reset parameter
-      delete (window as any).location;
-      window.location = { search: "?reset=true" } as any;
+      Object.defineProperty(window, "location", {
+        value: { search: "?reset=true" },
+        writable: true,
+      });
 
       renderWithQueryClient(<FormContainer />);
 
@@ -399,7 +403,7 @@ describe("FormContainer", () => {
               content: "base64content",
             }),
         }),
-      ) as any;
+      ) as unknown as typeof fetch;
 
       renderWithQueryClient(<FormContainer />);
 

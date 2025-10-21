@@ -55,7 +55,7 @@ describe("certifiedmail", () => {
 
   describe("sendMail", () => {
     let mockForm: HTMLFormElement;
-    let submitSpy: any;
+    let submitSpy: ReturnType<typeof vi.spyOn>;
 
     beforeEach(() => {
       // Mock document.createElement
@@ -67,7 +67,7 @@ describe("certifiedmail", () => {
         style: { display: "" },
         appendChild: vi.fn(),
         submit: vi.fn(),
-      } as any;
+      } as unknown as HTMLFormElement;
 
       submitSpy = vi.spyOn(mockForm, "submit");
 
@@ -82,17 +82,17 @@ describe("certifiedmail", () => {
               name: "",
               value: "",
               files: null,
-            } as any;
+            } as unknown as HTMLInputElement;
           }
           return document.createElement(tagName);
         },
       );
 
       vi.spyOn(document.body, "appendChild").mockImplementation(
-        () => null as any,
+        () => null as unknown as Node,
       );
       vi.spyOn(document.body, "removeChild").mockImplementation(
-        () => null as any,
+        () => null as unknown as Node,
       );
     });
 
