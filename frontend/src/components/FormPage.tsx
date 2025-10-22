@@ -20,6 +20,7 @@ const FormPage: React.FC<FormPageProps> = ({
   onSubmit,
   onBack,
   pageConfig,
+  animationDirection,
 }) => {
   const {
     pageNumber,
@@ -44,11 +45,22 @@ const FormPage: React.FC<FormPageProps> = ({
         });
     }, [animationRef.current]);
 
+    const getAnimationName = () => {
+        /* Return early if we're not animating */
+        if (!isAnimating) {
+            return "";
+        }
 
+        if (animationDirection == "normal") {
+            return "animate-slide-in";
+        } else if (animationDirection == "reverse") {
+            return "animate-slide-out";
+        }
+    };
 
   return (
     <PageLayout>
-          <div id={"page" + pageNumber} className={`w-full max-w-2xl bg-white lg:rounded-lg lg:shadow-lg lg:border lg:border-sky ${isAnimating ? 'animate-slide-in' : ''}`}
+          <div id={"page" + pageNumber} className={`w-full max-w-2xl bg-white lg:rounded-lg lg:shadow-lg lg:border lg:border-sky ${getAnimationName()}`}
                 ref={animationRef}
           >
         {/* Progress Indicator */}

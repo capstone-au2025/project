@@ -72,11 +72,25 @@ h6 {
 /* Slide In Animation */
 .animate-slide-in {
     animation: 150ms ease-in slide-in;
+    animation-direction: normal;
+}
+
+.animate-slide-out {
+    animation: 150ms ease-in slide-out;
 }
 
 @keyframes slide-in {
     0% {
         transform: translateX(50%);
+    }
+    100% {
+        transform: translateX(0%);
+    }
+}
+
+@keyframes slide-out {
+    0% {
+        transform: translateX(-50%);
     }
     100% {
         transform: translateX(0%);
