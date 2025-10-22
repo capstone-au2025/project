@@ -83,6 +83,7 @@ const FormContainer = () => {
   const handlePageSubmit =
     (nextPage: PageState) => (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
+        
       setCurrentPage(nextPage);
     };
 
@@ -94,45 +95,42 @@ const FormContainer = () => {
     setCurrentPage("intro");
   };
 
-  // Page routing
-  const pageRoutes: Record<PageState, React.ReactElement | null> = {
-    intro: <IntroPage onGetStarted={handleGetStarted} />,
-    form1: (
-      <FormPage
-        formData={formData}
-        onInputChange={handleInputChange}
-        onSubmit={handlePageSubmit("form2")}
-        onBack={handleBackToIntro}
-        pageConfig={formPages[0]}
-      />
-    ),
-    form2: (
-      <FormPage
-        formData={formData}
-        onInputChange={handleInputChange}
-        onSubmit={handlePageSubmit("form3")}
-        onBack={handleBackNavigation("form1")}
-        pageConfig={formPages[1]}
-      />
-    ),
-    form3: (
-      <FormPage
-        formData={formData}
-        onInputChange={handleInputChange}
-        onSubmit={handlePageSubmit("submitted")}
-        onBack={handleBackNavigation("form2")}
-        pageConfig={formPages[2]}
-      />
-    ),
-    submitted: (
-      <SubmittedPage
-        formData={formData}
-        onBack={() => setCurrentPage("form3")}
-      />
-    ),
-  };
+    return (
+        <>
+            {currentPage == "intro" && <IntroPage onGetStarted={handleGetStarted} />}
+        {currentPage === "form1" &&
+            <FormPage
+         formData={formData}
+         onInputChange={handleInputChange}
+         onSubmit={handlePageSubmit("form2")}
+         onBack={handleBackToIntro}
+         pageConfig={formPages[0]}
+            />}
+        { currentPage == "form2" &&
+            <FormPage
+          formData={formData}
+          onInputChange={handleInputChange}
+          onSubmit={handlePageSubmit("form3")}
+          onBack={handleBackNavigation("form1")}
+          pageConfig={formPages[1]}
+            />
+            }
+        {currentPage == "form3" &&
+            <FormPage
+         formData={formData}
+         onInputChange={handleInputChange}
+         onSubmit={handlePageSubmit("submitted")}
+         onBack={handleBackNavigation("form2")}
+         pageConfig={formPages[2]}
+            />}
+        {currentPage == "submitted"  &&
+            <SubmittedPage
+         formData={formData}
+         onBack={() => setCurrentPage("form3")}
+            />}
+        </>
+    );
 
-  return pageRoutes[currentPage];
 };
 
 export default FormContainer;
