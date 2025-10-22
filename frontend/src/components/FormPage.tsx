@@ -1,5 +1,6 @@
 import React from "react";
 import type { ChangeEvent, FormEvent } from "react";
+import { useState, useEffect, useRef } from "react";
 import QuestionBox from "./QuestionBox";
 import ProgressIndicator from "./ProgressIndicator";
 import PageLayout from "./PageLayout";
@@ -31,9 +32,25 @@ const FormPage: React.FC<FormPageProps> = ({
     pageInfoText,
   } = pageConfig;
 
+    const [isAnimating, setIsAnimating] = useState(true);
+    const animationRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        animationRef.current?.addEventListener("annimationcancel", () => {
+            setIsAnimating(false);
+        });
+
+        animationRef.current?.addEventListener("annimationend", () => {
+            setIsAnimating(false);
+        });
+    }, [animationRef.current]);
+
+
+
   return (
     <PageLayout>
-      <div className="w-full max-w-2xl bg-white lg:rounded-lg lg:shadow-lg lg:border lg:border-sky">
+          <div id={"page" + pageNumber} className={`w-full max-w-2xl bg-white lg:rounded-lg lg:shadow-lg lg:border lg:border-sky ${isAnimating ? 'animate-slide-in' : ''}`}
+                ref={animationRef}
+          >
         {/* Progress Indicator */}
         <div className="p-4 sm:p-6 pb-3 sm:pb-4">
           <ProgressIndicator currentStep={pageNumber} totalSteps={3} />
@@ -65,7 +82,7 @@ const FormPage: React.FC<FormPageProps> = ({
           </p>
         </div>
 
-        <form onSubmit={onSubmit}>
+          <form onSubmit={onSubmit}>
           {/* All Questions */}
           <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4 sm:space-y-5">
             {questions.map((question) => (
