@@ -8,6 +8,7 @@ import (
 	"time"
 
 	_ "embed"
+	_ "time/tzdata"
 )
 
 type InferenceProvider interface {
