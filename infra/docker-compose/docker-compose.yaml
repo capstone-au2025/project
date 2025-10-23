@@ -1,0 +1,19 @@
+services:
+  backend:
+    image: ghcr.io/capstone-au2025/project:ollama
+    ports:
+      - 3001:3001
+    environment:
+      - INFERENCE_PROVIDER=ollama
+      - OLLAMA_HOST=http://ollama:11434
+      - OLLAMA_MODEL_ID=gemma3:4b
+    depends_on:
+      - ollama
+  ollama:
+    image: ollama/ollama
+    volumes:
+      - ./ollama:/root/.ollama
+  watchtower:
+    image: beatkind/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
