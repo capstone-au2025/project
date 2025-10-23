@@ -98,7 +98,7 @@ const MaxRequestHeaderSize = 4 * 1024
 
 // Golang's net/http server has an infinite read/write timeout by default. We want to set it to a
 // lower value to reduce load on the server
-const ServerTimeout = 30 * time.Second
+const ServerTimeout = 60 * time.Second
 
 // Renders a pdf from the a `PdfRequest object`
 func (rt *router) pdf(w http.ResponseWriter, r *http.Request) {
