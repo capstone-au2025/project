@@ -4,6 +4,7 @@ import IntroPage from "./IntroPage";
 import FormPage from "./FormPage";
 import SubmittedPage from "./SubmittedPage";
 import { formPages } from "../config/formQuestions";
+import { Route, Switch, useLocation } from "wouter";
 
 export interface FormData extends Record<string, string> {
   mainProblem: string;
@@ -54,85 +55,66 @@ const FormContainer = () => {
   const [formData, setFormData] = useState<FormData>(() =>
     loadFromLocalStorage(STORAGE_KEY, INITIAL_FORM_DATA),
   );
-  const [currentPage, setCurrentPage] = useState<PageState>(() => {
-    // Check URL parameter to force start from intro
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get("reset") === "true") {
-      localStorage.clear();
-      setFormData(INITIAL_FORM_DATA);
-      return "intro";
-    }
-    return loadFromLocalStorage(PAGE_STATE_KEY, "intro" as PageState);
-  });
+  const [location, setLocation] = useLocation();
 
   useEffect(() => {
     saveToLocalStorage(STORAGE_KEY, formData);
   }, [formData]);
 
   useEffect(() => {
-    saveToLocalStorage(PAGE_STATE_KEY, currentPage);
-  }, [currentPage]);
+    saveToLocalStorage(PAGE_STATE_KEY, location);
+  }, [location]);
 
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleGetStarted = () => setCurrentPage("form1");
-
   const handlePageSubmit =
     (nextPage: PageState) => (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      setCurrentPage(nextPage);
+      setLocation("/" + nextPage);
     };
 
-  const handleBackNavigation = (previousPage: PageState) => () => {
-    setCurrentPage(previousPage);
-  };
+  return <Switch>
+    <Route path="/">
+      <IntroPage nextPage="/form1" />
+    </Route>
 
-  const handleBackToIntro = () => {
-    setCurrentPage("intro");
-  };
-
-  // Page routing
-  const pageRoutes: Record<PageState, React.ReactElement | null> = {
-    intro: <IntroPage onGetStarted={handleGetStarted} />,
-    form1: (
+    <Route path="/form1">
       <FormPage
         formData={formData}
         onInputChange={handleInputChange}
         onSubmit={handlePageSubmit("form2")}
-        onBack={handleBackToIntro}
+        backPage="/"
         pageConfig={formPages[0]}
       />
-    ),
-    form2: (
+    </Route>
+
+    <Route path="/form2">
       <FormPage
         formData={formData}
         onInputChange={handleInputChange}
         onSubmit={handlePageSubmit("form3")}
-        onBack={handleBackNavigation("form1")}
+        backPage="/form1"
         pageConfig={formPages[1]}
       />
-    ),
-    form3: (
+    </Route>
+
+    <Route path="/form3">
       <FormPage
         formData={formData}
         onInputChange={handleInputChange}
         onSubmit={handlePageSubmit("submitted")}
-        onBack={handleBackNavigation("form2")}
+        backPage="/form2"
         pageConfig={formPages[2]}
       />
-    ),
-    submitted: (
-      <SubmittedPage
-        formData={formData}
-        onBack={() => setCurrentPage("form3")}
-      />
-    ),
-  };
+    </Route>
 
-  return pageRoutes[currentPage];
+    <Route path="/submitted">
+      <SubmittedPage formData={formData} backPage="form3" />
+    </Route>
+  </Switch>
 };
 
 export default FormContainer;
