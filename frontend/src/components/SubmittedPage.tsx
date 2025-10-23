@@ -68,7 +68,9 @@ const sender: NameAndAddress = {
 
 async function generatePdf(formData: Record<string, string>) {
   let message = "";
-  const keyToQuestion = Object.fromEntries(formPages.flatMap(x => x.questions).map(x => [x.name, x.label]));
+  const keyToQuestion = Object.fromEntries(
+    formPages.flatMap((x) => x.questions).map((x) => [x.name, x.label]),
+  );
   for (const [key, value] of Object.entries(formData)) {
     message += `${keyToQuestion[key]}\n${value}\n\n`;
   }
@@ -77,7 +79,7 @@ async function generatePdf(formData: Record<string, string>) {
     method: "POST",
     body: JSON.stringify({
       message,
-    } satisfies TextRequest)
+    } satisfies TextRequest),
   });
   const textJson = await textResponse.json();
   const text = textResponseSchema.parse(textJson);
@@ -92,7 +94,7 @@ async function generatePdf(formData: Record<string, string>) {
       body: text.content,
     } satisfies PdfRequest),
     headers: { "Content-Type": "application/json" },
-  })
+  });
   const pdfJson = await pdfResp.json();
   return pdfResponseSchema.parse(pdfJson);
 }
@@ -101,8 +103,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, onBack }) => {
   const { data } = useQuery({
     queryKey: ["pdf", formData],
     staleTime: Infinity,
-    queryFn: () => generatePdf(formData)
-    ,
+    queryFn: () => generatePdf(formData),
   });
   const {
     width: pdfWidth,
@@ -114,10 +115,10 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, onBack }) => {
 
   let pdf:
     | {
-      bytes: Uint8Array;
-      blobUrl: string;
-      handleCertifiedMail: () => void;
-    }
+        bytes: Uint8Array;
+        blobUrl: string;
+        handleCertifiedMail: () => void;
+      }
     | undefined = undefined;
 
   if (data) {
