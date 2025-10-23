@@ -114,7 +114,6 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, onBack }) => {
 
   let pdf:
     | {
-      dataUrl: string;
       bytes: Uint8Array;
       blobUrl: string;
       handleCertifiedMail: () => void;
@@ -122,7 +121,6 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, onBack }) => {
     | undefined = undefined;
 
   if (data) {
-    const dataUrl = `data: application / pdf; base64, ${data.content} `;
     const pdfBytes = base64ToUint8Array(data.content);
     // Use blob url because mobile safari absolutely refuses to open data urls
     const blobUrl = URL.createObjectURL(
@@ -140,7 +138,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, onBack }) => {
       });
     };
 
-    pdf = { dataUrl, bytes: pdfBytes, blobUrl, handleCertifiedMail };
+    pdf = { bytes: pdfBytes, blobUrl, handleCertifiedMail };
   }
 
   const loadingSkeleton = (
@@ -163,7 +161,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, onBack }) => {
                 href={pdf.blobUrl}
                 className="absolute"
               >
-                <Document file={pdf.dataUrl} loading={loadingSkeleton}>
+                <Document file={pdf.blobUrl} loading={loadingSkeleton}>
                   <Page
                     pageNumber={1}
                     width={pdfWidth}
