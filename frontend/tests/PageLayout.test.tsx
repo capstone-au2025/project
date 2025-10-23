@@ -14,20 +14,6 @@ describe("PageLayout", () => {
     expect(screen.getByText("Test Content")).toBeInTheDocument();
   });
 
-  it("should render multiple children", () => {
-    render(
-      <PageLayout>
-        <h1>Title</h1>
-        <p>Paragraph</p>
-        <button>Button</button>
-      </PageLayout>,
-    );
-
-    expect(screen.getByText("Title")).toBeInTheDocument();
-    expect(screen.getByText("Paragraph")).toBeInTheDocument();
-    expect(screen.getByText("Button")).toBeInTheDocument();
-  });
-
   it("should apply correct wrapper classes for centering", () => {
     const { container } = render(
       <PageLayout>

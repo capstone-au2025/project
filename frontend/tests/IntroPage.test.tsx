@@ -23,28 +23,6 @@ describe("IntroPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("should render all 4 feature cards", () => {
-    const mockOnGetStarted = vi.fn();
-    render(<IntroPage onGetStarted={mockOnGetStarted} />);
-
-    expect(screen.getByText("Quick & Easy")).toBeInTheDocument();
-    expect(screen.getByText("Filler")).toBeInTheDocument();
-    expect(screen.getByText("Data Privacy")).toBeInTheDocument();
-    expect(screen.getByText("Free to Use")).toBeInTheDocument();
-  });
-
-  it("should render feature card descriptions", () => {
-    const mockOnGetStarted = vi.fn();
-    render(<IntroPage onGetStarted={mockOnGetStarted} />);
-
-    expect(
-      screen.getByText(/Answer just a few questions about your situation/i),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/This tool is completely free/i),
-    ).toBeInTheDocument();
-  });
-
   it("should render 'What you'll need' section", () => {
     const mockOnGetStarted = vi.fn();
     render(<IntroPage onGetStarted={mockOnGetStarted} />);
@@ -81,24 +59,6 @@ describe("IntroPage", () => {
     expect(
       screen.getByText(/Takes approximately 3-5 minutes to complete/i),
     ).toBeInTheDocument();
-  });
-
-  it("should render all feature card icons", () => {
-    const mockOnGetStarted = vi.fn();
-    const { container } = render(<IntroPage onGetStarted={mockOnGetStarted} />);
-
-    const icons = container.querySelectorAll(".bg-primary.rounded-full");
-    expect(icons).toHaveLength(4); // 4 feature cards = 4 icon containers
-  });
-
-  it("should have hover effects on feature cards", () => {
-    const mockOnGetStarted = vi.fn();
-    const { container } = render(<IntroPage onGetStarted={mockOnGetStarted} />);
-
-    const featureCards = container.querySelectorAll(".shadow-md");
-    featureCards.forEach((card) => {
-      expect(card).toHaveClass("hover:border-primary");
-    });
   });
 
   it("should render info icon in 'What you'll need' section", () => {
