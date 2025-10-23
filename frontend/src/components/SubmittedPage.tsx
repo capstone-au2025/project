@@ -115,10 +115,10 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, onBack }) => {
 
   let pdf:
     | {
-      bytes: Uint8Array;
-      blobUrl: string;
-      handleCertifiedMail: () => void;
-    }
+        bytes: Uint8Array;
+        blobUrl: string;
+        handleCertifiedMail: () => void;
+      }
     | undefined = undefined;
 
   if (data) {

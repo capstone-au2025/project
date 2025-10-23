@@ -74,16 +74,26 @@ describe("SubmittedPage", () => {
       },
     });
 
-    // Mock successful PDF response
-    global.fetch = vi.fn(() =>
-      Promise.resolve({
+    // Mock fetch to handle both /api/text and /api/pdf calls
+    global.fetch = vi.fn((url: string) => {
+      if (url === "/api/text") {
+        return Promise.resolve({
+          json: () =>
+            Promise.resolve({
+              status: "success",
+              content: "Generated letter content from AI",
+            }),
+        });
+      }
+      // Default to /api/pdf response
+      return Promise.resolve({
         json: () =>
           Promise.resolve({
             status: "success",
             content: btoa("fake pdf content"),
           }),
-      }),
-    ) as unknown as typeof fetch;
+      });
+    }) as unknown as typeof fetch;
 
     // Mock URL.createObjectURL
     global.URL.createObjectURL = vi.fn(() => "blob:mock-url");
@@ -105,19 +115,42 @@ describe("SubmittedPage", () => {
     expect(screen.getByText("Here's your letter:")).toBeInTheDocument();
   });
 
-  it("should fetch PDF on mount", async () => {
+  it("should fetch from both text and PDF APIs on mount", async () => {
     renderWithQueryClient(
       <SubmittedPage formData={mockFormData} onBack={mockOnBack} />,
     );
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith(
-        "/api/pdf",
-        expect.objectContaining({
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-        }),
+      const mockFetch = global.fetch as ReturnType<typeof vi.fn>;
+      const calls = mockFetch.mock.calls;
+
+      // Should have at least 2 calls: one to /api/text and one to /api/pdf
+      expect(calls.length).toBeGreaterThanOrEqual(2);
+
+      // Check for /api/text call
+      expect(calls.some((call) => call[0] === "/api/text")).toBe(true);
+
+      // Check for /api/pdf call
+      expect(calls.some((call) => call[0] === "/api/pdf")).toBe(true);
+    });
+  });
+
+  it("should send text data to text API", async () => {
+    renderWithQueryClient(
+      <SubmittedPage formData={mockFormData} onBack={mockOnBack} />,
+    );
+
+    await waitFor(() => {
+      const mockFetch = global.fetch as ReturnType<typeof vi.fn>;
+      const textCall = mockFetch.mock.calls.find(
+        (call) => call[0] === "/api/text",
       );
+
+      expect(textCall).toBeDefined();
+      const body = JSON.parse(textCall![1].body as string);
+      expect(body).toHaveProperty("message");
+      // Message should contain form question labels and values
+      expect(body.message).toContain("No heat");
     });
   });
 
@@ -127,17 +160,20 @@ describe("SubmittedPage", () => {
     );
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalled();
       const mockFetch = global.fetch as ReturnType<typeof vi.fn>;
-      const callArgs = mockFetch.mock.calls[0];
-      const body = JSON.parse(callArgs[1].body as string);
+      const pdfCall = mockFetch.mock.calls.find(
+        (call) => call[0] === "/api/pdf",
+      );
+
+      expect(pdfCall).toBeDefined();
+      const body = JSON.parse(pdfCall![1].body as string);
 
       expect(body).toHaveProperty("senderName");
       expect(body).toHaveProperty("senderAddress");
       expect(body).toHaveProperty("receiverName");
       expect(body).toHaveProperty("receiverAddress");
       expect(body).toHaveProperty("body");
-      expect(body.body).toContain(JSON.stringify(mockFormData));
+      expect(body.body).toBe("Generated letter content from AI");
     });
   });
 
@@ -245,7 +281,7 @@ describe("SubmittedPage", () => {
     });
   });
 
-  it("should handle PDF fetch error gracefully", async () => {
+  it("should handle fetch error gracefully", async () => {
     const consoleErrorSpy = vi
       .spyOn(console, "error")
       .mockImplementation(() => {});
@@ -271,7 +307,9 @@ describe("SubmittedPage", () => {
     );
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledTimes(1);
+      const mockFetch = global.fetch as ReturnType<typeof vi.fn>;
+      // Should have 2 calls: one to /api/text and one to /api/pdf
+      expect(mockFetch).toHaveBeenCalledTimes(2);
     });
 
     // Re-render with same props should not trigger another fetch
@@ -281,8 +319,9 @@ describe("SubmittedPage", () => {
       </QueryClientProvider>,
     );
 
-    // Should still only be called once due to staleTime: Infinity
-    expect(global.fetch).toHaveBeenCalledTimes(1);
+    // Should still only be called twice (same 2 calls) due to staleTime: Infinity
+    const mockFetch = global.fetch as ReturnType<typeof vi.fn>;
+    expect(mockFetch).toHaveBeenCalledTimes(2);
   });
 
   it("should render PDF in download link as well", async () => {
