@@ -66,7 +66,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, onBack }) => {
         body: JSON.stringify({
           senderName: sender.name,
           senderAddress: `${sender.address}, ${sender.city}, ${sender.state} ${sender.zip}`,
-          receiverName: destination.address,
+          receiverName: destination.name,
           receiverAddress: `${destination.address}, ${destination.city}, ${destination.state} ${destination.zip}`,
           body: `body here ${JSON.stringify(formData)}`,
         } satisfies PdfRequest),

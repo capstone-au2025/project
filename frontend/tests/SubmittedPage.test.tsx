@@ -266,7 +266,7 @@ describe("SubmittedPage", () => {
   });
 
   it("should use staleTime of Infinity for PDF query", async () => {
-    renderWithQueryClient(
+    const { rerender } = renderWithQueryClient(
       <SubmittedPage formData={mockFormData} onBack={mockOnBack} />,
     );
 
@@ -274,9 +274,11 @@ describe("SubmittedPage", () => {
       expect(global.fetch).toHaveBeenCalledTimes(1);
     });
 
-    // Re-render should not trigger another fetch
-    renderWithQueryClient(
-      <SubmittedPage formData={mockFormData} onBack={mockOnBack} />,
+    // Re-render with same props should not trigger another fetch
+    rerender(
+      <QueryClientProvider client={queryClient}>
+        <SubmittedPage formData={mockFormData} onBack={mockOnBack} />
+      </QueryClientProvider>,
     );
 
     // Should still only be called once due to staleTime: Infinity
