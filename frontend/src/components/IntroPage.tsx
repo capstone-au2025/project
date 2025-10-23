@@ -7,9 +7,10 @@ import {
   LightningIcon,
   InfoIcon,
 } from "./icons";
+import { Link } from "wouter";
 
 interface IntroPageProps {
-  onGetStarted: () => void;
+  nextPage: string;
 }
 
 interface FeatureCardProps {
@@ -32,7 +33,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
   </div>
 );
 
-const IntroPage: React.FC<IntroPageProps> = ({ onGetStarted }) => {
+const IntroPage: React.FC<IntroPageProps> = ({ nextPage }) => {
   const features = [
     {
       icon: CheckCircleIcon,
@@ -96,12 +97,12 @@ const IntroPage: React.FC<IntroPageProps> = ({ onGetStarted }) => {
             </div>
 
             <div className="text-center">
-              <button
-                onClick={onGetStarted}
+              <Link
+                href={nextPage}
                 className="w-full sm:w-auto px-8 sm:px-12 py-3 sm:py-4 bg-primary text-white rounded-md font-bold text-lg sm:text-xl cursor-pointer hover:bg-primary-hover transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 uppercase"
               >
                 Get Started
-              </button>
+              </Link>
               <p className="mt-3 sm:mt-4 text-xs sm:text-sm text-text-muted">
                 Takes approximately 3-5 minutes to complete
               </p>
