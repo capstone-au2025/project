@@ -33,36 +33,38 @@ const FormPage: React.FC<FormPageProps> = ({
     pageInfoText,
   } = pageConfig;
 
-    const [isAnimating, setIsAnimating] = useState(true);
-    const animationRef = useRef<HTMLDivElement>(null);
-    useEffect(() => {
-        animationRef.current?.addEventListener("annimationcancel", () => {
-            setIsAnimating(false);
-        });
+  const [isAnimating, setIsAnimating] = useState(true);
+  const animationRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    animationRef.current?.addEventListener("annimationcancel", () => {
+      setIsAnimating(false);
+    });
 
-        animationRef.current?.addEventListener("annimationend", () => {
-            setIsAnimating(false);
-        });
-    }, [animationRef.current]);
+    animationRef.current?.addEventListener("annimationend", () => {
+      setIsAnimating(false);
+    });
+  }, [animationRef.current]);
 
-    const getAnimationName = () => {
-        /* Return early if we're not animating */
-        if (!isAnimating) {
-            return "";
-        }
+  const getAnimationName = () => {
+    /* Return early if we're not animating */
+    if (!isAnimating) {
+      return "";
+    }
 
-        if (animationDirection == "normal") {
-            return "animate-slide-in";
-        } else if (animationDirection == "reverse") {
-            return "animate-slide-out";
-        }
-    };
+    if (animationDirection == "normal") {
+      return "animate-slide-in";
+    } else if (animationDirection == "reverse") {
+      return "animate-slide-out";
+    }
+  };
 
   return (
     <PageLayout>
-          <div id={"page" + pageNumber} className={`w-full max-w-2xl bg-white lg:rounded-lg lg:shadow-lg lg:border lg:border-sky ${getAnimationName()}`}
-                ref={animationRef}
-          >
+      <div
+        id={"page" + pageNumber}
+        className={`w-full max-w-2xl bg-white lg:rounded-lg lg:shadow-lg lg:border lg:border-sky ${getAnimationName()}`}
+        ref={animationRef}
+      >
         {/* Progress Indicator */}
         <div className="p-4 sm:p-6 pb-3 sm:pb-4">
           <ProgressIndicator currentStep={pageNumber} totalSteps={3} />
@@ -94,7 +96,7 @@ const FormPage: React.FC<FormPageProps> = ({
           </p>
         </div>
 
-          <form onSubmit={onSubmit}>
+        <form onSubmit={onSubmit}>
           {/* All Questions */}
           <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4 sm:space-y-5">
             {questions.map((question) => (
