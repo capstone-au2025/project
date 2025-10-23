@@ -27,7 +27,7 @@ export const formPages: PageConfig[] = [
     questions: [
       {
         name: "mainProblem",
-        label: "What problems are occuring with your house/apartment?",
+        label: "What problems are occurring with your house/apartment?",
         placeholder:
           "Examples: no running water, no heat or A/C, lock is broken, etc",
         required: true,
