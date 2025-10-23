@@ -89,16 +89,16 @@ func (rt *router) text(w http.ResponseWriter, r *http.Request) {
 
 // This should be set on any route which attempts to read the request body. Golang's net/http
 // server does not set a maximum limit. We are only passing around small JSON so this can be small
-const MaxRequestBodySize = 4 * 1024
+const MaxRequestBodySize = 64 * 1024
 
 // Golang's net/http server adds an extra 4096 bytes to this value as a buffer. The total buffer
 // includes the request line, as well as all headers. The default value is 1MB which is clearly too
 // large for the kinds of requests we need to handle
-const MaxRequestHeaderSize = 4 * 1024
+const MaxRequestHeaderSize = 8 * 1024
 
 // Golang's net/http server has an infinite read/write timeout by default. We want to set it to a
 // lower value to reduce load on the server
-const ServerTimeout = 30 * time.Second
+const ServerTimeout = 60 * time.Second
 
 // Renders a pdf from the a `PdfRequest object`
 func (rt *router) pdf(w http.ResponseWriter, r *http.Request) {
@@ -149,7 +149,7 @@ func healthcheck(w http.ResponseWriter, _ *http.Request) {
 }
 
 func main() {
-	maxInputTokens := uint64(1000)
+	maxInputTokens := uint64(2000)
 	if val := os.Getenv("MAX_INPUT_TOKENS"); val != "" {
 		if parsed, err := strconv.ParseUint(val, 10, 0); err != nil {
 			slog.Warn("Invalid MAX_INPUT_TOKENS. Using default value", "err", err)
@@ -160,7 +160,7 @@ func main() {
 		slog.Info("environment variable MAX_INPUT_TOKENS is not defined. Using default value")
 	}
 
-	maxOutputTokens := uint64(500)
+	maxOutputTokens := uint64(800)
 	if val := os.Getenv("MAX_OUTPUT_TOKENS"); val != "" {
 		if parsed, err := strconv.ParseUint(val, 10, 0); err != nil {
 			slog.Warn("Invalid MAX_OUTPUT_TOKENS. Using default value", "err", err)

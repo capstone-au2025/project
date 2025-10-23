@@ -14,6 +14,7 @@ import { Document, Page } from "react-pdf";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import PageLayout from "./PageLayout";
+import { formPages } from "../config/formQuestions";
 
 GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -24,6 +25,10 @@ interface SubmittedPageProps {
   formData: Record<string, string>;
   onBack: () => void;
 }
+
+type TextRequest = {
+  message: string;
+};
 
 type PdfRequest = {
   senderName: string;
@@ -38,42 +43,67 @@ const pdfResponseSchema = z.object({
   content: z.base64(),
 });
 
+const textResponseSchema = z.object({
+  status: z.literal("success"),
+  content: z.string(),
+});
+
+const destination: NameAndAddress = {
+  address: "Destination Address",
+  city: "Destination City",
+  company: undefined,
+  name: "Destination Name",
+  state: "OH",
+  zip: "12345",
+};
+
+const sender: NameAndAddress = {
+  address: "Sender Address",
+  city: "Sender City",
+  company: undefined,
+  name: "Sender Name",
+  state: "OH",
+  zip: "12345",
+};
+
+async function generatePdf(formData: Record<string, string>) {
+  let message = "";
+  const keyToQuestion = Object.fromEntries(
+    formPages.flatMap((x) => x.questions).map((x) => [x.name, x.label]),
+  );
+  for (const [key, value] of Object.entries(formData)) {
+    message += `${keyToQuestion[key]}\n${value}\n\n`;
+  }
+
+  const textResponse = await fetch("/api/text", {
+    method: "POST",
+    body: JSON.stringify({
+      message,
+    } satisfies TextRequest),
+  });
+  const textJson = await textResponse.json();
+  const text = textResponseSchema.parse(textJson);
+
+  const pdfResp = await fetch("/api/pdf", {
+    method: "POST",
+    body: JSON.stringify({
+      senderName: sender.name,
+      senderAddress: `${sender.address}, ${sender.city}, ${sender.state} ${sender.zip} `,
+      receiverName: destination.address,
+      receiverAddress: `${destination.address}, ${destination.city}, ${destination.state} ${destination.zip} `,
+      body: text.content,
+    } satisfies PdfRequest),
+    headers: { "Content-Type": "application/json" },
+  });
+  const pdfJson = await pdfResp.json();
+  return pdfResponseSchema.parse(pdfJson);
+}
+
 const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, onBack }) => {
-  const destination: NameAndAddress = {
-    address: "Destination Address",
-    city: "Destination City",
-    company: undefined,
-    name: "Destination Name",
-    state: "OH",
-    zip: "12345",
-  };
-
-  const sender: NameAndAddress = {
-    address: "Sender Address",
-    city: "Sender City",
-    company: undefined,
-    name: "Sender Name",
-    state: "OH",
-    zip: "12345",
-  };
-
   const { data } = useQuery({
     queryKey: ["pdf", formData],
     staleTime: Infinity,
-    queryFn: () =>
-      fetch("/api/pdf", {
-        method: "POST",
-        body: JSON.stringify({
-          senderName: sender.name,
-          senderAddress: `${sender.address}, ${sender.city}, ${sender.state} ${sender.zip}`,
-          receiverName: destination.name,
-          receiverAddress: `${destination.address}, ${destination.city}, ${destination.state} ${destination.zip}`,
-          body: `body here ${JSON.stringify(formData)}`,
-        } satisfies PdfRequest),
-        headers: { "Content-Type": "application/json" },
-      })
-        .then((resp) => resp.json())
-        .then((json) => pdfResponseSchema.parse(json)),
+    queryFn: () => generatePdf(formData),
   });
   const {
     width: pdfWidth,
@@ -85,19 +115,17 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, onBack }) => {
 
   let pdf:
     | {
-        dataUrl: string;
-        bytes: Uint8Array;
-        blobUrl: string;
-        handleCertifiedMail: () => void;
-      }
+      bytes: Uint8Array;
+      blobUrl: string;
+      handleCertifiedMail: () => void;
+    }
     | undefined = undefined;
 
   if (data) {
-    const dataUrl = `data:application/pdf;base64,${data.content}`;
-    const bytes = base64ToUint8Array(data.content);
+    const pdfBytes = base64ToUint8Array(data.content);
     // Use blob url because mobile safari absolutely refuses to open data urls
     const blobUrl = URL.createObjectURL(
-      new Blob([bytes], { type: "application/pdf" }),
+      new Blob([pdfBytes], { type: "application/pdf" }),
     );
 
     const handleCertifiedMail = () => {
@@ -106,12 +134,12 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, onBack }) => {
         destination,
         duplex: false,
         letterName: "Letter",
-        pdfBytes: base64ToUint8Array(data.content),
+        pdfBytes,
         pdfName: "Letter.pdf",
       });
     };
 
-    pdf = { dataUrl, bytes, blobUrl, handleCertifiedMail };
+    pdf = { bytes: pdfBytes, blobUrl, handleCertifiedMail };
   }
 
   const loadingSkeleton = (
@@ -134,7 +162,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, onBack }) => {
                 href={pdf.blobUrl}
                 className="absolute"
               >
-                <Document file={pdf.dataUrl} loading={loadingSkeleton}>
+                <Document file={pdf.blobUrl} loading={loadingSkeleton}>
                   <Page
                     pageNumber={1}
                     width={pdfWidth}
