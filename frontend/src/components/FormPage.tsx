@@ -12,6 +12,7 @@ interface FormPageProps {
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
   onBack?: () => void;
   pageConfig: PageConfig;
+  animationDirection: string;
 }
 
 const FormPage: React.FC<FormPageProps> = ({

@@ -66,7 +66,7 @@ const FormContainer = () => {
   });
 
   /* Direction for animations. */
-  const [direction, setDirection] = useState<String>("normal");
+  const [direction, setDirection] = useState<string>("normal");
 
   useEffect(() => {
     saveToLocalStorage(STORAGE_KEY, formData);
