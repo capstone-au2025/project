@@ -100,7 +100,10 @@ async function generatePdf(formData: Record<string, string>) {
   return pdfResponseSchema.parse(pdfJson);
 }
 
-const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, backPage }) => {
+const SubmittedPage: React.FC<SubmittedPageProps> = ({
+  formData,
+  backPage,
+}) => {
   const { data } = useQuery({
     queryKey: ["pdf", formData],
     staleTime: Infinity,
@@ -116,10 +119,10 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, backPage }) => 
 
   let pdf:
     | {
-      bytes: Uint8Array;
-      blobUrl: string;
-      handleCertifiedMail: () => void;
-    }
+        bytes: Uint8Array;
+        blobUrl: string;
+        handleCertifiedMail: () => void;
+      }
     | undefined = undefined;
 
   if (data) {
