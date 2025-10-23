@@ -76,45 +76,47 @@ const FormContainer = () => {
       setLocation("/" + nextPage);
     };
 
-  return <Switch>
-    <Route path="/">
-      <IntroPage nextPage="/form1" />
-    </Route>
+  return (
+    <Switch>
+      <Route path="/">
+        <IntroPage nextPage="/form1" />
+      </Route>
 
-    <Route path="/form1">
-      <FormPage
-        formData={formData}
-        onInputChange={handleInputChange}
-        onSubmit={handlePageSubmit("form2")}
-        backPage="/"
-        pageConfig={formPages[0]}
-      />
-    </Route>
+      <Route path="/form1">
+        <FormPage
+          formData={formData}
+          onInputChange={handleInputChange}
+          onSubmit={handlePageSubmit("form2")}
+          backPage="/"
+          pageConfig={formPages[0]}
+        />
+      </Route>
 
-    <Route path="/form2">
-      <FormPage
-        formData={formData}
-        onInputChange={handleInputChange}
-        onSubmit={handlePageSubmit("form3")}
-        backPage="/form1"
-        pageConfig={formPages[1]}
-      />
-    </Route>
+      <Route path="/form2">
+        <FormPage
+          formData={formData}
+          onInputChange={handleInputChange}
+          onSubmit={handlePageSubmit("form3")}
+          backPage="/form1"
+          pageConfig={formPages[1]}
+        />
+      </Route>
 
-    <Route path="/form3">
-      <FormPage
-        formData={formData}
-        onInputChange={handleInputChange}
-        onSubmit={handlePageSubmit("submitted")}
-        backPage="/form2"
-        pageConfig={formPages[2]}
-      />
-    </Route>
+      <Route path="/form3">
+        <FormPage
+          formData={formData}
+          onInputChange={handleInputChange}
+          onSubmit={handlePageSubmit("submitted")}
+          backPage="/form2"
+          pageConfig={formPages[2]}
+        />
+      </Route>
 
-    <Route path="/submitted">
-      <SubmittedPage formData={formData} backPage="form3" />
-    </Route>
-  </Switch>
+      <Route path="/submitted">
+        <SubmittedPage formData={formData} backPage="form3" />
+      </Route>
+    </Switch>
+  );
 };
 
 export default FormContainer;

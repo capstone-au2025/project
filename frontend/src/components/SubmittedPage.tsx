@@ -39,7 +39,10 @@ const pdfResponseSchema = z.object({
   content: z.base64(),
 });
 
-const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, backPage }) => {
+const SubmittedPage: React.FC<SubmittedPageProps> = ({
+  formData,
+  backPage,
+}) => {
   const destination: NameAndAddress = {
     address: "Destination Address",
     city: "Destination City",
@@ -86,11 +89,11 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, backPage }) => 
 
   let pdf:
     | {
-      dataUrl: string;
-      bytes: Uint8Array;
-      blobUrl: string;
-      handleCertifiedMail: () => void;
-    }
+        dataUrl: string;
+        bytes: Uint8Array;
+        blobUrl: string;
+        handleCertifiedMail: () => void;
+      }
     | undefined = undefined;
 
   if (data) {

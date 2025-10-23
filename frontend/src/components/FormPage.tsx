@@ -52,10 +52,11 @@ const FormPage: React.FC<FormPageProps> = ({
 
         {/* Tip Box */}
         <div
-          className={`mx-4 sm:mx-6 mb-4 sm:mb-6 border-l-4 p-3 sm:p-4 rounded-r-lg shadow-sm ${tipType === "success"
-            ? "bg-white border-butterscotch"
-            : "bg-white border-primary"
-            }`}
+          className={`mx-4 sm:mx-6 mb-4 sm:mb-6 border-l-4 p-3 sm:p-4 rounded-r-lg shadow-sm ${
+            tipType === "success"
+              ? "bg-white border-butterscotch"
+              : "bg-white border-primary"
+          }`}
         >
           <p className="text-xs sm:text-sm md:text-base text-text-primary">
             <strong className="text-primary">
@@ -83,10 +84,13 @@ const FormPage: React.FC<FormPageProps> = ({
             {/* Buttons */}
             <div className="pt-4 sm:pt-6">
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <Link href={backPage}
+                <Link
+                  href={backPage}
                   type="button"
                   className="px-6 sm:px-8 py-3 bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base leading-1 grid items-center"
-                >Back</Link>
+                >
+                  Back
+                </Link>
                 <button
                   type="submit"
                   className="flex-1 py-3 sm:py-4 px-6 sm:px-8 bg-primary text-white rounded-md font-bold text-base sm:text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase"
