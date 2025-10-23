@@ -14,6 +14,7 @@ import { Document, Page } from "react-pdf";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import PageLayout from "./PageLayout";
+import { formPages } from "../config/formQuestions";
 
 GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -67,8 +68,9 @@ const sender: NameAndAddress = {
 
 async function generatePdf(formData: Record<string, string>) {
   let message = "";
-  for (const value of Object.values(formData)) {
-    message += value + "\n\n";
+  const keyToQuestion = Object.fromEntries(formPages.flatMap(x => x.questions).map(x => [x.name, x.label]));
+  for (const [key, value] of Object.entries(formData)) {
+    message += `${keyToQuestion[key]}\n${value}\n\n`;
   }
 
   const textResponse = await fetch("/api/text", {
@@ -79,15 +81,14 @@ async function generatePdf(formData: Record<string, string>) {
   });
   const textJson = await textResponse.json();
   const text = textResponseSchema.parse(textJson);
-  console.log(text)
 
   const pdfResp = await fetch("/api/pdf", {
     method: "POST",
     body: JSON.stringify({
       senderName: sender.name,
-      senderAddress: `${sender.address}, ${sender.city}, ${sender.state} ${sender.zip}`,
+      senderAddress: `${sender.address}, ${sender.city}, ${sender.state} ${sender.zip} `,
       receiverName: destination.address,
-      receiverAddress: `${destination.address}, ${destination.city}, ${destination.state} ${destination.zip}`,
+      receiverAddress: `${destination.address}, ${destination.city}, ${destination.state} ${destination.zip} `,
       body: text.content,
     } satisfies PdfRequest),
     headers: { "Content-Type": "application/json" },
@@ -121,7 +122,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, onBack }) => {
     | undefined = undefined;
 
   if (data) {
-    const dataUrl = `data:application/pdf;base64,${data.content}`;
+    const dataUrl = `data: application / pdf; base64, ${data.content} `;
     const pdfBytes = base64ToUint8Array(data.content);
     // Use blob url because mobile safari absolutely refuses to open data urls
     const blobUrl = URL.createObjectURL(
