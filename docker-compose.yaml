@@ -22,6 +22,8 @@ services:
           path: go.mod
         - action: rebuild
           path: go.sum
+    depends_on:
+      - ollama
   frontend:
     ports:
       - 5173:5173

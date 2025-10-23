@@ -27,6 +27,8 @@
             uv
             opentofu
             opentofu-ls
+            kubectl
+            kubelogin-oidc
           ];
           GOFLAGS = "-tags=aws,ollama";
         };
