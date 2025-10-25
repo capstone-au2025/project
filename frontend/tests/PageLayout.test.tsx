@@ -24,7 +24,7 @@ describe("PageLayout", () => {
     const wrapper = container.firstChild as HTMLElement;
     expect(wrapper).toHaveClass("min-h-full");
     expect(wrapper).toHaveClass("flex");
-    expect(wrapper).toHaveClass("items-center");
+    expect(wrapper).toHaveClass("items-start");
     expect(wrapper).toHaveClass("justify-center");
   });
 });

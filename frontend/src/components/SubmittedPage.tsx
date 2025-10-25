@@ -14,7 +14,7 @@ import { Document, Page } from "react-pdf";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import PageLayout from "./PageLayout";
-import { formPages } from "../config/formQuestions";
+import { getConfig } from "../config/configLoader";
 
 GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -68,8 +68,9 @@ const sender: NameAndAddress = {
 
 async function generatePdf(formData: Record<string, string>) {
   let message = "";
+  const config = getConfig();
   const keyToQuestion = Object.fromEntries(
-    formPages.flatMap((x) => x.questions).map((x) => [x.name, x.label]),
+    config.formPages.flatMap((x) => x.questions).map((x) => [x.name, x.label]),
   );
   for (const [key, value] of Object.entries(formData)) {
     message += `${keyToQuestion[key]}\n${value}\n\n`;
@@ -100,6 +101,7 @@ async function generatePdf(formData: Record<string, string>) {
 }
 
 const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, onBack }) => {
+  const config = getConfig();
   const { data } = useQuery({
     queryKey: ["pdf", formData],
     staleTime: Infinity,
@@ -150,7 +152,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, onBack }) => {
     <PageLayout>
       <div className="w-full max-w-2xl lg:rounded-lg lg:shadow-lg lg:border lg:border-sky py-8 px-4">
         <div className="flex flex-col items-center gap-4 lg:gap-8 lg:px-4 leading-none">
-          <h2 className="text-2xl">Here's your letter:</h2>
+          <h2 className="text-2xl">{config.submittedPage.heading}</h2>
           <div
             ref={pdfRef}
             className="w-[300px] h-[387px] shadow-md border border-sky relative"
@@ -181,7 +183,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, onBack }) => {
                 onClick={pdf.handleCertifiedMail}
                 className="h-[56px] bg-primary text-white rounded-md font-bold text-sm sm:text-base hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase flex items-center justify-center"
               >
-                Mail to your Landlord
+                {config.submittedPage.mailButton}
               </button>
             ) : (
               <Skeleton className="h-[56px] rounded-md" />
@@ -190,10 +192,10 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, onBack }) => {
               <a
                 href={pdf.blobUrl}
                 target="_blank"
-                download="Letter.pdf"
+                download={config.submittedPage.downloadFilename}
                 className="h-[52px] box-border bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base align-middle flex items-center justify-center"
               >
-                Download PDF
+                {config.submittedPage.downloadButton}
               </a>
             ) : (
               <Skeleton className="h-[52px] box-border border-2 border-transparent rounded-md" />
@@ -202,7 +204,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, onBack }) => {
               onClick={onBack}
               className="py-3 bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base align-middle flex items-center justify-center"
             >
-              Back
+              {config.submittedPage.backButton}
             </button>
           </div>
         </div>

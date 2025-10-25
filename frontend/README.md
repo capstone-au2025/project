@@ -1,4 +1,20 @@
-# React + TypeScript + Vite
+# JusticeTech Frontend
+
+A React + TypeScript + Vite application for the JusticeTech project.
+
+## Configuration
+
+All user-facing text (titles, descriptions, form questions, button labels, etc.) is managed in a centralized YAML configuration file: `src/config/uiConfig.yaml`
+
+To modify any text in the application:
+
+1. Edit `src/config/uiConfig.yaml`
+2. Run `npm run build` to parse the configuration
+3. Deploy the updated application
+
+The YAML configuration is parsed once at build time and embedded directly into the application bundle. No runtime parsing overhead is incurred.
+
+## Setup
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
