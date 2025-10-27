@@ -28,5 +28,6 @@ COPY --from=ghcr.io/typst/typst:v0.13.1 /bin/typst /bin/typst
 ENV PATH=/bin
 COPY --from=frontend /app/dist /app/frontend
 COPY --from=backend /app/backend /app/backend
+COPY --from=backend /app/default-form.json /app/default-form.json
 COPY --from=typst-wrapper /app/typst-wrapper /bin/typst-wrapper
 CMD ["./backend"]

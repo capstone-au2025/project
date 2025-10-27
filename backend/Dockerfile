@@ -18,4 +18,6 @@ RUN go mod download
 
 COPY . /app
 
+COPY default-form.json .
+
 CMD ["air", "-build.cmd", "go build -tags=aws,ollama -o ./tmp/main ."]

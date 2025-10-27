@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -41,7 +42,7 @@ type PdfResponseError struct {
 }
 
 type TextRequest struct {
-	Message string `json:"message"`
+	Answers map[string]string `json:"answers"`
 }
 
 type TextResponseSuccess struct {
@@ -60,12 +61,90 @@ const (
 	statusError   = "error"
 )
 
+type QuestionType int
+
+const (
+	QuestionString QuestionType = iota
+	QuestionBool
+	QuestionDate
+	QuestionPhoneNumber
+)
+
+var _ json.Marshaler = (*QuestionType)(nil)
+var _ json.Unmarshaler = (*QuestionType)(nil)
+
+func (a *QuestionType) UnmarshalJSON(b []byte) error {
+	var s string
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	switch s {
+	case "string":
+		*a = QuestionString
+	case "bool":
+		*a = QuestionBool
+	case "date":
+		*a = QuestionDate
+	case "phone_number":
+		*a = QuestionPhoneNumber
+	default:
+		return fmt.Errorf("unknown question type: %v", s)
+	}
+	return nil
+}
+
+func (a QuestionType) MarshalJSON() ([]byte, error) {
+	var s string
+	switch a {
+	case QuestionString:
+		s = "string"
+	case QuestionBool:
+		s = "bool"
+	case QuestionDate:
+		s = "date"
+	case QuestionPhoneNumber:
+		s = "phone_number"
+	default:
+		panic(fmt.Sprintf("unexpected QuestionType: %#v", a))
+	}
+	return json.Marshal(s)
+}
+
+type Question struct {
+	Name     string       `json:"name"`
+	Question string       `json:"question"`
+	Required bool         `json:"required"`
+	Typ      QuestionType `json:"type"`
+}
+
+type Page struct {
+	Title     string     `json:"title"`
+	Subtitle  string     `json:"subtitle"`
+	TipText   string     `json:"tipText"`
+	Questions []Question `json:"questions"`
+}
+
+type Form struct {
+	// The name of the form (ex. Rental Complaint)
+	Name string `json:"name"`
+	// A brief description of the form
+	Description string `json:"description"`
+	// Pages of questions
+	Pages []Page `json:"pages"`
+	// The part of the system prompt specific to this Form
+	SystemPrompt string `json:"systemPrompt"`
+	// How question answers should be formatted into the user prompt
+	UserPrompt string `json:"userPrompt"`
+}
+
 // Given a message, get the body of a letter from LLM inference
 func (rt *router) text(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var req TextRequest
 	err := json.NewDecoder(http.MaxBytesReader(w, r.Body, MaxRequestBodySize)).Decode(&req)
+
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		_ = json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "failed to decode body"})
@@ -73,7 +152,16 @@ func (rt *router) text(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := rt.ip.Infer(r.Context(), req.Message)
+	var buff bytes.Buffer
+	err = userPromptTemplate.Execute(&buff, req.Answers)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "failed to template answers"})
+		slog.ErrorContext(r.Context(), "failed to template answers", "err", err)
+		return
+	}
+
+	resp, err := rt.ip.Infer(r.Context(), buff.String())
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		_ = json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "failed to run inference"})
