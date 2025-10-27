@@ -15,6 +15,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime"
 	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime/types"
 	"github.com/aws/aws-sdk-go-v2/service/sts"
+	"golang.org/x/time/rate"
 )
 
 // Error variables for AWS configuration validation
@@ -29,6 +30,7 @@ type AWS struct {
 	modelId         string
 	maxInputTokens  int
 	maxOutputTokens *int32
+	limiter         *rate.Limiter
 }
 
 var _ InferenceProvider = (*AWS)(nil)
@@ -68,6 +70,7 @@ func NewAWS(maxInputTokens, maxOutputTokens uint64) (*AWS, error) {
 		modelId:         bedrockModelId,
 		maxInputTokens:  int(maxInputTokens),
 		maxOutputTokens: aws.Int32(int32(maxOutputTokens)),
+		limiter:         rate.NewLimiter(1, 3), // 1 req/sec, burst 3
 	}, nil
 }
 
@@ -78,6 +81,10 @@ func init() {
 }
 
 func (b *AWS) Infer(ctx context.Context, input string) (string, error) {
+	if b.limiter != nil && !b.limiter.Allow() {
+		return "", errors.New("rate limit exceeded")
+	}
+
 	systemPrompt := RenderSystemPrompt()
 
 	// Bedrock does not expose an API to count the number of tokens that a particular model would
