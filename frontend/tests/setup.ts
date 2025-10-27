@@ -4,13 +4,13 @@ import { resolve } from "path";
 import yaml from "js-yaml";
 import { UIConfig } from "../src/config/configLoader";
 
-// Load the actual YAML file from disk (at project root)
-const yamlFilePath = resolve(__dirname, "../../app-config.yaml");
+// Load the actual YAML file from disk (via symlink in frontend directory)
+const yamlFilePath = resolve(__dirname, "../app-config.yaml");
 const yamlContent = readFileSync(yamlFilePath, "utf-8");
 const loadedConfig = yaml.load(yamlContent) as UIConfig;
 
 // Mock the YAML import to return the actual file content
-vi.mock("@config?raw", () => ({
+vi.mock("../../app-config.yaml?raw", () => ({
   default: yamlContent,
 }));
 
