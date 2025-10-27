@@ -10,7 +10,7 @@ const yamlContent = readFileSync(yamlFilePath, "utf-8");
 const loadedConfig = yaml.load(yamlContent) as UIConfig;
 
 // Mock the YAML import to return the actual file content
-vi.mock("../../../app-config.yaml?raw", () => ({
+vi.mock("@config?raw", () => ({
   default: yamlContent,
 }));
 

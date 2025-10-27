@@ -1,5 +1,5 @@
 import yaml from "js-yaml";
-import appConfigRaw from "../../../app-config.yaml?raw";
+import appConfigRaw from "@config?raw";
 
 // TypeScript interfaces for config structure
 export interface QuestionConfig {
