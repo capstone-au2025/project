@@ -1,5 +1,6 @@
 import React from "react";
 import type { ChangeEvent, FormEvent } from "react";
+import { useState, useEffect, useRef } from "react";
 import QuestionBox from "./QuestionBox";
 import ProgressIndicator from "./ProgressIndicator";
 import PageLayout from "./PageLayout";
@@ -11,6 +12,7 @@ interface FormPageProps {
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
   onBack?: () => void;
   pageConfig: PageConfig;
+  animationDirection: string;
 }
 
 const FormPage: React.FC<FormPageProps> = ({
@@ -19,6 +21,7 @@ const FormPage: React.FC<FormPageProps> = ({
   onSubmit,
   onBack,
   pageConfig,
+  animationDirection,
 }) => {
   const {
     pageNumber,
@@ -31,9 +34,38 @@ const FormPage: React.FC<FormPageProps> = ({
     pageInfoText,
   } = pageConfig;
 
+  const [isAnimating, setIsAnimating] = useState(true);
+  const animationRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    animationRef.current?.addEventListener("annimationcancel", () => {
+      setIsAnimating(false);
+    });
+
+    animationRef.current?.addEventListener("annimationend", () => {
+      setIsAnimating(false);
+    });
+  }, [animationRef.current]);
+
+  const getAnimationName = () => {
+    /* Return early if we're not animating */
+    if (!isAnimating) {
+      return "";
+    }
+
+    if (animationDirection == "normal") {
+      return "animate-slide-in";
+    } else if (animationDirection == "reverse") {
+      return "animate-slide-out";
+    }
+  };
+
   return (
     <PageLayout>
-      <div className="w-full max-w-2xl bg-white lg:rounded-lg lg:shadow-lg lg:border lg:border-sky">
+      <div
+        id={"page" + pageNumber}
+        className={`w-full max-w-2xl bg-white lg:rounded-lg lg:shadow-lg lg:border lg:border-sky ${getAnimationName()}`}
+        ref={animationRef}
+      >
         {/* Progress Indicator */}
         <div className="p-4 sm:p-6 pb-3 sm:pb-4">
           <ProgressIndicator currentStep={pageNumber} totalSteps={3} />
