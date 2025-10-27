@@ -1,5 +1,5 @@
 import yaml from "js-yaml";
-import uiConfigRaw from "./uiConfig.yaml?raw";
+import appConfigRaw from "../../../app-config.yaml?raw";
 
 // TypeScript interfaces for config structure
 export interface QuestionConfig {
@@ -66,7 +66,7 @@ export interface UIConfig {
 // Load and parse YAML config once on module import
 async function loadConfig(): Promise<UIConfig> {
   try {
-    const parsedConfig = yaml.load(uiConfigRaw) as UIConfig;
+    const parsedConfig = yaml.load(appConfigRaw) as UIConfig;
     return parsedConfig;
   } catch (error) {
     console.error("Error loading UI config:", error);
