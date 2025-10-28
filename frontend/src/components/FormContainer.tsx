@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import IntroPage from "./IntroPage";
 import FormPage from "./FormPage";
 import SubmittedPage from "./SubmittedPage";
-import { formPages } from "../config/formQuestions";
+import { Route, Switch, useLocation, useSearchParams } from "wouter";
+import { getConfig } from "../config/configLoader";
 
 export interface FormData extends Record<string, string> {
   mainProblem: string;
@@ -50,100 +51,113 @@ const saveToLocalStorage = (key: string, value: unknown): void => {
   }
 };
 
-const FormContainer = () => {
-  const [formData, setFormData] = useState<FormData>(() =>
-    loadFromLocalStorage(STORAGE_KEY, INITIAL_FORM_DATA),
-  );
-  const [currentPage, setCurrentPage] = useState<PageState>(() => {
-    // Check URL parameter to force start from intro
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get("reset") === "true") {
-      localStorage.clear();
-      setFormData(INITIAL_FORM_DATA);
-      return "intro";
-    }
-    return loadFromLocalStorage(PAGE_STATE_KEY, "intro" as PageState);
-  });
+const usePreviousLocation = () => {
+  const [location] = useLocation();
+  const [previousLocation, setPreviousLocation] = useState<string | null>(null);
+  const lastSavedLocation = useRef<string | null>(null);
 
-  /* Direction for animations. */
-  const [direction, setDirection] = useState<string>("normal");
+  useEffect(() => {
+    setPreviousLocation(lastSavedLocation.current);
+
+    lastSavedLocation.current = location;
+  }, [location]);
+
+  return previousLocation;
+};
+
+const FormContainer = () => {
+  const config = getConfig();
+  const [formData, setFormData] = useState<FormData>(() =>
+    loadFromLocalStorage(STORAGE_KEY, INITIAL_FORM_DATA)
+  );
+  const [location, setLocation] = useLocation();
+  const previousLocation = usePreviousLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  let direction = "normal";
+  const locationOrder = ["/", "/form1", "/form2", "/form3"];
+  if (previousLocation) {
+    const deltaLocation =
+      locationOrder.indexOf(location) - locationOrder.indexOf(previousLocation);
+    if (deltaLocation === 0) {
+      direction = "none";
+    } else if (deltaLocation < 0) {
+      direction = "reverse";
+    }
+  }
 
   useEffect(() => {
     saveToLocalStorage(STORAGE_KEY, formData);
   }, [formData]);
 
   useEffect(() => {
-    saveToLocalStorage(PAGE_STATE_KEY, currentPage);
-  }, [currentPage]);
+    saveToLocalStorage(PAGE_STATE_KEY, location);
+  }, [location]);
 
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleGetStarted = () => {
-    setDirection("normal");
-    setCurrentPage("form1");
-  };
+  if (searchParams.get("reset") === "true") {
+    setSearchParams((prev) => {
+      prev.delete("reset");
+      return undefined;
+    });
+    setFormData(INITIAL_FORM_DATA);
+    localStorage.clear();
+    setLocation("/");
+  }
 
   const handlePageSubmit =
     (nextPage: PageState) => (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      window.scrollTo(0, 0);
-      setDirection("normal");
-      setCurrentPage(nextPage);
+      setLocation("/" + nextPage);
     };
 
-  const handleBackNavigation = (previousPage: PageState) => () => {
-    setDirection("reverse");
-    window.scrollTo(0, 0);
-    setCurrentPage(previousPage);
-  };
-
-  const handleBackToIntro = () => {
-    setCurrentPage("intro");
-  };
-
   return (
-    <>
-      {currentPage == "intro" && <IntroPage onGetStarted={handleGetStarted} />}
-      {currentPage === "form1" && (
+    <Switch>
+      <Route path="/form1">
         <FormPage
           formData={formData}
           onInputChange={handleInputChange}
           onSubmit={handlePageSubmit("form2")}
-          onBack={handleBackToIntro}
-          pageConfig={formPages[0]}
+          backPage="/"
+          pageConfig={config.formPages[0]}
           animationDirection={direction}
         />
-      )}
-      {currentPage == "form2" && (
+      </Route>
+
+      <Route path="/form2">
         <FormPage
           formData={formData}
           onInputChange={handleInputChange}
           onSubmit={handlePageSubmit("form3")}
-          onBack={handleBackNavigation("form1")}
-          pageConfig={formPages[1]}
+          backPage="/form1"
+          pageConfig={config.formPages[1]}
           animationDirection={direction}
         />
-      )}
-      {currentPage == "form3" && (
+      </Route>
+
+      <Route path="/form3">
         <FormPage
           formData={formData}
           onInputChange={handleInputChange}
           onSubmit={handlePageSubmit("submitted")}
-          onBack={handleBackNavigation("form2")}
-          pageConfig={formPages[2]}
+          backPage="/form2"
+          pageConfig={config.formPages[2]}
           animationDirection={direction}
         />
-      )}
-      {currentPage == "submitted" && (
-        <SubmittedPage
-          formData={formData}
-          onBack={() => setCurrentPage("form3")}
-        />
-      )}
-    </>
+      </Route>
+
+      <Route path="/submitted">
+        <SubmittedPage formData={formData} backPage="form3" />
+      </Route>
+
+      <Route>
+        <IntroPage nextPage="/form1" />
+      </Route>
+    </Switch>
   );
 };
 
