@@ -3,8 +3,8 @@ import type { ChangeEvent, FormEvent } from "react";
 import IntroPage from "./IntroPage";
 import FormPage from "./FormPage";
 import SubmittedPage from "./SubmittedPage";
-import { formPages } from "../config/formQuestions";
 import { Route, Switch, useLocation } from "wouter";
+import { getConfig } from "../config/configLoader";
 
 export interface FormData extends Record<string, string> {
   mainProblem: string;
@@ -66,6 +66,7 @@ const usePreviousLocation = () => {
 };
 
 const FormContainer = () => {
+  const config = getConfig();
   const [formData, setFormData] = useState<FormData>(() =>
     loadFromLocalStorage(STORAGE_KEY, INITIAL_FORM_DATA),
   );
@@ -106,7 +107,7 @@ const FormContainer = () => {
   return (
     <Switch>
       <Route path="/">
-        <IntroPage nextPage="/form1" animationDirection={direction} />
+        <IntroPage nextPage="/form1" />
       </Route>
 
       <Route path="/form1">
@@ -115,7 +116,7 @@ const FormContainer = () => {
           onInputChange={handleInputChange}
           onSubmit={handlePageSubmit("form2")}
           backPage="/"
-          pageConfig={formPages[0]}
+          pageConfig={config.formPages[0]}
           animationDirection={direction}
         />
       </Route>
@@ -126,7 +127,7 @@ const FormContainer = () => {
           onInputChange={handleInputChange}
           onSubmit={handlePageSubmit("form3")}
           backPage="/form1"
-          pageConfig={formPages[1]}
+          pageConfig={config.formPages[1]}
           animationDirection={direction}
         />
       </Route>
@@ -137,7 +138,7 @@ const FormContainer = () => {
           onInputChange={handleInputChange}
           onSubmit={handlePageSubmit("submitted")}
           backPage="/form2"
-          pageConfig={formPages[2]}
+          pageConfig={config.formPages[2]}
           animationDirection={direction}
         />
       </Route>

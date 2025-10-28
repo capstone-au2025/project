@@ -1,11 +1,11 @@
 import React from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import { useState, useEffect, useRef } from "react";
 import QuestionBox from "./QuestionBox";
 import ProgressIndicator from "./ProgressIndicator";
 import PageLayout from "./PageLayout";
-import type { PageConfig } from "../config/formQuestions";
 import { Link, useLocation } from "wouter";
+import type { PageConfig } from "../config/configLoader";
+import { getConfig } from "../config/configLoader";
 
 interface FormPageProps {
   formData: Record<string, string>;
@@ -78,7 +78,9 @@ const FormPage: React.FC<FormPageProps> = ({
         >
           <p className="text-xs sm:text-sm md:text-base text-text-primary">
             <strong className="text-primary">
-              {tipType === "success" ? "Almost done!" : "Tip:"}
+              {tipType === "success"
+                ? getConfig().common.successTipPrefix
+                : getConfig().common.tipPrefix}
             </strong>{" "}
             {tipText}
           </p>
@@ -107,7 +109,7 @@ const FormPage: React.FC<FormPageProps> = ({
                   type="button"
                   className="px-6 sm:px-8 py-3 bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base leading-1 grid items-center"
                 >
-                  Back
+                  {getConfig().common.backButton}
                 </Link>
                 <button
                   type="submit"
