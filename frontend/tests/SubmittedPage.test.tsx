@@ -314,7 +314,7 @@ describe("SubmittedPage", () => {
     // Re-render with same props should not trigger another fetch
     rerender(
       <QueryClientProvider client={queryClient}>
-        <SubmittedPage formData={mockFormData} backPage="/form3"} />
+        <SubmittedPage formData={mockFormData} backPage="/form3" />
       </QueryClientProvider>,
     );
 
