@@ -14,7 +14,6 @@ describe("FormPage", () => {
 
   const mockOnInputChange = vi.fn();
   const mockOnSubmit = vi.fn();
-  const mockOnBack = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
