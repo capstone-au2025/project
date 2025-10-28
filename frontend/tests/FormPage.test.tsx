@@ -23,7 +23,8 @@ describe("FormPage", () => {
   describe("Page 1", () => {
     it("should render page title and subtitle", () => {
       render(
-        <FormPage animationDirection="normal"
+        <FormPage
+          animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
@@ -44,7 +45,8 @@ describe("FormPage", () => {
 
     it("should render progress indicator with step 1", () => {
       const { container } = render(
-        <FormPage animationDirection="normal"
+        <FormPage
+          animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
@@ -60,7 +62,8 @@ describe("FormPage", () => {
 
     it("should render all questions from config", () => {
       render(
-        <FormPage animationDirection="normal"
+        <FormPage
+          animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
@@ -84,7 +87,8 @@ describe("FormPage", () => {
 
     it("should render tip text", () => {
       render(
-        <FormPage animationDirection="normal"
+        <FormPage
+          animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
@@ -101,7 +105,8 @@ describe("FormPage", () => {
 
     it("should show Continue button", () => {
       render(
-        <FormPage animationDirection="normal"
+        <FormPage
+          animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
@@ -117,7 +122,8 @@ describe("FormPage", () => {
 
     it("should show Back button when onBack is provided", () => {
       render(
-        <FormPage animationDirection="normal"
+        <FormPage
+          animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
@@ -131,7 +137,8 @@ describe("FormPage", () => {
 
     it("should not show Back button when onBack is undefined", () => {
       render(
-        <FormPage animationDirection="normal"
+        <FormPage
+          animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
@@ -148,7 +155,8 @@ describe("FormPage", () => {
   describe("Page 2", () => {
     it("should render page 2 content", () => {
       render(
-        <FormPage animationDirection="normal"
+        <FormPage
+          animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
@@ -165,7 +173,8 @@ describe("FormPage", () => {
 
     it("should render all 4 questions for page 2", () => {
       render(
-        <FormPage animationDirection="normal"
+        <FormPage
+          animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
@@ -194,7 +203,8 @@ describe("FormPage", () => {
   describe("Page 3", () => {
     it("should render page 3 content", () => {
       render(
-        <FormPage animationDirection="normal"
+        <FormPage
+          animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
@@ -211,7 +221,8 @@ describe("FormPage", () => {
 
     it("should show success tip type", () => {
       render(
-        <FormPage animationDirection="normal"
+        <FormPage
+          animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
@@ -225,7 +236,8 @@ describe("FormPage", () => {
 
     it("should show Generate Letter button", () => {
       render(
-        <FormPage animationDirection="normal"
+        <FormPage
+          animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
@@ -244,7 +256,8 @@ describe("FormPage", () => {
     it("should call onInputChange when typing in textarea", async () => {
       const user = userEvent.setup();
       render(
-        <FormPage animationDirection="normal"
+        <FormPage
+          animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
@@ -264,7 +277,8 @@ describe("FormPage", () => {
     it("should call onSubmit when form is submitted", async () => {
       const user = userEvent.setup();
       render(
-        <FormPage animationDirection="normal"
+        <FormPage
+          animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
@@ -281,7 +295,8 @@ describe("FormPage", () => {
 
     it("should display form data values in textareas", () => {
       render(
-        <FormPage animationDirection="normal"
+        <FormPage
+          animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
@@ -299,7 +314,8 @@ describe("FormPage", () => {
 
     it("should show empty string for missing form data", () => {
       render(
-        <FormPage animationDirection="normal"
+        <FormPage
+          animationDirection="normal"
           formData={{}}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
@@ -319,7 +335,8 @@ describe("FormPage", () => {
   describe("Required fields", () => {
     it("should mark required fields with asterisk", () => {
       render(
-        <FormPage animationDirection="normal"
+        <FormPage
+          animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
@@ -338,7 +355,8 @@ describe("FormPage", () => {
 
     it("should have required attribute on required textareas", () => {
       render(
-        <FormPage animationDirection="normal"
+        <FormPage
+          animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
@@ -358,7 +376,8 @@ describe("FormPage", () => {
   describe("Placeholder text", () => {
     it("should show placeholder text from config", () => {
       render(
-        <FormPage animationDirection="normal"
+        <FormPage
+          animationDirection="normal"
           formData={{}}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
