@@ -204,7 +204,7 @@ describe("SubmittedPage", () => {
     expect(screen.getByRole("link", { name: /back/i })).toBeInTheDocument();
   });
 
-  it("should call backPage="/form3Back button is clicked", async () => {
+  it("should call backPage when Back button is clicked", async () => {
     const user = userEvent.setup();
     renderWithQueryClient(
       <SubmittedPage formData={mockFormData} backPage="/form3" />,
