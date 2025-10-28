@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import IntroPage from "./IntroPage";
 import FormPage from "./FormPage";
@@ -51,11 +51,38 @@ const saveToLocalStorage = (key: string, value: unknown): void => {
   }
 };
 
+const usePreviousLocation = () => {
+  const [location] = useLocation();
+  const [previousLocation, setPreviousLocation] = useState<string | null>(null);
+  const lastSavedLocation = useRef<string | null>(null);
+
+  useEffect(() => {
+    setPreviousLocation(lastSavedLocation.current);
+
+    lastSavedLocation.current = location;
+  }, [location]);
+
+  return previousLocation;
+};
+
 const FormContainer = () => {
   const [formData, setFormData] = useState<FormData>(() =>
     loadFromLocalStorage(STORAGE_KEY, INITIAL_FORM_DATA),
   );
   const [location, setLocation] = useLocation();
+  const previousLocation = usePreviousLocation();
+
+  let direction = "normal";
+  const locationOrder = ["/", "/form1", "/form2", "/form3"];
+  if (previousLocation) {
+    const deltaLocation =
+      locationOrder.indexOf(location) - locationOrder.indexOf(previousLocation);
+    if (deltaLocation === 0) {
+      direction = "none";
+    } else if (deltaLocation < 0) {
+      direction = "reverse";
+    }
+  }
 
   useEffect(() => {
     saveToLocalStorage(STORAGE_KEY, formData);
@@ -79,7 +106,7 @@ const FormContainer = () => {
   return (
     <Switch>
       <Route path="/">
-        <IntroPage nextPage="/form1" />
+        <IntroPage nextPage="/form1" animationDirection={direction} />
       </Route>
 
       <Route path="/form1">
@@ -89,6 +116,7 @@ const FormContainer = () => {
           onSubmit={handlePageSubmit("form2")}
           backPage="/"
           pageConfig={formPages[0]}
+          animationDirection={direction}
         />
       </Route>
 
@@ -99,6 +127,7 @@ const FormContainer = () => {
           onSubmit={handlePageSubmit("form3")}
           backPage="/form1"
           pageConfig={formPages[1]}
+          animationDirection={direction}
         />
       </Route>
 
@@ -109,6 +138,7 @@ const FormContainer = () => {
           onSubmit={handlePageSubmit("submitted")}
           backPage="/form2"
           pageConfig={formPages[2]}
+          animationDirection={direction}
         />
       </Route>
 

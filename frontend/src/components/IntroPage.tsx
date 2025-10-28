@@ -7,10 +7,11 @@ import {
   LightningIcon,
   InfoIcon,
 } from "./icons";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 
 interface IntroPageProps {
   nextPage: string;
+  animationDirection: string;
 }
 
 interface FeatureCardProps {
@@ -33,7 +34,12 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
   </div>
 );
 
-const IntroPage: React.FC<IntroPageProps> = ({ nextPage }) => {
+const IntroPage: React.FC<IntroPageProps> = ({
+  nextPage,
+  animationDirection,
+}) => {
+  const [location, _] = useLocation();
+
   const features = [
     {
       icon: CheckCircleIcon,

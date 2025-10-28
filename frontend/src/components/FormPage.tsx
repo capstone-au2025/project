@@ -1,10 +1,11 @@
 import React from "react";
 import type { ChangeEvent, FormEvent } from "react";
+import { useState, useEffect, useRef } from "react";
 import QuestionBox from "./QuestionBox";
 import ProgressIndicator from "./ProgressIndicator";
 import PageLayout from "./PageLayout";
 import type { PageConfig } from "../config/formQuestions";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 
 interface FormPageProps {
   formData: Record<string, string>;
@@ -12,6 +13,7 @@ interface FormPageProps {
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
   backPage: string;
   pageConfig: PageConfig;
+  animationDirection: string;
 }
 
 const FormPage: React.FC<FormPageProps> = ({
@@ -20,6 +22,7 @@ const FormPage: React.FC<FormPageProps> = ({
   onSubmit,
   pageConfig,
   backPage,
+  animationDirection,
 }) => {
   const {
     pageNumber,
@@ -32,9 +35,24 @@ const FormPage: React.FC<FormPageProps> = ({
     pageInfoText,
   } = pageConfig;
 
+  const [location, _] = useLocation();
+
+  const getAnimationName = () => {
+    if (animationDirection == "normal") {
+      return "animate-slide-in";
+    } else if (animationDirection == "reverse") {
+      return "animate-slide-out";
+    }
+    return "";
+  };
+
   return (
     <PageLayout>
-      <div className="w-full max-w-2xl bg-white lg:rounded-lg lg:shadow-lg lg:border lg:border-sky">
+      <div
+        id={"page" + pageNumber}
+        key={location}
+        className={`w-full max-w-2xl bg-white lg:rounded-lg lg:shadow-lg lg:border lg:border-sky ${getAnimationName()}`}
+      >
         {/* Progress Indicator */}
         <div className="p-4 sm:p-6 pb-3 sm:pb-4">
           <ProgressIndicator currentStep={pageNumber} totalSteps={3} />

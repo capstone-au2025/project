@@ -22,7 +22,7 @@ RUN go mod tidy
 ENV CGO_ENABLED=0
 RUN go build
 
-FROM scratch
+FROM alpine
 WORKDIR /app
 COPY --from=ghcr.io/typst/typst:v0.13.1 /bin/typst /bin/typst
 ENV PATH=/bin
