@@ -9,6 +9,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": "http://localhost:3001",
+      "/altcha": "http://localhost:3001",
     },
     allowedHosts: true,
   },

@@ -5,6 +5,7 @@ import QuestionBox from "./QuestionBox";
 import ProgressIndicator from "./ProgressIndicator";
 import PageLayout from "./PageLayout";
 import type { PageConfig } from "../config/formQuestions";
+import Altcha from "./Altcha";
 
 interface FormPageProps {
   formData: Record<string, string>;
@@ -13,7 +14,10 @@ interface FormPageProps {
   onBack?: () => void;
   pageConfig: PageConfig;
   animationDirection: string;
+  requireAltcha?: boolean;
 }
+
+type VerifyState = "idle" | "verifying" | "ok" | "fail";
 
 const FormPage: React.FC<FormPageProps> = ({
   formData,
@@ -22,7 +26,30 @@ const FormPage: React.FC<FormPageProps> = ({
   onBack,
   pageConfig,
   animationDirection,
-}) => {
+  requireAltcha = false,
+}: FormPageProps) {
+  const formRef = useRef(null);
+  const altchaRef = useRef(null);
+  const [verifyState] = useState("idle" as VerifyState);
+
+  // The npm package registers the custom element; no manual script load needed here
+
+  const handleSubmit = async (e: any) => {
+    if (!requireAltcha) {
+      onSubmit(e);
+      return;
+    }
+
+    // If ALTCHA is required, ensure widget has verified before submitting 
+    const isVerified = altchaRef.current?.verified;
+    if (!isVerified) {
+      e.preventDefault();
+      alert("Please solve the ALTCHA first.");
+      return;
+    }
+
+    onSubmit(e);
+  };
   const {
     pageNumber,
     title,
@@ -112,6 +139,14 @@ const FormPage: React.FC<FormPageProps> = ({
               />
             ))}
 
+            {/* Altcha (only on final page) */}
+            {requireAltcha && (
+              <div className="pt-2">
+                <Altcha ref={altchaRef} />
+              </div>
+            )}
+            
+
             {/* Buttons */}
             <div className="pt-4 sm:pt-6">
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
@@ -126,9 +161,10 @@ const FormPage: React.FC<FormPageProps> = ({
                 )}
                 <button
                   type="submit"
+                  disabled={requireAltcha && verifyState === "verifying"}
                   className="flex-1 py-3 sm:py-4 px-6 sm:px-8 bg-primary text-white rounded-md font-bold text-base sm:text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase"
                 >
-                  {submitButtonText}
+                  {requireAltcha && verifyState === "verifying" ? "Verifying..." : submitButtonText}
                 </button>
               </div>
               <p className="text-center text-xs sm:text-sm text-text-muted mt-3">
@@ -140,6 +176,7 @@ const FormPage: React.FC<FormPageProps> = ({
       </div>
     </PageLayout>
   );
-};
+  
+}
 
 export default FormPage;

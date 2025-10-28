@@ -135,6 +135,7 @@ const FormContainer = () => {
           onBack={handleBackNavigation("form2")}
           pageConfig={formPages[2]}
           animationDirection={direction}
+          requireAltcha={true}
         />
       )}
       {currentPage == "submitted" && (
