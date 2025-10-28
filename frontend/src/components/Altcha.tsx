@@ -25,7 +25,7 @@ const Altcha = forwardRef(function AltchaInner(
   const [value, setValue] = useState<string | null>(null);
   const [verified, setVerified] = useState(false);
 
-  useImperativeHandle(ref as any, () => ({ value, verified } as ExposedState), [value, verified]);
+  useImperativeHandle(ref, () => ({ value, verified } as ExposedState), [value, verified]);
 
   useEffect(() => {
     const handleStateChange = (ev: Event | CustomEvent) => {
@@ -51,12 +51,12 @@ const Altcha = forwardRef(function AltchaInner(
 
   return (
     <altcha-widget
-      ref={widgetRef as unknown as any}
+      ref={widgetRef}
       
       challengeurl="/altcha/challenge"
       verifyurl="/altcha/verify"
       
-      style={{ "--altcha-max-width": "100%" } as any}
+      style={{ "--altcha-max-width": "100%" }}
     ></altcha-widget>
   );
 });
