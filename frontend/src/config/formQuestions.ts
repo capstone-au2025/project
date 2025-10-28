@@ -27,7 +27,7 @@ export const formPages: PageConfig[] = [
     questions: [
       {
         name: "mainProblem",
-        label: "What problems are occuring with your house/apartment?",
+        label: "What problems are occurring with your house/apartment?",
         placeholder:
           "Examples: no running water, no heat or A/C, lock is broken, etc",
         required: true,
@@ -89,7 +89,7 @@ export const formPages: PageConfig[] = [
     title: "Final Question",
     subtitle: "One last thing before we generate your letter",
     tipText:
-      "Almost done! This final question helps us add context and information to your letter!",
+      "This final question helps us add context and information to your letter!",
     tipType: "success",
     questions: [
       {

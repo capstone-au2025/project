@@ -40,16 +40,24 @@
   /* Butterscotch */
 }
 
+html,
 body {
   margin: 0;
+  padding: 0;
   min-width: 320px;
-  min-height: 100vh;
+  height: 100%;
   font-family: var(--font-family-secondary);
   background-color: white;
 }
 
+button {
+  cursor: pointer;
+}
+
 #root {
-  min-height: 100vh;
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 h1,
@@ -59,4 +67,36 @@ h4,
 h5,
 h6 {
   font-family: var(--font-family-primary);
+}
+
+/* Slide In Animation */
+.animate-slide-in {
+  animation: 150ms ease-in slide-in;
+  animation-direction: normal;
+}
+
+.animate-slide-out {
+  animation: 150ms ease-in slide-out;
+}
+
+@keyframes slide-in {
+  0% {
+    transform: translateX(50%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0%);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-out {
+  0% {
+    transform: translateX(-50%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0%);
+    opacity: 1;
+  }
 }

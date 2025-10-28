@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -41,7 +42,7 @@ type PdfResponseError struct {
 }
 
 type TextRequest struct {
-	Message string `json:"message"`
+	Answers map[string]string `json:"answers"`
 }
 
 type TextResponseSuccess struct {
@@ -60,12 +61,90 @@ const (
 	statusError   = "error"
 )
 
+type QuestionType int
+
+const (
+	QuestionString QuestionType = iota
+	QuestionBool
+	QuestionDate
+	QuestionPhoneNumber
+)
+
+var _ json.Marshaler = (*QuestionType)(nil)
+var _ json.Unmarshaler = (*QuestionType)(nil)
+
+func (a *QuestionType) UnmarshalJSON(b []byte) error {
+	var s string
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	switch s {
+	case "string":
+		*a = QuestionString
+	case "bool":
+		*a = QuestionBool
+	case "date":
+		*a = QuestionDate
+	case "phone_number":
+		*a = QuestionPhoneNumber
+	default:
+		return fmt.Errorf("unknown question type: %v", s)
+	}
+	return nil
+}
+
+func (a QuestionType) MarshalJSON() ([]byte, error) {
+	var s string
+	switch a {
+	case QuestionString:
+		s = "string"
+	case QuestionBool:
+		s = "bool"
+	case QuestionDate:
+		s = "date"
+	case QuestionPhoneNumber:
+		s = "phone_number"
+	default:
+		panic(fmt.Sprintf("unexpected QuestionType: %#v", a))
+	}
+	return json.Marshal(s)
+}
+
+type Question struct {
+	Name     string       `json:"name"`
+	Question string       `json:"question"`
+	Required bool         `json:"required"`
+	Typ      QuestionType `json:"type"`
+}
+
+type Page struct {
+	Title     string     `json:"title"`
+	Subtitle  string     `json:"subtitle"`
+	TipText   string     `json:"tipText"`
+	Questions []Question `json:"questions"`
+}
+
+type Form struct {
+	// The name of the form (ex. Rental Complaint)
+	Name string `json:"name"`
+	// A brief description of the form
+	Description string `json:"description"`
+	// Pages of questions
+	Pages []Page `json:"pages"`
+	// The part of the system prompt specific to this Form
+	SystemPrompt string `json:"systemPrompt"`
+	// How question answers should be formatted into the user prompt
+	UserPrompt string `json:"userPrompt"`
+}
+
 // Given a message, get the body of a letter from LLM inference
 func (rt *router) text(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var req TextRequest
 	err := json.NewDecoder(http.MaxBytesReader(w, r.Body, MaxRequestBodySize)).Decode(&req)
+
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		_ = json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "failed to decode body"})
@@ -73,7 +152,16 @@ func (rt *router) text(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := rt.ip.Infer(r.Context(), req.Message)
+	var buff bytes.Buffer
+	err = userPromptTemplate.Execute(&buff, req.Answers)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "failed to template answers"})
+		slog.ErrorContext(r.Context(), "failed to template answers", "err", err)
+		return
+	}
+
+	resp, err := rt.ip.Infer(r.Context(), buff.String())
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		_ = json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "failed to run inference"})
@@ -89,16 +177,16 @@ func (rt *router) text(w http.ResponseWriter, r *http.Request) {
 
 // This should be set on any route which attempts to read the request body. Golang's net/http
 // server does not set a maximum limit. We are only passing around small JSON so this can be small
-const MaxRequestBodySize = 4 * 1024
+const MaxRequestBodySize = 64 * 1024
 
 // Golang's net/http server adds an extra 4096 bytes to this value as a buffer. The total buffer
 // includes the request line, as well as all headers. The default value is 1MB which is clearly too
 // large for the kinds of requests we need to handle
-const MaxRequestHeaderSize = 4 * 1024
+const MaxRequestHeaderSize = 8 * 1024
 
 // Golang's net/http server has an infinite read/write timeout by default. We want to set it to a
 // lower value to reduce load on the server
-const ServerTimeout = 30 * time.Second
+const ServerTimeout = 60 * time.Second
 
 // Renders a pdf from the a `PdfRequest object`
 func (rt *router) pdf(w http.ResponseWriter, r *http.Request) {
@@ -149,7 +237,7 @@ func healthcheck(w http.ResponseWriter, _ *http.Request) {
 }
 
 func main() {
-	maxInputTokens := uint64(1000)
+	maxInputTokens := uint64(2000)
 	if val := os.Getenv("MAX_INPUT_TOKENS"); val != "" {
 		if parsed, err := strconv.ParseUint(val, 10, 0); err != nil {
 			slog.Warn("Invalid MAX_INPUT_TOKENS. Using default value", "err", err)
@@ -160,7 +248,7 @@ func main() {
 		slog.Info("environment variable MAX_INPUT_TOKENS is not defined. Using default value")
 	}
 
-	maxOutputTokens := uint64(500)
+	maxOutputTokens := uint64(800)
 	if val := os.Getenv("MAX_OUTPUT_TOKENS"); val != "" {
 		if parsed, err := strconv.ParseUint(val, 10, 0); err != nil {
 			slog.Warn("Invalid MAX_OUTPUT_TOKENS. Using default value", "err", err)

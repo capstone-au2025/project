@@ -22,12 +22,12 @@ RUN go mod tidy
 ENV CGO_ENABLED=0
 RUN go build
 
-FROM scratch
+FROM alpine
 WORKDIR /app
 COPY --from=ghcr.io/typst/typst:v0.13.1 /bin/typst /bin/typst
-COPY --from=ghcr.io/typst/typst:v0.13.1 /lib/ld-musl-x86_64.so.1 /lib/ld-musl-x86_64.so.1
 ENV PATH=/bin
 COPY --from=frontend /app/dist /app/frontend
 COPY --from=backend /app/backend /app/backend
+COPY --from=backend /app/default-form.json /app/default-form.json
 COPY --from=typst-wrapper /app/typst-wrapper /bin/typst-wrapper
 CMD ["./backend"]
