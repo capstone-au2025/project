@@ -218,7 +218,7 @@ func main() {
 			r.URL.Path += ".html"
 		}
 
-		http.FileServer(http.Dir("frontend/dist")).ServeHTTP(w, r)
+		http.FileServer(http.Dir("frontend")).ServeHTTP(w, r)
 	}))
 
 	fmt.Println("Listening on :3001")
