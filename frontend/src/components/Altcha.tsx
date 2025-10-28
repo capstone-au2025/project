@@ -7,26 +7,34 @@ interface AltchaProps {
   onStateChange?: (ev: Event | CustomEvent) => void;
 }
 
-const Altcha = forwardRef(function AltchaInner({ onStateChange }: AltchaProps, ref: any) {
-  const widgetRef = useRef(null);
-  const [value, setValue] = useState(null as string | null);
+// Minimal type for the custom element value
+interface AltchaEventDetail {
+  payload?: string | null;
+  state?: string;
+}
+
+type AltchaElement = HTMLElement & { verified?: boolean };
+
+type ExposedState = { value: string | null; verified: boolean };
+
+const Altcha = forwardRef(function AltchaInner(
+  { onStateChange }: AltchaProps,
+  ref
+) {
+  const widgetRef = useRef<AltchaElement | null>(null);
+  const [value, setValue] = useState<string | null>(null);
   const [verified, setVerified] = useState(false);
 
-  useImperativeHandle(ref, () => ({ value, verified }), [value, verified]);
+  useImperativeHandle(ref as any, () => ({ value, verified } as ExposedState), [value, verified]);
 
   useEffect(() => {
     const handleStateChange = (ev: Event | CustomEvent) => {
       console.log("ALTCHA state change:", ev);
       if ("detail" in ev) {
-        // detail.payload is provided by the widget when solved
-        // It may contain the signed result; we still rely on hidden inputs for verification
-        // but expose value for debugging/advanced use if needed.
-        // @ts-ignore
-        const payload = (ev as any).detail?.payload;
-        console.log("ALTCHA payload:", payload);
-        setValue(payload || null);
-        // @ts-ignore
-        const state = (ev as any).detail?.state;
+        const detail = (ev as CustomEvent<AltchaEventDetail>).detail;
+        const payload = detail?.payload ?? null;
+        setValue(payload);
+        const state = detail?.state;
         if (state === "verified") {
           setVerified(true);
         }
@@ -36,14 +44,14 @@ const Altcha = forwardRef(function AltchaInner({ onStateChange }: AltchaProps, r
 
     const { current } = widgetRef;
     if (current) {
-      current.addEventListener("statechange", handleStateChange);
-      return () => current.removeEventListener("statechange", handleStateChange);
+      current.addEventListener("statechange", handleStateChange as EventListener);
+      return () => current.removeEventListener("statechange", handleStateChange as EventListener);
     }
   }, [onStateChange]);
 
   return (
     <altcha-widget
-      ref={widgetRef}
+      ref={widgetRef as unknown as any}
       
       challengeurl="/altcha/challenge"
       verifyurl="/altcha/verify"

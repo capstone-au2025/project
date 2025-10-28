@@ -1,7 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import "./App.css";
-declare namespace JSX { interface IntrinsicElements { [elem: string]: any } }
 import FormContainer from "./components/FormContainer";
 import { configReady } from "./config/configLoader";
 

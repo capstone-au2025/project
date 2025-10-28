@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import QuestionBox from "./QuestionBox";
 import ProgressIndicator from "./ProgressIndicator";
@@ -28,20 +28,16 @@ const FormPage: React.FC<FormPageProps> = ({
   backPage,
   animationDirection,
   requireAltcha = false,
-}: FormPageProps) {
-  const formRef = useRef(null);
-  const altchaRef = useRef(null);
+}: FormPageProps) => {
+  const altchaRef = useRef<{ verified?: boolean } | null>(null);
   const [verifyState] = useState("idle" as VerifyState);
 
-  // The npm package registers the custom element; no manual script load needed here
-
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     if (!requireAltcha) {
       onSubmit(e);
       return;
     }
 
-    // If ALTCHA is required, ensure widget has verified before submitting 
     const isVerified = altchaRef.current?.verified;
     if (!isVerified) {
       e.preventDefault();
@@ -113,7 +109,7 @@ const FormPage: React.FC<FormPageProps> = ({
           </p>
         </div>
 
-        <form onSubmit={onSubmit}>
+        <form onSubmit={handleSubmit}>
           {/* All Questions */}
           <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4 sm:space-y-5">
             {questions.map((question) => (
@@ -135,7 +131,6 @@ const FormPage: React.FC<FormPageProps> = ({
               </div>
             )}
             
-
             {/* Buttons */}
             <div className="pt-4 sm:pt-6">
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
@@ -163,7 +158,6 @@ const FormPage: React.FC<FormPageProps> = ({
       </div>
     </PageLayout>
   );
-  
 }
 
 export default FormPage;
