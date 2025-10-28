@@ -3,7 +3,7 @@ import type { ChangeEvent, FormEvent } from "react";
 import IntroPage from "./IntroPage";
 import FormPage from "./FormPage";
 import SubmittedPage from "./SubmittedPage";
-import { formPages } from "../config/formQuestions";
+import { getConfig } from "../config/configLoader";
 
 export interface FormData extends Record<string, string> {
   mainProblem: string;
@@ -51,6 +51,7 @@ const saveToLocalStorage = (key: string, value: unknown): void => {
 };
 
 const FormContainer = () => {
+  const config = getConfig();
   const [formData, setFormData] = useState<FormData>(() =>
     loadFromLocalStorage(STORAGE_KEY, INITIAL_FORM_DATA),
   );
@@ -113,7 +114,7 @@ const FormContainer = () => {
           onInputChange={handleInputChange}
           onSubmit={handlePageSubmit("form2")}
           onBack={handleBackToIntro}
-          pageConfig={formPages[0]}
+          pageConfig={config.formPages[0]}
           animationDirection={direction}
         />
       )}
@@ -123,7 +124,7 @@ const FormContainer = () => {
           onInputChange={handleInputChange}
           onSubmit={handlePageSubmit("form3")}
           onBack={handleBackNavigation("form1")}
-          pageConfig={formPages[1]}
+          pageConfig={config.formPages[1]}
           animationDirection={direction}
         />
       )}
@@ -133,7 +134,7 @@ const FormContainer = () => {
           onInputChange={handleInputChange}
           onSubmit={handlePageSubmit("submitted")}
           onBack={handleBackNavigation("form2")}
-          pageConfig={formPages[2]}
+          pageConfig={config.formPages[2]}
           animationDirection={direction}
         />
       )}

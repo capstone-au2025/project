@@ -3,6 +3,7 @@ WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm install
 COPY frontend /app
+COPY app-config.yaml /app-config.yaml
 RUN npm run build
 
 FROM golang:latest AS backend

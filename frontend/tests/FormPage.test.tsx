@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import FormPage from "../src/components/FormPage";
-import { formPages } from "../src/config/formQuestions";
+import { getConfig } from "../src/config/configLoader";
 import "@testing-library/jest-dom";
 
 describe("FormPage", () => {
@@ -28,7 +28,7 @@ describe("FormPage", () => {
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
           onBack={mockOnBack}
-          pageConfig={formPages[0]}
+          pageConfig={getConfig().formPages[0]}
         />,
       );
 
@@ -49,7 +49,7 @@ describe("FormPage", () => {
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
           onBack={mockOnBack}
-          pageConfig={formPages[0]}
+          pageConfig={getConfig().formPages[0]}
         />,
       );
 
@@ -65,7 +65,7 @@ describe("FormPage", () => {
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
           onBack={mockOnBack}
-          pageConfig={formPages[0]}
+          pageConfig={getConfig().formPages[0]}
         />,
       );
 
@@ -89,7 +89,7 @@ describe("FormPage", () => {
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
           onBack={mockOnBack}
-          pageConfig={formPages[0]}
+          pageConfig={getConfig().formPages[0]}
         />,
       );
 
@@ -106,7 +106,7 @@ describe("FormPage", () => {
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
           onBack={mockOnBack}
-          pageConfig={formPages[0]}
+          pageConfig={getConfig().formPages[0]}
         />,
       );
 
@@ -122,7 +122,7 @@ describe("FormPage", () => {
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
           onBack={mockOnBack}
-          pageConfig={formPages[0]}
+          pageConfig={getConfig().formPages[0]}
         />,
       );
 
@@ -135,7 +135,7 @@ describe("FormPage", () => {
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
-          pageConfig={formPages[0]}
+          pageConfig={getConfig().formPages[0]}
         />,
       );
 
@@ -153,7 +153,7 @@ describe("FormPage", () => {
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
           onBack={mockOnBack}
-          pageConfig={formPages[1]}
+          pageConfig={getConfig().formPages[1]}
         />,
       );
 
@@ -170,7 +170,7 @@ describe("FormPage", () => {
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
           onBack={mockOnBack}
-          pageConfig={formPages[1]}
+          pageConfig={getConfig().formPages[1]}
         />,
       );
 
@@ -199,7 +199,7 @@ describe("FormPage", () => {
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
           onBack={mockOnBack}
-          pageConfig={formPages[2]}
+          pageConfig={getConfig().formPages[2]}
         />,
       );
 
@@ -216,7 +216,7 @@ describe("FormPage", () => {
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
           onBack={mockOnBack}
-          pageConfig={formPages[2]}
+          pageConfig={getConfig().formPages[2]}
         />,
       );
 
@@ -230,7 +230,7 @@ describe("FormPage", () => {
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
           onBack={mockOnBack}
-          pageConfig={formPages[2]}
+          pageConfig={getConfig().formPages[2]}
         />,
       );
 
@@ -249,7 +249,7 @@ describe("FormPage", () => {
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
           onBack={mockOnBack}
-          pageConfig={formPages[0]}
+          pageConfig={getConfig().formPages[0]}
         />,
       );
 
@@ -269,7 +269,7 @@ describe("FormPage", () => {
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
           onBack={mockOnBack}
-          pageConfig={formPages[0]}
+          pageConfig={getConfig().formPages[0]}
         />,
       );
 
@@ -287,7 +287,7 @@ describe("FormPage", () => {
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
           onBack={mockOnBack}
-          pageConfig={formPages[0]}
+          pageConfig={getConfig().formPages[0]}
         />,
       );
 
@@ -304,7 +304,7 @@ describe("FormPage", () => {
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
           onBack={mockOnBack}
-          pageConfig={formPages[0]}
+          pageConfig={getConfig().formPages[0]}
         />,
       );
 
@@ -322,7 +322,7 @@ describe("FormPage", () => {
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
           onBack={mockOnBack}
-          pageConfig={formPages[0]}
+          pageConfig={getConfig().formPages[0]}
         />,
       );
 
@@ -342,7 +342,7 @@ describe("FormPage", () => {
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
           onBack={mockOnBack}
-          pageConfig={formPages[0]}
+          pageConfig={getConfig().formPages[0]}
         />,
       );
 
@@ -361,7 +361,7 @@ describe("FormPage", () => {
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
           onBack={mockOnBack}
-          pageConfig={formPages[0]}
+          pageConfig={getConfig().formPages[0]}
         />,
       );
 
@@ -381,7 +381,7 @@ describe("FormPage", () => {
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
           onBack={mockOnBack}
-          pageConfig={formPages[0]}
+          pageConfig={getConfig().formPages[0]}
         />,
       );
 
