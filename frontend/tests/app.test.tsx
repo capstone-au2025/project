@@ -3,6 +3,8 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import App from "../src/App.tsx";
 import "@testing-library/jest-dom";
+import { Router } from "wouter";
+import { memoryLocation } from "wouter/memory-location";
 
 describe("App", () => {
   beforeEach(() => {
@@ -14,7 +16,7 @@ describe("App", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Landlord-Tenant Communication Tool"),
+        screen.getByText("Landlord-Tenant Communication Tool")
       ).toBeInTheDocument();
     });
   });
@@ -39,28 +41,21 @@ describe("App", () => {
     expect(button).not.toBeInTheDocument();
     expect(
       await screen.findByText(
-        "What problems are occurring with your house/apartment?",
-      ),
+        "What problems are occurring with your house/apartment?"
+      )
     ).toBeInTheDocument();
   });
 
   it("should start at the intro page", async () => {
-    render(<App />);
+    render(
+      <Router hook={memoryLocation().hook}>
+        <App />
+      </Router>
+    );
 
     await waitFor(() => {
       expect(screen.getByText("Get Started")).toBeInTheDocument();
       expect(screen.getByText("Quick & Easy")).toBeInTheDocument();
-    });
-  });
-
-  it("should provide React Query context to children", async () => {
-    render(<App />);
-
-    await waitFor(() => {
-      // FormContainer should render successfully, indicating QueryClient is provided
-      expect(
-        screen.getByText("Landlord-Tenant Communication Tool"),
-      ).toBeInTheDocument();
     });
   });
 });

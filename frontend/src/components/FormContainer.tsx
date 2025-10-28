@@ -3,7 +3,7 @@ import type { ChangeEvent, FormEvent } from "react";
 import IntroPage from "./IntroPage";
 import FormPage from "./FormPage";
 import SubmittedPage from "./SubmittedPage";
-import { Route, Switch, useLocation } from "wouter";
+import { Route, Switch, useLocation, useSearchParams } from "wouter";
 import { getConfig } from "../config/configLoader";
 
 export interface FormData extends Record<string, string> {
@@ -68,10 +68,11 @@ const usePreviousLocation = () => {
 const FormContainer = () => {
   const config = getConfig();
   const [formData, setFormData] = useState<FormData>(() =>
-    loadFromLocalStorage(STORAGE_KEY, INITIAL_FORM_DATA),
+    loadFromLocalStorage(STORAGE_KEY, INITIAL_FORM_DATA)
   );
   const [location, setLocation] = useLocation();
   const previousLocation = usePreviousLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   let direction = "normal";
   const locationOrder = ["/", "/form1", "/form2", "/form3"];
@@ -98,6 +99,16 @@ const FormContainer = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  if (searchParams.get("reset") === "true") {
+    setSearchParams((prev) => {
+      prev.delete("reset");
+      return undefined;
+    });
+    setFormData(INITIAL_FORM_DATA);
+    localStorage.clear();
+    setLocation("/");
+  }
+
   const handlePageSubmit =
     (nextPage: PageState) => (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -106,10 +117,6 @@ const FormContainer = () => {
 
   return (
     <Switch>
-      <Route path="/">
-        <IntroPage nextPage="/form1" />
-      </Route>
-
       <Route path="/form1">
         <FormPage
           formData={formData}
@@ -145,6 +152,10 @@ const FormContainer = () => {
 
       <Route path="/submitted">
         <SubmittedPage formData={formData} backPage="form3" />
+      </Route>
+
+      <Route>
+        <IntroPage nextPage="/form1" />
       </Route>
     </Switch>
   );
