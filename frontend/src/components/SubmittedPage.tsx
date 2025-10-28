@@ -14,6 +14,7 @@ import { Document, Page } from "react-pdf";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import PageLayout from "./PageLayout";
+import { Link } from "wouter";
 import { getConfig } from "../config/configLoader";
 
 GlobalWorkerOptions.workerSrc = new URL(
@@ -23,7 +24,7 @@ GlobalWorkerOptions.workerSrc = new URL(
 
 interface SubmittedPageProps {
   formData: Record<string, string>;
-  onBack: () => void;
+  backPage: string;
 }
 
 type TextRequest = {
@@ -100,7 +101,10 @@ async function generatePdf(formData: Record<string, string>) {
   return pdfResponseSchema.parse(pdfJson);
 }
 
-const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, onBack }) => {
+const SubmittedPage: React.FC<SubmittedPageProps> = ({
+  formData,
+  backPage,
+}) => {
   const config = getConfig();
   const { data } = useQuery({
     queryKey: ["pdf", formData],
@@ -200,12 +204,12 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({ formData, onBack }) => {
             ) : (
               <Skeleton className="h-[52px] box-border border-2 border-transparent rounded-md" />
             )}
-            <button
-              onClick={onBack}
+            <Link
+              href={backPage}
               className="py-3 bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base align-middle flex items-center justify-center"
             >
               {config.submittedPage.backButton}
-            </button>
+            </Link>
           </div>
         </div>
       </div>

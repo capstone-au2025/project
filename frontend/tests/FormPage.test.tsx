@@ -23,11 +23,11 @@ describe("FormPage", () => {
   describe("Page 1", () => {
     it("should render page title and subtitle", () => {
       render(
-        <FormPage
+        <FormPage animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
-          onBack={mockOnBack}
+          backPage="/form1"
           pageConfig={getConfig().formPages[0]}
         />,
       );
@@ -44,11 +44,11 @@ describe("FormPage", () => {
 
     it("should render progress indicator with step 1", () => {
       const { container } = render(
-        <FormPage
+        <FormPage animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
-          onBack={mockOnBack}
+          backPage="/form1"
           pageConfig={getConfig().formPages[0]}
         />,
       );
@@ -60,11 +60,11 @@ describe("FormPage", () => {
 
     it("should render all questions from config", () => {
       render(
-        <FormPage
+        <FormPage animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
-          onBack={mockOnBack}
+          backPage="/form1"
           pageConfig={getConfig().formPages[0]}
         />,
       );
@@ -84,11 +84,11 @@ describe("FormPage", () => {
 
     it("should render tip text", () => {
       render(
-        <FormPage
+        <FormPage animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
-          onBack={mockOnBack}
+          backPage="/form1"
           pageConfig={getConfig().formPages[0]}
         />,
       );
@@ -101,11 +101,11 @@ describe("FormPage", () => {
 
     it("should show Continue button", () => {
       render(
-        <FormPage
+        <FormPage animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
-          onBack={mockOnBack}
+          backPage="/form1"
           pageConfig={getConfig().formPages[0]}
         />,
       );
@@ -117,21 +117,21 @@ describe("FormPage", () => {
 
     it("should show Back button when onBack is provided", () => {
       render(
-        <FormPage
+        <FormPage animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
-          onBack={mockOnBack}
+          backPage="/form1"
           pageConfig={getConfig().formPages[0]}
         />,
       );
 
-      expect(screen.getByRole("button", { name: /back/i })).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: /back/i })).toBeInTheDocument();
     });
 
     it("should not show Back button when onBack is undefined", () => {
       render(
-        <FormPage
+        <FormPage animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
@@ -148,11 +148,11 @@ describe("FormPage", () => {
   describe("Page 2", () => {
     it("should render page 2 content", () => {
       render(
-        <FormPage
+        <FormPage animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
-          onBack={mockOnBack}
+          backPage="/form1"
           pageConfig={getConfig().formPages[1]}
         />,
       );
@@ -165,11 +165,11 @@ describe("FormPage", () => {
 
     it("should render all 4 questions for page 2", () => {
       render(
-        <FormPage
+        <FormPage animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
-          onBack={mockOnBack}
+          backPage="/form1"
           pageConfig={getConfig().formPages[1]}
         />,
       );
@@ -194,11 +194,11 @@ describe("FormPage", () => {
   describe("Page 3", () => {
     it("should render page 3 content", () => {
       render(
-        <FormPage
+        <FormPage animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
-          onBack={mockOnBack}
+          backPage="/form1"
           pageConfig={getConfig().formPages[2]}
         />,
       );
@@ -211,11 +211,11 @@ describe("FormPage", () => {
 
     it("should show success tip type", () => {
       render(
-        <FormPage
+        <FormPage animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
-          onBack={mockOnBack}
+          backPage="/form1"
           pageConfig={getConfig().formPages[2]}
         />,
       );
@@ -225,11 +225,11 @@ describe("FormPage", () => {
 
     it("should show Generate Letter button", () => {
       render(
-        <FormPage
+        <FormPage animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
-          onBack={mockOnBack}
+          backPage="/form1"
           pageConfig={getConfig().formPages[2]}
         />,
       );
@@ -244,11 +244,11 @@ describe("FormPage", () => {
     it("should call onInputChange when typing in textarea", async () => {
       const user = userEvent.setup();
       render(
-        <FormPage
+        <FormPage animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
-          onBack={mockOnBack}
+          backPage="/form1"
           pageConfig={getConfig().formPages[0]}
         />,
       );
@@ -264,11 +264,11 @@ describe("FormPage", () => {
     it("should call onSubmit when form is submitted", async () => {
       const user = userEvent.setup();
       render(
-        <FormPage
+        <FormPage animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
-          onBack={mockOnBack}
+          backPage="/form1"
           pageConfig={getConfig().formPages[0]}
         />,
       );
@@ -279,31 +279,13 @@ describe("FormPage", () => {
       expect(mockOnSubmit).toHaveBeenCalledTimes(1);
     });
 
-    it("should call onBack when back button is clicked", async () => {
-      const user = userEvent.setup();
-      render(
-        <FormPage
-          formData={mockFormData}
-          onInputChange={mockOnInputChange}
-          onSubmit={mockOnSubmit}
-          onBack={mockOnBack}
-          pageConfig={getConfig().formPages[0]}
-        />,
-      );
-
-      const backButton = screen.getByRole("button", { name: /back/i });
-      await user.click(backButton);
-
-      expect(mockOnBack).toHaveBeenCalledTimes(1);
-    });
-
     it("should display form data values in textareas", () => {
       render(
-        <FormPage
+        <FormPage animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
-          onBack={mockOnBack}
+          backPage="/form1"
           pageConfig={getConfig().formPages[0]}
         />,
       );
@@ -317,11 +299,11 @@ describe("FormPage", () => {
 
     it("should show empty string for missing form data", () => {
       render(
-        <FormPage
+        <FormPage animationDirection="normal"
           formData={{}}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
-          onBack={mockOnBack}
+          backPage="/form1"
           pageConfig={getConfig().formPages[0]}
         />,
       );
@@ -337,11 +319,11 @@ describe("FormPage", () => {
   describe("Required fields", () => {
     it("should mark required fields with asterisk", () => {
       render(
-        <FormPage
+        <FormPage animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
-          onBack={mockOnBack}
+          backPage="/form1"
           pageConfig={getConfig().formPages[0]}
         />,
       );
@@ -356,11 +338,11 @@ describe("FormPage", () => {
 
     it("should have required attribute on required textareas", () => {
       render(
-        <FormPage
+        <FormPage animationDirection="normal"
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
-          onBack={mockOnBack}
+          backPage="/form1"
           pageConfig={getConfig().formPages[0]}
         />,
       );
@@ -376,11 +358,11 @@ describe("FormPage", () => {
   describe("Placeholder text", () => {
     it("should show placeholder text from config", () => {
       render(
-        <FormPage
+        <FormPage animationDirection="normal"
           formData={{}}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
-          onBack={mockOnBack}
+          backPage="/form1"
           pageConfig={getConfig().formPages[0]}
         />,
       );

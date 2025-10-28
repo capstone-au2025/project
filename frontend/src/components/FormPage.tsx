@@ -1,9 +1,9 @@
 import React from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import { useState, useEffect, useRef } from "react";
 import QuestionBox from "./QuestionBox";
 import ProgressIndicator from "./ProgressIndicator";
 import PageLayout from "./PageLayout";
+import { Link, useLocation } from "wouter";
 import type { PageConfig } from "../config/configLoader";
 import { getConfig } from "../config/configLoader";
 
@@ -11,7 +11,7 @@ interface FormPageProps {
   formData: Record<string, string>;
   onInputChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
-  onBack?: () => void;
+  backPage: string;
   pageConfig: PageConfig;
   animationDirection: string;
 }
@@ -20,8 +20,8 @@ const FormPage: React.FC<FormPageProps> = ({
   formData,
   onInputChange,
   onSubmit,
-  onBack,
   pageConfig,
+  backPage,
   animationDirection,
 }) => {
   const {
@@ -35,37 +35,23 @@ const FormPage: React.FC<FormPageProps> = ({
     pageInfoText,
   } = pageConfig;
 
-  const [isAnimating, setIsAnimating] = useState(true);
-  const animationRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    animationRef.current?.addEventListener("annimationcancel", () => {
-      setIsAnimating(false);
-    });
-
-    animationRef.current?.addEventListener("annimationend", () => {
-      setIsAnimating(false);
-    });
-  }, [animationRef.current]);
+  const [location, _] = useLocation();
 
   const getAnimationName = () => {
-    /* Return early if we're not animating */
-    if (!isAnimating) {
-      return "";
-    }
-
     if (animationDirection == "normal") {
       return "animate-slide-in";
     } else if (animationDirection == "reverse") {
       return "animate-slide-out";
     }
+    return "";
   };
 
   return (
     <PageLayout>
       <div
         id={"page" + pageNumber}
+        key={location}
         className={`w-full max-w-2xl bg-white lg:rounded-lg lg:shadow-lg lg:border lg:border-sky ${getAnimationName()}`}
-        ref={animationRef}
       >
         {/* Progress Indicator */}
         <div className="p-4 sm:p-6 pb-3 sm:pb-4">
@@ -118,15 +104,13 @@ const FormPage: React.FC<FormPageProps> = ({
             {/* Buttons */}
             <div className="pt-4 sm:pt-6">
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                {onBack && (
-                  <button
-                    type="button"
-                    onClick={onBack}
-                    className="px-6 sm:px-8 py-3 bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base"
-                  >
-                    {getConfig().common.backButton}
-                  </button>
-                )}
+                <Link
+                  href={backPage}
+                  type="button"
+                  className="px-6 sm:px-8 py-3 bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base leading-1 grid items-center"
+                >
+                  {getConfig().common.backButton}
+                </Link>
                 <button
                   type="submit"
                   className="flex-1 py-3 sm:py-4 px-6 sm:px-8 bg-primary text-white rounded-md font-bold text-base sm:text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase"
