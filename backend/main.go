@@ -73,7 +73,7 @@ const (
 var _ json.Marshaler = (*QuestionType)(nil)
 var _ json.Unmarshaler = (*QuestionType)(nil)
 
-func (a *QuestionType) UnmarshalJSON(b []byte) error {
+func (qt *QuestionType) UnmarshalJSON(b []byte) error {
 	var s string
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -81,22 +81,22 @@ func (a *QuestionType) UnmarshalJSON(b []byte) error {
 	}
 	switch s {
 	case "string":
-		*a = QuestionString
+		*qt = QuestionString
 	case "bool":
-		*a = QuestionBool
+		*qt = QuestionBool
 	case "date":
-		*a = QuestionDate
+		*qt = QuestionDate
 	case "phone_number":
-		*a = QuestionPhoneNumber
+		*qt = QuestionPhoneNumber
 	default:
 		return fmt.Errorf("unknown question type: %v", s)
 	}
 	return nil
 }
 
-func (a QuestionType) MarshalJSON() ([]byte, error) {
+func (qt QuestionType) MarshalJSON() ([]byte, error) {
 	var s string
-	switch a {
+	switch qt {
 	case QuestionString:
 		s = "string"
 	case QuestionBool:
@@ -106,7 +106,7 @@ func (a QuestionType) MarshalJSON() ([]byte, error) {
 	case QuestionPhoneNumber:
 		s = "phone_number"
 	default:
-		panic(fmt.Sprintf("unexpected QuestionType: %#v", a))
+		panic(fmt.Sprintf("unexpected QuestionType: %#v", qt))
 	}
 	return json.Marshal(s)
 }
