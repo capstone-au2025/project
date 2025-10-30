@@ -64,7 +64,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ nextPage }) => {
           </section>
 
           {/* Button and Disclaimer */}
-          <section className="flex flex-col gap-6 sm:gap-8">
+          <section className="flex flex-col items-center gap-6 sm:gap-8">
             <div className="bg-white p-4 sm:p-6 rounded-lg border-l-4 border-primary shadow-sm">
               <h3 className="text-base sm:text-lg font-bold mb-2 text-indigo flex items-center gap-2 uppercase">
                 {InfoIcon}
@@ -75,10 +75,17 @@ const IntroPage: React.FC<IntroPageProps> = ({ nextPage }) => {
               </p>
             </div>
 
+            <label className="cursor-pointer">
+                <input required type="checkbox" className="m-3" id="tos-confirmation" name="tos-confirmation "/>
+                 I have read and agree to the&nbsp;
+                 <Link href="/termsofservice" className="text-indigo underline hover:text-primary">Terms of Service </Link>
+            </label>
+ 
+
             <div className="text-center">
-              <Link
+             <Link
                 href={nextPage}
-                className="w-full sm:w-auto px-8 sm:px-12 py-3 sm:py-4 bg-primary text-white rounded-md font-bold text-lg sm:text-xl cursor-pointer hover:bg-primary-hover transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 uppercase"
+                className="inline-block w-full sm:w-auto px-8 sm:px-12 py-3 sm:py-4 bg-primary text-white rounded-md font-bold text-lg sm:text-xl cursor-pointer hover:bg-primary-hover transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 uppercase"
               >
                 {config.introPage.getStartedButton}
               </Link>
