@@ -123,7 +123,7 @@ const FormContainer = () => {
           formData={formData}
           onInputChange={handleInputChange}
           onSubmit={handlePageSubmit("form2")}
-          backPage={previousLocation}
+          backPage={previousLocation == "/termsofservice" ? "/termsofservice" : "/" }
           pageConfig={config.formPages[0]}
           animationDirection={direction}
         />
@@ -156,7 +156,10 @@ const FormContainer = () => {
       </Route>
 
       <Route path="/termsofservice">
-        <TOSPage nextPage="/form1" />
+        <TOSPage
+          nextPage="/form1"
+          backPage="/"
+        />
       </Route>
 
       <Route>
