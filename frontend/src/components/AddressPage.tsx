@@ -226,7 +226,7 @@ const AddressPage: React.FC<AddressPageProps> = ({
                   type="submit"
                   className="flex-1 py-3 sm:py-4 px-6 sm:px-8 bg-primary text-white rounded-md font-bold text-base sm:text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase"
                 >
-                  Continue
+                  Generate Letter
                 </button>
               </div>
             </div>
