@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"os"
 	"testing"
 )
 
@@ -35,16 +34,8 @@ func TestRateLimitedProvider(t *testing.T) {
 }
 
 func TestRateLimitedProviderCustomConfig(t *testing.T) {
-	if err := os.Setenv("RATE_LIMIT_REQUESTS_PER_SECOND", "0.5"); err != nil {
-		t.Fatalf("Failed to set env var: %v", err)
-	}
-	if err := os.Setenv("RATE_LIMIT_BURST", "2"); err != nil {
-		t.Fatalf("Failed to set env var: %v", err)
-	}
-	defer func() {
-		_ = os.Unsetenv("RATE_LIMIT_REQUESTS_PER_SECOND")
-		_ = os.Unsetenv("RATE_LIMIT_BURST")
-	}()
+	t.Setenv("RATE_LIMIT_REQUESTS_PER_SECOND", "0.5")
+	t.Setenv("RATE_LIMIT_BURST", "2")
 
 	provider := &fastMockProvider{}
 	rateLimitedProvider := NewRateLimitedProvider(provider)
