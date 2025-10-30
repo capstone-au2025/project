@@ -55,7 +55,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ nextPage }) => {
           </p>
         </header>
 
-        <main className="flex flex-col gap-8 sm:gap-10">
+        <main className="flex lg:flex-col flex-col-reverse gap-8 sm:gap-10">
           {/* Feature Cards */}
           <section className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {features.map((feature, index) => (
