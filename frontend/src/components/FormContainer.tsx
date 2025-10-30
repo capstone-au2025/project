@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import IntroPage from "./IntroPage";
 import FormPage from "./FormPage";
+import TOSPage from "./TOSPage";
 import SubmittedPage from "./SubmittedPage";
 import { Route, Switch, useLocation, useSearchParams } from "wouter";
 import { getConfig } from "../config/configLoader";
@@ -17,7 +18,7 @@ export interface FormData extends Record<string, string> {
   additionalInformation: string;
 }
 
-type PageState = "intro" | "form1" | "form2" | "form3" | "submitted";
+type PageState = "intro" | "tos" | "form1" | "form2" | "form3" | "submitted";
 
 const STORAGE_KEY = "justiceFormData";
 const PAGE_STATE_KEY = "justiceFormPageState";
@@ -152,6 +153,10 @@ const FormContainer = () => {
 
       <Route path="/submitted">
         <SubmittedPage formData={formData} backPage="form3" />
+      </Route>
+
+      <Route path="/termsofservice">
+        <TOSPage nextPage="/form1" />
       </Route>
 
       <Route>
