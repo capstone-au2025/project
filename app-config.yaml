@@ -119,7 +119,7 @@ formPages:
     subtitle: "One last thing before we generate your letter"
     tipText: "This final question helps us add context and information to your letter!"
     tipType: "success"
-    submitButtonText: "Generate Letter"
+    submitButtonText: "Continue"
     pageInfoText: "Page 3 of 3 - Ready to submit!"
     questions:
       - name: "additionalInformation"
