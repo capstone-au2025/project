@@ -200,6 +200,9 @@ func main() {
 		ip: ip,
 	}
 
+	// Start analytics webhook scheduler (sends stats every week)
+	StartAnalyticsWebhookScheduler(7 * 24 * time.Hour)
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /api/pdf", rt.pdf)
 	mux.HandleFunc("POST /api/text", rt.text)
