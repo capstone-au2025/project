@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import IntroPage from "./IntroPage";
 import FormPage from "./FormPage";
+import TOSPage from "./TOSPage";
 import AddressPage from "./AddressPage";
 import SubmittedPage from "./SubmittedPage";
 import { Route, Switch, useLocation, useSearchParams } from "wouter";
@@ -20,6 +21,7 @@ export interface FormData extends Record<string, string> {
 
 type PageState =
   | "intro"
+  | "tos"
   | "form1"
   | "form2"
   | "form3"
@@ -135,7 +137,9 @@ const FormContainer = () => {
           formData={formData}
           onInputChange={handleInputChange}
           onSubmit={handlePageSubmit("form2")}
-          backPage="/"
+          backPage={
+            previousLocation == "/termsofservice" ? "/termsofservice" : "/"
+          }
           pageConfig={config.formPages[0]}
           animationDirection={direction}
         />
@@ -175,6 +179,10 @@ const FormContainer = () => {
 
       <Route path="/submitted">
         <SubmittedPage formData={formData} backPage="addresses" />
+      </Route>
+
+      <Route path="/termsofservice">
+        <TOSPage nextPage="/form1" backPage="/" />
       </Route>
 
       <Route>
