@@ -112,13 +112,13 @@ describe("SubmittedPage", () => {
     return render(
       <QueryClientProvider client={queryClient}>
         {component}
-      </QueryClientProvider>,
+      </QueryClientProvider>
     );
   };
 
   it("should render page title", () => {
     renderWithQueryClient(
-      <SubmittedPage formData={mockFormData} backPage="/form3" />,
+      <SubmittedPage formData={mockFormData} backPage="/form3" />
     );
 
     expect(screen.getByText("Here's your letter:")).toBeInTheDocument();
@@ -126,7 +126,7 @@ describe("SubmittedPage", () => {
 
   it("should fetch from both text and PDF APIs on mount", async () => {
     renderWithQueryClient(
-      <SubmittedPage formData={mockFormData} backPage="/form3" />,
+      <SubmittedPage formData={mockFormData} backPage="/form3" />
     );
 
     await waitFor(() => {
@@ -146,13 +146,13 @@ describe("SubmittedPage", () => {
 
   it("should send text data to text API", async () => {
     renderWithQueryClient(
-      <SubmittedPage formData={mockFormData} backPage="/form3" />,
+      <SubmittedPage formData={mockFormData} backPage="/form3" />
     );
 
     await waitFor(() => {
       const mockFetch = global.fetch as ReturnType<typeof vi.fn>;
       const textCall = mockFetch.mock.calls.find(
-        (call) => call[0] === "/api/text",
+        (call) => call[0] === "/api/text"
       );
 
       expect(textCall).toBeDefined();
@@ -165,18 +165,17 @@ describe("SubmittedPage", () => {
 
   it("should send correct data to PDF API", async () => {
     renderWithQueryClient(
-      <SubmittedPage formData={mockFormData} backPage="/form3" />,
+      <SubmittedPage formData={mockFormData} backPage="/form3" />
     );
 
     await waitFor(() => {
       const mockFetch = global.fetch as ReturnType<typeof vi.fn>;
       const pdfCall = mockFetch.mock.calls.find(
-        (call) => call[0] === "/api/pdf",
+        (call) => call[0] === "/api/pdf"
       );
 
       expect(pdfCall).toBeDefined();
       const body = JSON.parse(pdfCall![1].body as string);
-      console.log(body);
       expect(body).toHaveProperty("senderName");
       expect(body).toHaveProperty("senderAddress");
       expect(body).toHaveProperty("receiverName");
@@ -188,7 +187,7 @@ describe("SubmittedPage", () => {
 
   it("should render PDF document after successful fetch", async () => {
     renderWithQueryClient(
-      <SubmittedPage formData={mockFormData} backPage="/form3" />,
+      <SubmittedPage formData={mockFormData} backPage="/form3" />
     );
 
     await waitFor(() => {
@@ -198,7 +197,7 @@ describe("SubmittedPage", () => {
 
   it("should show loading skeleton while PDF is loading", () => {
     renderWithQueryClient(
-      <SubmittedPage formData={mockFormData} backPage="/form3" />,
+      <SubmittedPage formData={mockFormData} backPage="/form3" />
     );
 
     // Skeleton should be visible initially
@@ -208,7 +207,7 @@ describe("SubmittedPage", () => {
 
   it("should render Back button", () => {
     renderWithQueryClient(
-      <SubmittedPage formData={mockFormData} backPage="/form3" />,
+      <SubmittedPage formData={mockFormData} backPage="/form3" />
     );
 
     expect(screen.getByRole("link", { name: /back/i })).toBeInTheDocument();
@@ -216,19 +215,19 @@ describe("SubmittedPage", () => {
 
   it("should render Mail to Landlord button after PDF loads", async () => {
     renderWithQueryClient(
-      <SubmittedPage formData={mockFormData} backPage="/form3" />,
+      <SubmittedPage formData={mockFormData} backPage="/form3" />
     );
 
     await waitFor(() => {
       expect(
-        screen.getByRole("button", { name: /mail to your landlord/i }),
+        screen.getByRole("button", { name: /mail to your landlord/i })
       ).toBeInTheDocument();
     });
   });
 
   it("should render Download PDF link after PDF loads", async () => {
     renderWithQueryClient(
-      <SubmittedPage formData={mockFormData} backPage="/form3" />,
+      <SubmittedPage formData={mockFormData} backPage="/form3" />
     );
 
     await waitFor(() => {
@@ -244,12 +243,12 @@ describe("SubmittedPage", () => {
     const { sendMail } = await import("../src/certifiedmail");
 
     renderWithQueryClient(
-      <SubmittedPage formData={mockFormData} backPage="/form3" />,
+      <SubmittedPage formData={mockFormData} backPage="/form3" />
     );
 
     await waitFor(() => {
       expect(
-        screen.getByRole("button", { name: /mail to your landlord/i }),
+        screen.getByRole("button", { name: /mail to your landlord/i })
       ).toBeInTheDocument();
     });
 
@@ -264,13 +263,13 @@ describe("SubmittedPage", () => {
         pdfName: "Letter.pdf",
         letterName: "Letter",
         duplex: false,
-      }),
+      })
     );
   });
 
   it("should create blob URL for PDF", async () => {
     renderWithQueryClient(
-      <SubmittedPage formData={mockFormData} backPage="/form3" />,
+      <SubmittedPage formData={mockFormData} backPage="/form3" />
     );
 
     await waitFor(() => {
@@ -284,11 +283,11 @@ describe("SubmittedPage", () => {
       .mockImplementation(() => {});
 
     global.fetch = vi.fn(() =>
-      Promise.reject(new Error("Network error")),
+      Promise.reject(new Error("Network error"))
     ) as unknown as typeof fetch;
 
     renderWithQueryClient(
-      <SubmittedPage formData={mockFormData} backPage="/form3" />,
+      <SubmittedPage formData={mockFormData} backPage="/form3" />
     );
 
     // Should still render the page without crashing
@@ -300,7 +299,7 @@ describe("SubmittedPage", () => {
 
   it("should use staleTime of Infinity for PDF query", async () => {
     const { rerender } = renderWithQueryClient(
-      <SubmittedPage formData={mockFormData} backPage="/form3" />,
+      <SubmittedPage formData={mockFormData} backPage="/form3" />
     );
 
     await waitFor(() => {
@@ -313,7 +312,7 @@ describe("SubmittedPage", () => {
     rerender(
       <QueryClientProvider client={queryClient}>
         <SubmittedPage formData={mockFormData} backPage="/form3" />
-      </QueryClientProvider>,
+      </QueryClientProvider>
     );
 
     // Should still only be called twice (same 2 calls) due to staleTime: Infinity
@@ -323,7 +322,7 @@ describe("SubmittedPage", () => {
 
   it("should render PDF in download link as well", async () => {
     renderWithQueryClient(
-      <SubmittedPage formData={mockFormData} backPage="/form3" />,
+      <SubmittedPage formData={mockFormData} backPage="/form3" />
     );
 
     await waitFor(() => {

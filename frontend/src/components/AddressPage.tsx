@@ -15,7 +15,6 @@ const AddressInfo: React.FC<AddressInfoProps> = ({
   onChange,
 }) => {
   const prefix = type == "sender" ? "Your" : "Landlord's";
-  console.log(formData);
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold text-text-primary mb-2">
@@ -156,7 +155,7 @@ const AddressInfo: React.FC<AddressInfoProps> = ({
 interface AddressPageProps {
   formData: Record<string, string>;
   onInputChange: (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => void;
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
   backPage: string;
