@@ -123,7 +123,7 @@ const FormContainer = () => {
           formData={formData}
           onInputChange={handleInputChange}
           onSubmit={handlePageSubmit("form2")}
-          backPage="/"
+          backPage={previousLocation}
           pageConfig={config.formPages[0]}
           animationDirection={direction}
         />
