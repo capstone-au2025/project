@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import IntroPage from "./IntroPage";
 import FormPage from "./FormPage";
+import AddressPage from "./AddressPage";
 import SubmittedPage from "./SubmittedPage";
 import { Route, Switch, useLocation, useSearchParams } from "wouter";
 import { getConfig } from "../config/configLoader";
@@ -17,7 +18,13 @@ export interface FormData extends Record<string, string> {
   additionalInformation: string;
 }
 
-type PageState = "intro" | "form1" | "form2" | "form3" | "submitted";
+type PageState =
+  | "intro"
+  | "form1"
+  | "form2"
+  | "form3"
+  | "addresses"
+  | "submitted";
 
 const STORAGE_KEY = "justiceFormData";
 const PAGE_STATE_KEY = "justiceFormPageState";
@@ -75,7 +82,7 @@ const FormContainer = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   let direction = "normal";
-  const locationOrder = ["/", "/form1", "/form2", "/form3"];
+  const locationOrder = ["/", "/form1", "/form2", "/form3", "/addresses"];
   if (previousLocation) {
     const deltaLocation =
       locationOrder.indexOf(location) - locationOrder.indexOf(previousLocation);
@@ -94,8 +101,14 @@ const FormContainer = () => {
     saveToLocalStorage(PAGE_STATE_KEY, location);
   }, [location]);
 
-  const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+  ) => {
+    const target = e.target as
+      | HTMLInputElement
+      | HTMLTextAreaElement
+      | HTMLSelectElement;
+    const { name, value } = target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -143,15 +156,25 @@ const FormContainer = () => {
         <FormPage
           formData={formData}
           onInputChange={handleInputChange}
-          onSubmit={handlePageSubmit("submitted")}
+          onSubmit={handlePageSubmit("addresses")}
           backPage="/form2"
           pageConfig={config.formPages[2]}
           animationDirection={direction}
         />
       </Route>
 
+      <Route path="/addresses">
+        <AddressPage
+          formData={formData}
+          onInputChange={handleInputChange}
+          onSubmit={handlePageSubmit("submitted")}
+          backPage="/form3"
+          animationDirection={direction}
+        />
+      </Route>
+
       <Route path="/submitted">
-        <SubmittedPage formData={formData} backPage="form3" />
+        <SubmittedPage formData={formData} backPage="addresses" />
       </Route>
 
       <Route>

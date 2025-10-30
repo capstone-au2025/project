@@ -428,10 +428,38 @@ describe("FormContainer", () => {
       );
       await user.click(screen.getByRole("button", { name: /continue/i }));
 
-      // Submit form3
       await user.click(
         screen.getByRole("button", { name: /generate letter/i }),
       );
+
+      // Should navigate to addresses page
+      await waitFor(() => {
+        expect(screen.getByText("Addresses")).toBeInTheDocument();
+      });
+
+      await user.type(screen.getByLabelText(/Your Name/i), "Tenant Name");
+      await user.type(screen.getByLabelText(/Your Address/i), "123 Main St");
+      await user.type(screen.getByLabelText(/Your City/i), "Columbus");
+      await user.selectOptions(screen.getByLabelText(/Your State/i), "OH");
+      await user.type(screen.getByLabelText(/Your ZIP/i), "43215");
+
+      await user.type(
+        screen.getByLabelText(/Landlord's Name/i),
+        "Landlord Name",
+      );
+      await user.type(
+        screen.getByLabelText(/Landlord's Address/i),
+        "456 Landlord St",
+      );
+      await user.type(screen.getByLabelText(/Landlord's City/i), "Columbus");
+      await user.selectOptions(
+        screen.getByLabelText(/Landlord's State/i),
+        "OH",
+      );
+      await user.type(screen.getByLabelText(/Landlord's ZIP/i), "43216");
+
+      // Submit addresses to go to submitted page
+      await user.click(screen.getByRole("button", { name: /continue/i }));
 
       // Should show submitted page
       await waitFor(() => {

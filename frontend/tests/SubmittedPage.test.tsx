@@ -59,6 +59,16 @@ describe("SubmittedPage", () => {
     solutionToProblem: "Fix heater",
     solutionDate: "ASAP",
     additionalInformation: "None",
+    senderName: "John Sender",
+    senderAddress: "1234 Sender St",
+    senderCity: "Sendertown",
+    senderState: "OH",
+    senderZip: "12345",
+    destinationName: "Jane Receiver",
+    destinationAddress: "5678 Receiver Ave",
+    destinationCity: "Receiverville",
+    destinationState: "OH",
+    destinationZip: "67890",
   };
 
   let queryClient: QueryClient;
@@ -166,7 +176,7 @@ describe("SubmittedPage", () => {
 
       expect(pdfCall).toBeDefined();
       const body = JSON.parse(pdfCall![1].body as string);
-
+      console.log(body);
       expect(body).toHaveProperty("senderName");
       expect(body).toHaveProperty("senderAddress");
       expect(body).toHaveProperty("receiverName");

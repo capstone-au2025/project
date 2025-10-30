@@ -49,24 +49,6 @@ const textResponseSchema = z.object({
   content: z.string(),
 });
 
-const destination: NameAndAddress = {
-  address: "Destination Address",
-  city: "Destination City",
-  company: undefined,
-  name: "Destination Name",
-  state: "OH",
-  zip: "12345",
-};
-
-const sender: NameAndAddress = {
-  address: "Sender Address",
-  city: "Sender City",
-  company: undefined,
-  name: "Sender Name",
-  state: "OH",
-  zip: "12345",
-};
-
 async function generatePdf(formData: Record<string, string>) {
   let message = "";
   const config = getConfig();
@@ -74,9 +56,11 @@ async function generatePdf(formData: Record<string, string>) {
     config.formPages.flatMap((x) => x.questions).map((x) => [x.name, x.label]),
   );
   for (const [key, value] of Object.entries(formData)) {
-    message += `${keyToQuestion[key]}\n${value}\n\n`;
+    const question = keyToQuestion[key];
+    if (question) {
+      message += `${question}\n${value}\n\n`;
+    }
   }
-
   const textResponse = await fetch("/api/text", {
     method: "POST",
     body: JSON.stringify({
@@ -86,12 +70,30 @@ async function generatePdf(formData: Record<string, string>) {
   const textJson = await textResponse.json();
   const text = textResponseSchema.parse(textJson);
 
+  const sender: NameAndAddress = {
+    name: formData.senderName,
+    company: formData.senderCompany,
+    address: formData.senderAddress,
+    city: formData.senderCity,
+    state: (formData.senderState ?? "OH") as any,
+    zip: formData.senderZip,
+  };
+
+  const destination: NameAndAddress = {
+    name: formData.destinationName,
+    company: formData.destinationCompany,
+    address: formData.destinationAddress,
+    city: formData.destinationCity,
+    state: (formData.destinationState ?? "OH") as any,
+    zip: formData.destinationZip,
+  };
+
   const pdfResp = await fetch("/api/pdf", {
     method: "POST",
     body: JSON.stringify({
       senderName: sender.name,
       senderAddress: `${sender.address}, ${sender.city}, ${sender.state} ${sender.zip} `,
-      receiverName: destination.address,
+      receiverName: destination.name,
       receiverAddress: `${destination.address}, ${destination.city}, ${destination.state} ${destination.zip} `,
       body: text.content,
     } satisfies PdfRequest),
@@ -106,6 +108,23 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
   backPage,
 }) => {
   const config = getConfig();
+  const sender: NameAndAddress = {
+    name: formData.senderName,
+    company: formData.senderCompany,
+    address: formData.senderAddress,
+    city: formData.senderCity,
+    state: formData.senderState as any,
+    zip: formData.senderZip,
+  };
+
+  const destination: NameAndAddress = {
+    name: formData.destinationName,
+    company: formData.destinationCompany,
+    address: formData.destinationAddress,
+    city: formData.destinationCity,
+    state: formData.destinationState as any,
+    zip: formData.destinationZip,
+  };
   const { data } = useQuery({
     queryKey: ["pdf", formData],
     staleTime: Infinity,
@@ -131,7 +150,9 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     const pdfBytes = base64ToUint8Array(data.content);
     // Use blob url because mobile safari absolutely refuses to open data urls
     const blobUrl = URL.createObjectURL(
-      new Blob([pdfBytes], { type: "application/pdf" }),
+      new Blob([pdfBytes as unknown as ArrayBuffer], {
+        type: "application/pdf",
+      }),
     );
 
     const handleCertifiedMail = () => {

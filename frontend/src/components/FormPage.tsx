@@ -9,7 +9,9 @@ import { getConfig } from "../config/configLoader";
 
 interface FormPageProps {
   formData: Record<string, string>;
-  onInputChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
+  onInputChange: (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+  ) => void;
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
   backPage: string;
   pageConfig: PageConfig;
