@@ -54,9 +54,9 @@ export interface SubmittedPageConfig {
 }
 
 export interface TermsOfServicePageConfig {
-    heading: string;
-    terms: string;
-    continueButton: string;
+  heading: string;
+  terms: string;
+  continueButton: string;
 }
 
 export interface UIConfig {
