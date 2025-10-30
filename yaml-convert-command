@@ -1,0 +1,1 @@
+yq '[.[].[].[]?.[]?] | map(select(objects))' frontend/app-config.yaml

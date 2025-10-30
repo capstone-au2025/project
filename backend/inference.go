@@ -3,7 +3,9 @@ package main
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
+	"strings"
 	"text/template"
 	"time"
 
@@ -52,8 +54,20 @@ func init() {
 var systemPromptTemplateContent string
 var systemPromptTemplate *template.Template
 
+var userPromptTemplate *template.Template
+
+//go:embed default-form.json
+var formData string
+var form Form
+
 func init() {
-	systemPromptTemplate = template.Must(template.New("prompt.txt").Parse(systemPromptTemplateContent))
+	d := json.NewDecoder(strings.NewReader(formData))
+	err := d.Decode(&form)
+	if err != nil {
+		panic(err)
+	}
+	systemPromptTemplate = template.Must(template.New("prompt.txt").Parse(systemPromptTemplateContent + form.SystemPrompt))
+	userPromptTemplate = template.Must(template.New("user-prompt.txt").Parse(form.UserPrompt))
 }
 
 func RenderSystemPrompt() string {

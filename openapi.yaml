@@ -190,14 +190,16 @@ components:
     TextRequest:
       type: object
       required:
-        - message
+        - answers
       properties:
-        message:
-          type: string
-          description: Message or prompt for generating the letter content
-          example: "The sink in my apartment is not functioning"
+        answers:
+          type: object
+          description: The users form answers, keyed by question id
+          example: '{"mainProblem": "The sink is broken"}'
           minLength: 1
           maxLength: 1000
+          additionalProperties:
+            type: string
 
     TextResponseSuccess:
       type: object
