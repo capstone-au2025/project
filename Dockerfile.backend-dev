@@ -1,6 +1,6 @@
 FROM golang:latest AS typst-wrapper
 WORKDIR /app
-COPY typst-wrapper /app
+COPY backend/typst-wrapper /app
 RUN go get -u
 RUN go mod tidy
 ENV CGO_ENABLED=0
@@ -13,9 +13,10 @@ COPY --from=typst-wrapper /app/typst-wrapper /bin/typst-wrapper
 
 RUN go install github.com/air-verse/air@latest
 
-COPY go.mod go.sum ./
+COPY backend/go.mod backend/go.sum ./
 RUN go mod download
 
-COPY . /app
+COPY backend /app
+COPY app-config.yaml .
 
 CMD ["air", "-build.cmd", "go build -tags=aws,ollama -o ./tmp/main ."]

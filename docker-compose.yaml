@@ -3,7 +3,7 @@ services:
     ports:
       - 3001:3001
     build:
-      context: ./backend
+      dockerfile: Dockerfile.backend-dev
     environment:
       - INFERENCE_PROVIDER=ollama
       - OLLAMA_HOST=http://ollama:11434
@@ -28,7 +28,7 @@ services:
     ports:
       - 5173:5173
     build:
-      context: ./frontend
+      dockerfile: Dockerfile.frontend-dev
     depends_on:
       - backend
     develop:
