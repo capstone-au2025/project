@@ -25,7 +25,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
   title,
   description,
 }) => (
-  <div className="p-6 bg-white rounded-lg shadow-md border-2 border-sky hover:border-primary transition-colors duration-200">
+  <div className="p-6 bg-white rounded-lg border-2 border-sky">
     <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mb-4">
       {icon}
     </div>
@@ -55,7 +55,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ nextPage }) => {
           </p>
         </header>
 
-        <main className="flex flex-col gap-8 sm:gap-10">
+        <main className="flex lg:flex-col flex-col-reverse gap-8 sm:gap-10">
           {/* Feature Cards */}
           <section className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {features.map((feature, index) => (
