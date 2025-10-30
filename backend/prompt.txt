@@ -1,3 +1,0 @@
-The current time is {{.CurrentTime}}. Resolve relative dates to be absolute if any dates are given.
-
-Your job is to rewrite the input into more formal language.

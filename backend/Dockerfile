@@ -7,6 +7,8 @@ ENV CGO_ENABLED=0
 RUN go build
 
 FROM golang:latest
+RUN apt-get update
+RUN apt-get install -y yq
 WORKDIR /app
 COPY --from=ghcr.io/typst/typst:v0.13.1 /bin/typst /bin/typst
 COPY --from=typst-wrapper /app/typst-wrapper /bin/typst-wrapper
@@ -18,6 +20,7 @@ RUN go mod download
 
 COPY . /app
 
-COPY default-form.json .
+COPY app-config.yaml .
+RUN yq '[.[].[].[]?.[]?] | map(select(objects))' app-config.yaml > app-config.json
 
 CMD ["air", "-build.cmd", "go build -tags=aws,ollama -o ./tmp/main ."]

@@ -61,77 +61,15 @@ const (
 	statusError   = "error"
 )
 
-type QuestionType int
-
-const (
-	QuestionString QuestionType = iota
-	QuestionBool
-	QuestionDate
-	QuestionPhoneNumber
-)
-
-var _ json.Marshaler = (*QuestionType)(nil)
-var _ json.Unmarshaler = (*QuestionType)(nil)
-
-func (qt *QuestionType) UnmarshalJSON(b []byte) error {
-	var s string
-	err := json.Unmarshal(b, &s)
-	if err != nil {
-		return err
-	}
-	switch s {
-	case "string":
-		*qt = QuestionString
-	case "bool":
-		*qt = QuestionBool
-	case "date":
-		*qt = QuestionDate
-	case "phone_number":
-		*qt = QuestionPhoneNumber
-	default:
-		return fmt.Errorf("unknown question type: %v", s)
-	}
-	return nil
-}
-
-func (qt QuestionType) MarshalJSON() ([]byte, error) {
-	var s string
-	switch qt {
-	case QuestionString:
-		s = "string"
-	case QuestionBool:
-		s = "bool"
-	case QuestionDate:
-		s = "date"
-	case QuestionPhoneNumber:
-		s = "phone_number"
-	default:
-		panic(fmt.Sprintf("unexpected QuestionType: %#v", qt))
-	}
-	return json.Marshal(s)
-}
-
 type Question struct {
-	Name     string       `json:"name"`
-	Question string       `json:"question"`
-	Required bool         `json:"required"`
-	Typ      QuestionType `json:"type"`
-}
-
-type Page struct {
-	Title     string     `json:"title"`
-	Subtitle  string     `json:"subtitle"`
-	TipText   string     `json:"tipText"`
-	Questions []Question `json:"questions"`
+	Name     string `json:"name"`
+	Question string `json:"label"`
+	Required bool   `json:"required"`
 }
 
 type Form struct {
-	// The name of the form (ex. Rental Complaint)
-	Name string `json:"name"`
-	// A brief description of the form
-	Description string `json:"description"`
 	// Pages of questions
-	Pages []Page `json:"pages"`
+	Questions []Question `json:"questions"`
 	// The part of the system prompt specific to this Form
 	SystemPrompt string `json:"systemPrompt"`
 	// How question answers should be formatted into the user prompt

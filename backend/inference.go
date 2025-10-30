@@ -50,13 +50,10 @@ func init() {
 	}
 }
 
-//go:embed prompt.txt
-var systemPromptTemplateContent string
 var systemPromptTemplate *template.Template
-
 var userPromptTemplate *template.Template
 
-//go:embed default-form.json
+//go:embed app-config.json
 var formData string
 var form Form
 
@@ -66,7 +63,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	systemPromptTemplate = template.Must(template.New("prompt.txt").Parse(systemPromptTemplateContent + form.SystemPrompt))
+	systemPromptTemplate = template.Must(template.New("prompt.txt").Parse(form.SystemPrompt))
 	userPromptTemplate = template.Must(template.New("user-prompt.txt").Parse(form.UserPrompt))
 }
 
