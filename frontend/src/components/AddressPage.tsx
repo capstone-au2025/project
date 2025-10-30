@@ -155,7 +155,7 @@ const AddressInfo: React.FC<AddressInfoProps> = ({
 interface AddressPageProps {
   formData: Record<string, string>;
   onInputChange: (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) => void;
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
   backPage: string;

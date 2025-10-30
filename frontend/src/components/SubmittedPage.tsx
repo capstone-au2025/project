@@ -20,7 +20,7 @@ import { getConfig } from "../config/configLoader";
 
 GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url
+  import.meta.url,
 ).toString();
 
 interface SubmittedPageProps {
@@ -53,12 +53,12 @@ const textResponseSchema = z.object({
 async function generatePdf(
   formData: Record<string, string>,
   sender: NameAndAddress,
-  destination: NameAndAddress
+  destination: NameAndAddress,
 ) {
   let message = "";
   const config = getConfig();
   const keyToQuestion = Object.fromEntries(
-    config.formPages.flatMap((x) => x.questions).map((x) => [x.name, x.label])
+    config.formPages.flatMap((x) => x.questions).map((x) => [x.name, x.label]),
   );
   for (const [key, value] of Object.entries(formData)) {
     const question = keyToQuestion[key];
@@ -141,7 +141,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     const blobUrl = URL.createObjectURL(
       new Blob([pdfBytes as unknown as ArrayBuffer], {
         type: "application/pdf",
-      })
+      }),
     );
 
     const handleCertifiedMail = () => {
