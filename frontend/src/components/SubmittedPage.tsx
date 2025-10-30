@@ -4,6 +4,7 @@ import {
   base64ToUint8Array,
   sendMail,
   type NameAndAddress,
+  type State,
 } from "../certifiedmail";
 import z from "zod";
 import { GlobalWorkerOptions } from "pdfjs-dist";
@@ -19,7 +20,7 @@ import { getConfig } from "../config/configLoader";
 
 GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url,
+  import.meta.url
 ).toString();
 
 interface SubmittedPageProps {
@@ -49,11 +50,15 @@ const textResponseSchema = z.object({
   content: z.string(),
 });
 
-async function generatePdf(formData: Record<string, string>) {
+async function generatePdf(
+  formData: Record<string, string>,
+  sender: NameAndAddress,
+  destination: NameAndAddress
+) {
   let message = "";
   const config = getConfig();
   const keyToQuestion = Object.fromEntries(
-    config.formPages.flatMap((x) => x.questions).map((x) => [x.name, x.label]),
+    config.formPages.flatMap((x) => x.questions).map((x) => [x.name, x.label])
   );
   for (const [key, value] of Object.entries(formData)) {
     const question = keyToQuestion[key];
@@ -69,24 +74,6 @@ async function generatePdf(formData: Record<string, string>) {
   });
   const textJson = await textResponse.json();
   const text = textResponseSchema.parse(textJson);
-
-  const sender: NameAndAddress = {
-    name: formData.senderName,
-    company: formData.senderCompany,
-    address: formData.senderAddress,
-    city: formData.senderCity,
-    state: (formData.senderState ?? "OH") as any,
-    zip: formData.senderZip,
-  };
-
-  const destination: NameAndAddress = {
-    name: formData.destinationName,
-    company: formData.destinationCompany,
-    address: formData.destinationAddress,
-    city: formData.destinationCity,
-    state: (formData.destinationState ?? "OH") as any,
-    zip: formData.destinationZip,
-  };
 
   const pdfResp = await fetch("/api/pdf", {
     method: "POST",
@@ -108,12 +95,13 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
   backPage,
 }) => {
   const config = getConfig();
+
   const sender: NameAndAddress = {
     name: formData.senderName,
     company: formData.senderCompany,
     address: formData.senderAddress,
     city: formData.senderCity,
-    state: formData.senderState as any,
+    state: (formData.senderState ?? "OH") as State,
     zip: formData.senderZip,
   };
 
@@ -122,13 +110,14 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     company: formData.destinationCompany,
     address: formData.destinationAddress,
     city: formData.destinationCity,
-    state: formData.destinationState as any,
+    state: (formData.destinationState ?? "OH") as State,
     zip: formData.destinationZip,
   };
+
   const { data } = useQuery({
     queryKey: ["pdf", formData],
     staleTime: Infinity,
-    queryFn: () => generatePdf(formData),
+    queryFn: () => generatePdf(formData, sender, destination),
   });
   const {
     width: pdfWidth,
@@ -152,7 +141,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     const blobUrl = URL.createObjectURL(
       new Blob([pdfBytes as unknown as ArrayBuffer], {
         type: "application/pdf",
-      }),
+      })
     );
 
     const handleCertifiedMail = () => {
