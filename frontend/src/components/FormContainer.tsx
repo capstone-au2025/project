@@ -68,7 +68,7 @@ const usePreviousLocation = () => {
 const FormContainer = () => {
   const config = getConfig();
   const [formData, setFormData] = useState<FormData>(() =>
-    loadFromLocalStorage(STORAGE_KEY, INITIAL_FORM_DATA)
+    loadFromLocalStorage(STORAGE_KEY, INITIAL_FORM_DATA),
   );
   const [location, setLocation] = useLocation();
   const previousLocation = usePreviousLocation();

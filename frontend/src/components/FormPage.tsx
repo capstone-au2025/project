@@ -35,7 +35,7 @@ const FormPage: React.FC<FormPageProps> = ({
     pageInfoText,
   } = pageConfig;
 
-  const [location, _] = useLocation();
+  const location = useLocation()[0];
 
   const getAnimationName = () => {
     if (animationDirection == "normal") {

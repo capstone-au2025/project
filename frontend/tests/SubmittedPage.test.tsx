@@ -204,18 +204,6 @@ describe("SubmittedPage", () => {
     expect(screen.getByRole("link", { name: /back/i })).toBeInTheDocument();
   });
 
-  it("should call backPage="/form3Back button is clicked", async () => {
-    const user = userEvent.setup();
-    renderWithQueryClient(
-      <SubmittedPage formData={mockFormData} backPage="/form3" />,
-    );
-
-    const backButton = screen.getByRole("link", { name: /back/i });
-    await user.click(backButton);
-
-    expect(mockOnBack).toHaveBeenCalledTimes(1);
-  });
-
   it("should render Mail to Landlord button after PDF loads", async () => {
     renderWithQueryClient(
       <SubmittedPage formData={mockFormData} backPage="/form3" />,
@@ -295,7 +283,7 @@ describe("SubmittedPage", () => {
 
     // Should still render the page without crashing
     expect(screen.getByText("Here's your letter:")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /back/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /back/i })).toBeInTheDocument();
 
     consoleErrorSpy.mockRestore();
   });
@@ -314,7 +302,7 @@ describe("SubmittedPage", () => {
     // Re-render with same props should not trigger another fetch
     rerender(
       <QueryClientProvider client={queryClient}>
-        <SubmittedPage formData={mockFormData} backPage="/form3"} />
+        <SubmittedPage formData={mockFormData} backPage="/form3" />
       </QueryClientProvider>,
     );
 
