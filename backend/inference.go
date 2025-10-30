@@ -11,6 +11,11 @@ import (
 	_ "time/tzdata"
 )
 
+// InferenceProvider defines the interface for any inference provider.
+// Rate limiting is applied to all providers via the RateLimitedProvider wrapper
+// in main.go. Configure rate limits using environment variables:
+//   - RATE_LIMIT_REQUESTS_PER_SECOND: Number of requests per second (default: 1.0)
+//   - RATE_LIMIT_BURST: Maximum burst size (default: 3)
 type InferenceProvider interface {
 	// Runs user context input through inference provider.
 	// A system prompt may be included on creation of the inference provider.

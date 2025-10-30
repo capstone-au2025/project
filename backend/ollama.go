@@ -9,7 +9,6 @@ import (
 	"os"
 
 	"github.com/ollama/ollama/api"
-	"golang.org/x/time/rate"
 )
 
 var (
@@ -19,7 +18,6 @@ var (
 type Ollama struct {
 	client  *api.Client
 	modelId string
-	limiter *rate.Limiter
 }
 
 var _ InferenceProvider = (*Ollama)(nil)
@@ -47,14 +45,10 @@ func NewOllama() (*Ollama, error) {
 	return &Ollama{
 		client:  client,
 		modelId: modelId,
-		limiter: rate.NewLimiter(1, 3), // 1 req/sec, burst 3
 	}, nil
 }
 
 func (o *Ollama) Infer(ctx context.Context, input string) (string, error) {
-	if o.limiter != nil && !o.limiter.Allow() {
-		return "", errors.New("rate limit exceeded")
-	}
 	systemPrompt := RenderSystemPrompt()
 
 	var message string
