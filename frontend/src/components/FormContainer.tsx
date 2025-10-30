@@ -27,7 +27,6 @@ type PageState =
   | "form3"
   | "addresses"
   | "submitted";
->>>>>>> main
 
 const STORAGE_KEY = "justiceFormData";
 const PAGE_STATE_KEY = "justiceFormPageState";
@@ -138,7 +137,9 @@ const FormContainer = () => {
           formData={formData}
           onInputChange={handleInputChange}
           onSubmit={handlePageSubmit("form2")}
-          backPage={previousLocation == "/termsofservice" ? "/termsofservice" : "/" }
+          backPage={
+            previousLocation == "/termsofservice" ? "/termsofservice" : "/"
+          }
           pageConfig={config.formPages[0]}
           animationDirection={direction}
         />
@@ -181,10 +182,7 @@ const FormContainer = () => {
       </Route>
 
       <Route path="/termsofservice">
-        <TOSPage
-          nextPage="/form1"
-          backPage="/"
-        />
+        <TOSPage nextPage="/form1" backPage="/" />
       </Route>
 
       <Route>

@@ -8,10 +8,7 @@ interface TOSPageProps {
   backPage: string;
 }
 
-const TOSPage: React.FC<TOSPageProps> = ({
-    nextPage,
-    backPage,
-}) => {
+const TOSPage: React.FC<TOSPageProps> = ({ nextPage, backPage }) => {
   const config = getConfig();
   const terms: string = config.termsOfServicePage.terms;
   return (
@@ -27,27 +24,30 @@ const TOSPage: React.FC<TOSPageProps> = ({
           <section id="terms" className="flex flex-col gap-2 sm:gap-2">
             {/* Surround the terms in p tags */}
             {terms.split("\n").map((s, index) => (
-                <p key={index} className="text-left text-sm sm:text-md text-text-primary leading-relaxed px-2 sm:px-0">
+              <p
+                key={index}
+                className="text-left text-sm sm:text-md text-text-primary leading-relaxed px-2 sm:px-0"
+              >
                 {s}
-                      </p>
+              </p>
             ))}
           </section>
 
           {/* Button */}
           <section className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-                <a
-                  href={backPage}
-                  type="button"
-                  className="px-6 sm:px-8 py-3 bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base leading-1 grid items-center"
-                >
-                  {getConfig().common.backButton}
-                </a>
-              <Link
-                href={nextPage}
-                className="inline-block text-center flex-1 py-3 sm:py-4 px-6 sm:px-8 bg-primary text-white rounded-md font-bold text-base sm:text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase"
-              >
-                {config.termsOfServicePage.continueButton}
-              </Link>
+            <a
+              href={backPage}
+              type="button"
+              className="px-6 sm:px-8 py-3 bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base leading-1 grid items-center"
+            >
+              {getConfig().common.backButton}
+            </a>
+            <Link
+              href={nextPage}
+              className="inline-block text-center flex-1 py-3 sm:py-4 px-6 sm:px-8 bg-primary text-white rounded-md font-bold text-base sm:text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase"
+            >
+              {config.termsOfServicePage.continueButton}
+            </Link>
           </section>
         </main>
       </div>
