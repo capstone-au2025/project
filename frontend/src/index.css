@@ -6,15 +6,15 @@
   --font-family-secondary: "Merriweather", serif;
 
   /* Rentful Brand Colors */
-  --color-primary: #ff4d00;
-  /* Saffron Orange */
-  --color-primary-hover: #283745;
+  --color-primary: #dc2626;
+  /* Vibrant Red */
+  --color-primary-hover: #060e66;
   /* Indigo Blue for hover states */
-  --color-primary-light: rgb(255 77 0 / 0.05);
-  --color-primary-ring: rgb(255 77 0 / 0.3);
+  --color-primary-light: rgb(220 38 38 / 0.05);
+  --color-primary-ring: rgb(220 38 38 / 0.3);
 
   /* Brand Palette */
-  --color-indigo: #283745;
+  --color-indigo: #060e66;
   /* Indigo Blue - Main text */
   --color-sky: #bed7e9;
   /* Sky Blue - Borders & accents */
@@ -26,13 +26,13 @@
   /* Dark Indigo - Graphics */
 
   /* Semantic colors using brand palette */
-  --color-text-primary: #283745;
+  --color-text-primary: #060e66;
   /* Indigo Blue */
-  --color-text-muted: rgb(40 55 69 / 0.7);
+  --color-text-muted: rgb(6 14 102 / 0.7);
   /* Indigo Blue 70% opacity */
   --color-border: #bed7e9;
   /* Sky Blue */
-  --color-border-hover: #283745;
+  --color-border-hover: #060e66;
   /* Indigo Blue */
   --color-bg-light: #d5e7f1;
   /* Light Sky Blue */
