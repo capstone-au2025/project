@@ -428,9 +428,7 @@ describe("FormContainer", () => {
       );
       await user.click(screen.getByRole("button", { name: /continue/i }));
 
-      await user.click(
-        screen.getByRole("button", { name: /generate letter/i }),
-      );
+      await user.click(screen.getByRole("button", { name: /continue/i }));
 
       // Should navigate to addresses page
       await waitFor(() => {
@@ -459,7 +457,9 @@ describe("FormContainer", () => {
       await user.type(screen.getByLabelText(/Landlord's ZIP/i), "43216");
 
       // Submit addresses to go to submitted page
-      await user.click(screen.getByRole("button", { name: /continue/i }));
+      await user.click(
+        screen.getByRole("button", { name: /generate letter/i }),
+      );
 
       // Should show submitted page
       await waitFor(() => {

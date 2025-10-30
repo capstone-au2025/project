@@ -233,7 +233,7 @@ describe("FormPage", () => {
       expect(screen.getByText("Almost done!")).toBeInTheDocument();
     });
 
-    it("should show Generate Letter button", () => {
+    it("should show continue button", () => {
       render(
         <FormPage
           animationDirection="normal"
@@ -246,7 +246,7 @@ describe("FormPage", () => {
       );
 
       expect(
-        screen.getByRole("button", { name: /generate letter/i }),
+        screen.getByRole("button", { name: /continue/i }),
       ).toBeInTheDocument();
     });
   });
