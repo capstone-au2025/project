@@ -25,7 +25,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
   title,
   description,
 }) => (
-  <div className="p-6 bg-white rounded-lg shadow-md border-2 border-sky hover:border-primary transition-colors duration-200">
+  <div className="p-6 bg-white rounded-lg border-2 border-sky">
     <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mb-4">
       {icon}
     </div>
