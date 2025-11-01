@@ -21,12 +21,6 @@ introPage:
     - title: "Quick & Easy"
       description: "Answer just a few questions about your situation. The process takes less than 5 minutes."
 
-    - title: "Filler"
-      description: "FILLER INFORMATION"
-
-    - title: "Data Privacy"
-      description: "FILLER INFORMATION"
-
     - title: "Free to Use"
       description: "This tool is completely free. No registration or payment required to get started."
 
@@ -43,6 +37,27 @@ introPage:
 
   # Footer text under button
   footerText: "Takes approximately 3-5 minutes to complete"
+
+termsOfServicePage:
+  heading: "Terms of Service"
+
+  terms: |
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec luctus porta metus, eu laoreet orci rhoncus at. Aenean consectetur convallis vestibulum. Aliquam sapien nulla, hendrerit id eleifend vitae, molestie sodales ex. Integer leo ligula, consequat aliquam libero sed, pulvinar posuere elit. Etiam imperdiet ultricies enim non hendrerit. Proin euismod gravida massa vitae blandit. Vestibulum fermentum id tortor id pretium. Nunc eros metus, tincidunt id ex vitae, auctor cursus nisl. Nulla dolor nulla, tristique tempor mi quis, tincidunt facilisis ante. Sed sagittis luctus metus vitae posuere. Nam semper, nibh at cursus lobortis, lectus justo dapibus dolor, vitae vulputate risus turpis at ligula. Vivamus fermentum, quam vel interdum volutpat, leo ligula blandit justo, id ultricies augue dolor sed nunc.
+
+    
+    Duis eget sapien vitae tortor laoreet porta. Morbi dolor enim, vehicula vitae lectus sit amet, condimentum congue felis. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nulla facilisi. Morbi interdum sollicitudin vulputate. Aenean elementum felis eget nisl suscipit, nec porta nibh placerat. Donec eget mattis nisl. Sed semper maximus magna vel sagittis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eget sodales erat. Morbi elementum ligula lacinia nulla vulputate, non tristique tellus cursus. Phasellus id erat nec erat tincidunt dignissim ut eget ante.
+
+    
+    Phasellus tincidunt venenatis placerat. Ut sagittis vulputate orci eu rutrum. Nulla mattis nunc et lacus scelerisque ultrices. Suspendisse lobortis, augue a aliquam tempor, felis metus vehicula massa, ultrices faucibus urna orci sit amet nunc. Nulla eros erat, ultricies vel augue et, pulvinar venenatis nunc. Fusce condimentum nisi augue, tincidunt tincidunt ipsum luctus in. Maecenas ut felis at mi suscipit consectetur in et metus. Ut urna magna, cursus eget mollis a, congue non arcu. Donec vitae metus tincidunt, maximus lacus et, maximus
+    velit. Sed in interdum urna. Donec congue pulvinar arcu id accumsan.
+
+    
+    Sed vel lorem vel erat fringilla accumsan. Nulla est leo, feugiat sed vestibulum id, dictum non arcu. Phasellus vitae consectetur nibh. Aenean enim tellus, aliquam faucibus dapibus quis, faucibus at lorem. Mauris ipsum tellus, viverra a porttitor vel, accumsan vel magna. Proin in nisl eu nisi vulputate pretium at a diam. Donec vitae risus vestibulum, tincidunt nisi a, pulvinar elit. Suspendisse nulla quam, molestie convallis tempor id, malesuada sit amet nisl. Nulla feugiat dictum sodales. Suspendisse non auctor libero. Etiam vitae consectetur ante.
+
+    
+    Nulla ac arcu urna. Ut sit amet ex fermentum, iaculis purus id, elementum diam. Aliquam sodales tristique faucibus. Pellentesque nec blandit ante, vitae blandit velit. Duis imperdiet dolor at est eleifend, vel feugiat metus condimentum. Mauris sit amet feugiat sapien. Ut lectus erat, mattis egestas consectetur ac, semper et lacus. Aenean sit amet purus rutrum, lobortis est sed, pulvinar lectus. Aliquam non augue pretium, porttitor massa at, sollicitudin metus. Duis pharetra ex pharetra maximus laoreet. Praesent blandit nisi turpis, id imperdiet felis elementum vitae. Vivamus dui quam, convallis eleifend metus nec, volutpat porta enim. Integer dapibus leo ut dolor accumsan hendrerit. Quisque elementum maximus lorem, a ultricies libero tristique eget. 
+
+  continueButton: "Agree and Continue"
 
 formPages:
   # Page 1: Initial Concerns
@@ -104,7 +119,7 @@ formPages:
     subtitle: "One last thing before we generate your letter"
     tipText: "This final question helps us add context and information to your letter!"
     tipType: "success"
-    submitButtonText: "Generate Letter"
+    submitButtonText: "Continue"
     pageInfoText: "Page 3 of 3 - Ready to submit!"
     questions:
       - name: "additionalInformation"

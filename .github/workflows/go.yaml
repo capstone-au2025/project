@@ -30,7 +30,7 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Test
-        run: docker build -t backend backend && docker run backend go test -v
+        run: docker build . -t backend -f Dockerfile.backend-dev && docker run backend go test -v
 
   lint:
     name: Lint
