@@ -113,22 +113,24 @@ func altchaChallengeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// remove this later
 	solved := solveChallenge(&response)
 	fmt.Println("Solved Number: \n", solved)
 
-	payload := map[string]interface{}{
-		"algorithm": response.Algorithm,
-		"challenge": response.Challenge,
-		"salt":      response.Salt,
-		"number":    solved,
-		"signature": response.Signature,
-	}
+	// used for testing purposes **remove this later**
+	// payload := map[string]interface{}{
+	// 	"algorithm": response.Algorithm,
+	// 	"challenge": response.Challenge,
+	// 	"salt":      response.Salt,
+	// 	"number":    solved,
+	// 	"signature": response.Signature,
+	// }
 
 	//ok, err := altcha.VerifySolution(payload, secret, true)
 	//fmt.Println("Verification result:", ok, "Error:", err)
 
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(payload)
+	_ = json.NewEncoder(w).Encode(response)
 }
 
 func solveChallenge(response *altcha.Challenge) int {
