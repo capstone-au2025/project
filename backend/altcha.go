@@ -2,144 +2,182 @@ package main
 
 import (
 	"crypto/hmac"
+	cr "crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
-	"errors"
+	"fmt"
 	"log/slog"
-	"math/rand"
 	"net/http"
 	"os"
-	"strconv"
+	"sync"
 	"time"
+
+	altcha "github.com/altcha-org/altcha-lib-go"
 )
 
-// ---- Types used by the challenge/verify flow ----
-
-type altchaChallenge struct {
-	// Opaque token the client must return as-is
-	Token string `json:"token"`
-	// HMAC-SHA256(token, secret), base64
-	Hash string `json:"hash"`
-	// Optional: client can show/use this (not required)
-	ExpiresUTC string `json:"expires"`
+type HMACKey struct {
+	HMACKey string `json:"hmacKey"`
 }
 
-type altchaVerifyRequest struct {
-	Token string `json:"token"`
-	Hash  string `json:"hash"`
+var usedStore = NewUsedChallengeStore(10 * time.Minute)
+
+type UsedChallengeStore struct {
+	store    sync.Map
+	lifetime time.Duration
 }
 
-type altchaVerifyResponse struct {
-	Ok bool `json:"ok"`
+func NewUsedChallengeStore(lifetime time.Duration) *UsedChallengeStore {
+	u := &UsedChallengeStore{lifetime: lifetime}
+	go u.cleanupRoutine()
+	return u
 }
 
-// ---- Helpers ----
+func (u *UsedChallengeStore) Add(key string, expires time.Time) {
+	u.store.Store(key, expires)
+}
 
-func hmacKey() (string, error) {
+func (u *UsedChallengeStore) IsUsed(key string) bool {
+	expires, ok := u.store.Load(key)
+	if !ok {
+		return false
+	}
+	exp := expires.(time.Time)
+	if time.Now().After(exp) {
+		u.store.Delete(key)
+		return false
+	}
+	return true
+}
+
+func (u *UsedChallengeStore) cleanupRoutine() {
+	for {
+		time.Sleep(time.Minute)
+		now := time.Now()
+		u.store.Range(func(key, value any) bool {
+			exp := value.(time.Time)
+			if now.After(exp) {
+				u.store.Delete(key)
+			}
+			return true
+		})
+	}
+}
+
+func getHMACKey() string {
 	secret := os.Getenv("ALTCHA_HMAC_KEY")
+
 	if secret == "" {
-		return "", errors.New("ALTCHA_HMAC_KEY not set")
+		secret = GenerateRandomString(32)
+		os.Setenv("ALTCHA_HMAC_KEY", secret)
 	}
-	return secret, nil
+	return secret
 }
 
-func signToken(token string, secret string) string {
-	mac := hmac.New(sha256.New, []byte(secret))
-	mac.Write([]byte(token))
-	sig := mac.Sum(nil)
-	return base64.StdEncoding.EncodeToString(sig)
-}
+func GenerateRandomBytes(n int) []byte {
+	b := make([]byte, n)
+	_, err := cr.Read(b)
 
-// token = base64("nonce:epochSeconds")
-func makeToken() string {
-	nonce := strconv.FormatInt(rand.Int63(), 10)
-	exp := time.Now().Add(5 * time.Minute).Unix() // token valid for 5 minutes
-	raw := nonce + ":" + strconv.FormatInt(exp, 10)
-	return base64.StdEncoding.EncodeToString([]byte(raw))
-}
-
-func parseToken(tokenB64 string) (nonce string, exp time.Time, err error) {
-	raw, err := base64.StdEncoding.DecodeString(tokenB64)
 	if err != nil {
-		return "", time.Time{}, err
+		slog.Error("Failed to generate random bytes", "err", err)
+		return nil
 	}
-	parts := string(raw)
-	// format: "<nonce>:<epoch>"
-	i := -1
-	for idx := range parts {
-		if parts[idx] == ':' {
-			i = idx
-			break
-		}
-	}
-	if i < 0 {
-		return "", time.Time{}, errors.New("bad token")
-	}
-	nonce = parts[:i]
-	epochStr := parts[i+1:]
-	secs, err := strconv.ParseInt(epochStr, 10, 64)
-	if err != nil {
-		return "", time.Time{}, err
-	}
-	exp = time.Unix(secs, 0).UTC()
-	return nonce, exp, nil
+	return b
 }
 
-// ---- Handlers ----
+func GenerateRandomString(s int) string {
+	b := GenerateRandomBytes(s)
 
-// GET /altcha/challenge
+	return base64.URLEncoding.EncodeToString(b)
+}
+
 func altchaChallengeHandler(w http.ResponseWriter, r *http.Request) {
-	secret, err := hmacKey()
-	if err != nil {
+	secret := getHMACKey()
+	if secret == "" {
 		http.Error(w, "server misconfigured", http.StatusInternalServerError)
-		slog.Error("ALTCHA_HMAC_KEY missing")
+		return
+	}
+	expires := time.Now().Add(5 * time.Minute)
+
+	response, err := altcha.CreateChallenge(altcha.ChallengeOptions{
+		HMACKey: secret,
+		Expires: &expires,
+	})
+
+	if err != nil {
+		http.Error(w, "failed to generate challenge", http.StatusInternalServerError)
 		return
 	}
 
-	token := makeToken()
-	hash := signToken(token, secret)
+	solved := solveChallenge(&response)
+	fmt.Println("Solved Number: \n", solved)
 
-	resp := altchaChallenge{
-		Token:      token,
-		Hash:       hash,
-		ExpiresUTC: time.Now().Add(5 * time.Minute).UTC().Format(time.RFC3339),
+	payload := map[string]interface{}{
+		"algorithm": response.Algorithm,
+		"challenge": response.Challenge,
+		"salt":      response.Salt,
+		"number":    solved,
+		"signature": response.Signature,
 	}
+
+	//ok, err := altcha.VerifySolution(payload, secret, true)
+	//fmt.Println("Verification result:", ok, "Error:", err)
+
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(resp)
+	_ = json.NewEncoder(w).Encode(payload)
 }
 
-// POST /altcha/verify
-func altchaVerifyHandler(w http.ResponseWriter, r *http.Request) {
-	secret, err := hmacKey()
+func solveChallenge(response *altcha.Challenge) int {
+	res, err := altcha.SolveChallengeSafe(response.Challenge,
+		response.Salt,
+		altcha.Algorithm(response.Algorithm),
+		int(response.MaxNumber),
+		0,
+		nil)
 	if err != nil {
+		return -1
+	}
+	return res.Number
+}
+
+func altchaVerifyHandler(w http.ResponseWriter, r *http.Request) {
+	secret := getHMACKey()
+	if secret == "" {
 		http.Error(w, "server misconfigured", http.StatusInternalServerError)
 		return
 	}
-
-	var req altchaVerifyRequest
-	if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, MaxRequestBodySize)).Decode(&req); err != nil {
-		http.Error(w, "bad request", http.StatusBadRequest)
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	// Recompute HMAC over the token
-	expected := signToken(req.Token, secret)
-	ok := hmac.Equal([]byte(req.Hash), []byte(expected))
-
-	// Also enforce expiry inside token
-	if ok {
-		_, exp, err := parseToken(req.Token)
-		if err != nil || time.Now().After(exp) {
-			ok = false
-		}
+	formData := r.FormValue("altcha")
+	if formData == "" {
+		http.Error(w, "Altcha payload missing", http.StatusBadRequest)
+		return
 	}
+	_ = json.NewDecoder(r.Body).Decode(&formData)
+	key := makeHMACKey(formData, secret)
 
+	if usedStore.IsUsed(key) {
+		http.Error(w, "reused challenge", http.StatusForbidden)
+		return
+	}
+	response, err := altcha.VerifySolutionSafe(formData, secret, true)
+	if err != nil || !response {
+		slog.Error("failed to verify challenge hello world", "error", err)
+		http.Error(w, "failed to verify challenge", http.StatusInternalServerError)
+		return
+	}
+	fmt.Println("Verification result:", response, "Error:", err)
+	usedStore.Add(key, time.Now().Add(5 * time.Minute))
 	w.Header().Set("Content-Type", "application/json")
-	if ok {
-		_ = json.NewEncoder(w).Encode(altchaVerifyResponse{Ok: true})
-		return
-	}
-	w.WriteHeader(http.StatusUnauthorized)
-	_ = json.NewEncoder(w).Encode(altchaVerifyResponse{Ok: false})
+	_ = json.NewEncoder(w).Encode(response)
+}
+
+func makeHMACKey(data, secret string) string {
+	mac := hmac.New(sha256.New, []byte(secret))
+	mac.Write([]byte(data))
+	return hex.EncodeToString(mac.Sum(nil))
 }

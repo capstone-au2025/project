@@ -148,6 +148,22 @@ func healthcheck(w http.ResponseWriter, _ *http.Request) {
 	_ = json.NewEncoder(w).Encode(response)
 }
 
+func withCORS(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3001")
+        w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+        // Handle preflight (OPTIONS) requests immediately
+        if r.Method == http.MethodOptions {
+            w.WriteHeader(http.StatusOK)
+            return
+        }
+
+        next.ServeHTTP(w, r)
+    })
+}
+
 func main() {
 	maxInputTokens := uint64(2000)
 	if val := os.Getenv("MAX_INPUT_TOKENS"); val != "" {
@@ -205,9 +221,8 @@ func main() {
 	mux.HandleFunc("POST /api/text", rt.text)
 	mux.HandleFunc("GET /healthz", healthcheck)
 
-	// Altcha routes
-	mux.HandleFunc("GET /altcha/challenge", altchaChallengeHandler)
-	mux.HandleFunc("POST /altcha/verify", altchaVerifyHandler)
+	mux.Handle("GET /api/altcha/challenge", withCORS(http.HandlerFunc(altchaChallengeHandler)))
+	mux.Handle("POST /api/altcha/verify", withCORS(http.HandlerFunc(altchaVerifyHandler)))
 
 	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ext := filepath.Ext(r.URL.Path)

@@ -29,7 +29,6 @@ const Altcha = forwardRef(function AltchaInner(
 
   useEffect(() => {
     const handleStateChange = (ev: Event | CustomEvent) => {
-      console.log("ALTCHA state change:", ev);
       if ("detail" in ev) {
         const detail = (ev as CustomEvent<AltchaEventDetail>).detail;
         const payload = detail?.payload ?? null;
@@ -52,9 +51,8 @@ const Altcha = forwardRef(function AltchaInner(
   return (
     <altcha-widget
       ref={widgetRef}
-      
-      challengeurl="/altcha/challenge"
-      verifyurl="/altcha/verify"
+      challengeurl="http://localhost:3001/api/altcha/challenge"
+      verifyurl="http://localhost:3001/api/altcha/verify"
       
       style={{ "--altcha-max-width": "100%" }}
     ></altcha-widget>
