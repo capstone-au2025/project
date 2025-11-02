@@ -171,7 +171,7 @@ func altchaVerifyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Println("Verification result:", response, "Error:", err)
-	usedStore.Add(key, time.Now().Add(5 * time.Minute))
+	usedStore.Add(key, time.Now().Add(5*time.Minute))
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(response)
 }
