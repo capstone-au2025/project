@@ -70,7 +70,10 @@ func getHMACKey() string {
 
 	if secret == "" {
 		secret = GenerateRandomString(32)
-		os.Setenv("ALTCHA_HMAC_KEY", secret)
+		err := os.Setenv("ALTCHA_HMAC_KEY", secret)
+		if err != nil {
+			slog.Error("Failed to set ALTCHA_HMAC_KEY", "err", err)
+		}
 	}
 	return secret
 }
