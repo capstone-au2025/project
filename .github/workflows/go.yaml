@@ -23,7 +23,7 @@ jobs:
         run: sudo apt-get install yq
       - name: Run yq
         working-directory: backend
-        run: yq '{"questions": [.[].[].[]?.[]?] | map(select(objects)), "systemPrompt": .inference.systemPrompt, "userPrompt": .inference.userPrompt}' app-config.yaml > app-config.json
+        run: "yq '{\"questions\": [.[].[].[]?.[]?] | map(select(objects)), \"systemPrompt\": .inference.systemPrompt, \"userPrompt\": .inference.userPrompt}' app-config.yaml > app-config.json"
       - name: Build
         working-directory: backend
         run: go build
