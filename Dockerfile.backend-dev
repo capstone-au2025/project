@@ -19,4 +19,4 @@ RUN go mod download
 COPY backend /app
 COPY app-config.yaml .
 
-CMD ["air", "-build.cmd", "go build -tags=aws,ollama -o ./tmp/main ."]
+CMD ["air", "-build.cmd", "go build -tags=openai -o ./tmp/main ."]
