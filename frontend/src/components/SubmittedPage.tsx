@@ -106,7 +106,8 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
 
   const handleAltchaStateChange = (ev: Event | CustomEvent) => {
     if ("detail" in ev) {
-      const detail = (ev as CustomEvent<{ payload?: string; state?: string }>).detail;
+      const detail = (ev as CustomEvent<{ payload?: string; state?: string }>)
+        .detail;
       if (detail?.state === "verified" && detail?.payload) {
         setAltchaPayload(detail.payload);
       }
@@ -209,7 +210,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
             )}
             {pdfLoading && loadingSkeleton}
           </div>
-          
+
           {/* ALTCHA widget */}
           <div className="w-full">
             <Altcha ref={altchaRef} onStateChange={handleAltchaStateChange} />
