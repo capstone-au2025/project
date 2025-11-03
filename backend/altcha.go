@@ -10,6 +10,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -18,6 +19,11 @@ import (
 
 var challengeExpiration = 10 * time.Minute
 var usedStore = NewUsedChallengeStore(challengeExpiration)
+
+var (
+	hmacKey     string
+	hmacKeyOnce sync.Once
+)
 
 // used by /api/text and /api/pdf to verify the altcha token and prevent replay attacks
 type AltchaService struct {
@@ -89,13 +95,15 @@ func (u *UsedChallengeStore) cleanupRoutine() {
 }
 
 func getHMACKey() string {
-	secret := os.Getenv("ALTCHA_HMAC_KEY")
+	hmacKeyOnce.Do(func() {
+		hmacKey = os.Getenv("ALTCHA_HMAC_KEY")
 
-	if secret == "" {
-		secret = GenerateRandomString(32)
-		slog.Info("Generated new HMAC key", "key", secret)
-	}
-	return secret
+		if hmacKey == "" {
+			hmacKey = GenerateRandomString(32)
+			slog.Info("Generated new HMAC key", "key", hmacKey)
+		}
+	})
+	return hmacKey
 }
 
 func GenerateRandomBytes(n int) []byte {
@@ -147,24 +155,37 @@ func altchaVerifyHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	err := r.ParseForm()
-	if err != nil {
-		http.Error(w, "failed to parse form", http.StatusInternalServerError)
-		return
+	var payload string
+
+	contentType := r.Header.Get("Content-Type")
+	if strings.HasPrefix(contentType, "application/json") {
+		var data struct {
+			Payload string `json:"payload"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+			http.Error(w, "failed to parse JSON body", http.StatusBadRequest)
+			return
+		}
+		payload = data.Payload
+	} else {
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, "failed to parse form", http.StatusBadRequest)
+			return
+		}
+		payload = r.Form.Get("altcha")
 	}
-	formData := r.Form.Get("altcha")
-	if formData == "" {
+
+	if payload == "" {
 		http.Error(w, "Altcha payload missing", http.StatusBadRequest)
 		return
 	}
-	_ = json.NewDecoder(r.Body).Decode(&formData)
-	key := makeHMACKey(formData, secret)
+	key := makeHMACKey(payload, secret)
 
 	if usedStore.IsUsed(key) {
 		http.Error(w, "reused challenge", http.StatusForbidden)
 		return
 	}
-	response, err := altcha.VerifySolutionSafe(formData, secret, true)
+	response, err := altcha.VerifySolutionSafe(payload, secret, true)
 	if err != nil || !response {
 		http.Error(w, "failed to verify challenge", http.StatusInternalServerError)
 		return
@@ -172,7 +193,10 @@ func altchaVerifyHandler(w http.ResponseWriter, r *http.Request) {
 
 	usedStore.Add(key)
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(map[string]bool{"verified": true})
+	_ = json.NewEncoder(w).Encode(map[string]any{
+		"success": "true",
+		"payload": payload,
+	})
 }
 
 func makeHMACKey(data, secret string) string {

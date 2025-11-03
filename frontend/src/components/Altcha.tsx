@@ -88,22 +88,10 @@ const Altcha = forwardRef<{ value: string | null }, AltchaProps>(({ onStateChang
   useEffect(() => {
     const handleStateChange = async (ev: Event | CustomEvent) => {
       if ('detail' in ev) {
-        const detail = (ev as CustomEvent<{ payload?: string; state?: string }>).detail
-        const payload = detail?.payload || null
-        setValue(ev.detail.payload || null)
-        onStateChange?.(ev)
-        if (detail?.state === 'verified' && payload) {
-          const res = await fetch('/api/altcha/verify', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `altcha=${encodeURIComponent(payload)}`,
-          })
-
-          if (!res.ok) {
-            throw new Error('Backend verification failed')
-          }
-        }
+        setValue(ev.detail.payload || null);
+        onStateChange?.(ev);
       }
+  
     }
 
     const { current } = widgetRef
@@ -123,7 +111,7 @@ const Altcha = forwardRef<{ value: string | null }, AltchaProps>(({ onStateChang
       }}
       
       challengeurl="/api/altcha/challenge"
-      
+      verifyurl="/api/altcha/verify"
     ></altcha-widget>
   )
 })
