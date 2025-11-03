@@ -1,5 +1,3 @@
-//go:build openai
-
 package main
 
 import (
@@ -8,10 +6,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/openai/openai-go/v3"
-	"github.com/openai/openai-go/v3/option"
-	"github.com/openai/openai-go/v3/packages/param"
-	"github.com/openai/openai-go/v3/responses"
+	"github.com/openai/openai-go"
+	"github.com/openai/openai-go/option"
+	"github.com/openai/openai-go/packages/param"
 )
 
 var (
@@ -56,21 +53,24 @@ func NewOpenAI(maxOutputTokens int) (*OpenAi, error) {
 func (o *OpenAi) Infer(ctx context.Context, input string) (string, error) {
 	systemPrompt := RenderSystemPrompt()
 
-	res, err := o.client.Responses.New(context.Background(), responses.ResponseNewParams{
-		Instructions:    param.NewOpt(systemPrompt),
-		MaxOutputTokens: param.NewOpt(int64(o.maxOutputTokens)),
-		Model:           o.modelId,
-	})
+	res, err := o.client.Chat.Completions.New(context.TODO(), openai.ChatCompletionNewParams{
+		// Prompt:    openai.CompletionNewParamsPromptUnion{OfString: param.NewOpt(systemPrompt + input)},
+		Messages: []openai.ChatCompletionMessageParamUnion{
+			openai.UserMessage(systemPrompt + input),
+		},
+		Model:     o.modelId,
+		MaxTokens: param.NewOpt(int64(o.maxOutputTokens))})
+
 	if err != nil {
 		return "", err
 	}
 
-	switch res.Output[0].Content[0].Type {
-	case "output_text":
-		return res.Output[0].Content[0].Text, nil
-	default:
-		return "", fmt.Errorf("model refused to produce output")
+	if res.Choices[0].Message.Refusal != "" {
+		return "", fmt.Errorf("model refused for reason: %v", res.Choices[0].Message.Refusal)
 	}
+
+	return res.Choices[0].Message.Content, nil
+
 }
 
 func init() {
