@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"strings"
+	"os"
 	"text/template"
 	"time"
 
@@ -53,13 +53,15 @@ func init() {
 var systemPromptTemplate *template.Template
 var userPromptTemplate *template.Template
 
-//go:embed app-config.json
-var formData string
 var form Form
 
 func init() {
-	d := json.NewDecoder(strings.NewReader(formData))
-	err := d.Decode(&form)
+	f, err := os.Open("app-config.json")
+	if err != nil {
+		panic(err)
+	}
+	d := json.NewDecoder(f)
+	err = d.Decode(&form)
 	if err != nil {
 		panic(err)
 	}
