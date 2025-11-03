@@ -7,7 +7,6 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -16,10 +15,6 @@ import (
 
 	altcha "github.com/altcha-org/altcha-lib-go"
 )
-
-type HMACKey struct {
-	HMACKey string `json:"hmacKey"`
-}
 
 var usedStore = NewUsedChallengeStore(10 * time.Minute)
 
@@ -34,7 +29,8 @@ func NewUsedChallengeStore(lifetime time.Duration) *UsedChallengeStore {
 	return u
 }
 
-func (u *UsedChallengeStore) Add(key string, expires time.Time) {
+func (u *UsedChallengeStore) Add(key string) {
+	expires := time.Now().Add(u.lifetime)
 	u.store.Store(key, expires)
 }
 
@@ -70,10 +66,7 @@ func getHMACKey() string {
 
 	if secret == "" {
 		secret = GenerateRandomString(32)
-		err := os.Setenv("ALTCHA_HMAC_KEY", secret)
-		if err != nil {
-			slog.Error("Failed to set ALTCHA_HMAC_KEY", "err", err)
-		}
+		slog.Info("Generated new HMAC key", "key", secret)
 	}
 	return secret
 }
@@ -101,7 +94,7 @@ func altchaChallengeHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "server misconfigured", http.StatusInternalServerError)
 		return
 	}
-	expires := time.Now().Add(5 * time.Minute)
+	expires := time.Now().Add(10 * time.Minute)
 
 	response, err := altcha.CreateChallenge(altcha.ChallengeOptions{
 		HMACKey: secret,
@@ -113,37 +106,8 @@ func altchaChallengeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// remove this later
-	solved := solveChallenge(&response)
-	fmt.Println("Solved Number: \n", solved)
-
-	// used for testing purposes **remove this later**
-	// payload := map[string]interface{}{
-	// 	"algorithm": response.Algorithm,
-	// 	"challenge": response.Challenge,
-	// 	"salt":      response.Salt,
-	// 	"number":    solved,
-	// 	"signature": response.Signature,
-	// }
-
-	//ok, err := altcha.VerifySolution(payload, secret, true)
-	//fmt.Println("Verification result:", ok, "Error:", err)
-
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(response)
-}
-
-func solveChallenge(response *altcha.Challenge) int {
-	res, err := altcha.SolveChallengeSafe(response.Challenge,
-		response.Salt,
-		altcha.Algorithm(response.Algorithm),
-		int(response.MaxNumber),
-		0,
-		nil)
-	if err != nil {
-		return -1
-	}
-	return res.Number
 }
 
 func altchaVerifyHandler(w http.ResponseWriter, r *http.Request) {
@@ -156,8 +120,8 @@ func altchaVerifyHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-
-	formData := r.FormValue("altcha")
+	r.ParseForm()
+	formData := r.Form.Get("altcha")
 	if formData == "" {
 		http.Error(w, "Altcha payload missing", http.StatusBadRequest)
 		return
@@ -170,15 +134,15 @@ func altchaVerifyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	response, err := altcha.VerifySolutionSafe(formData, secret, true)
-	if err != nil || !response {
-		slog.Error("failed to verify challenge hello world", "error", err)
+	if err != nil || !response{
 		http.Error(w, "failed to verify challenge", http.StatusInternalServerError)
 		return
 	}
-	fmt.Println("Verification result:", response, "Error:", err)
-	usedStore.Add(key, time.Now().Add(5*time.Minute))
+	
+	
+	usedStore.Add(key)
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(response)
+	_ = json.NewEncoder(w).Encode(map[string]bool{"verified": true})
 }
 
 func makeHMACKey(data, secret string) string {

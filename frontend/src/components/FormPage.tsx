@@ -31,7 +31,7 @@ const FormPage: React.FC<FormPageProps> = ({
   animationDirection,
   requireAltcha = false,
 }: FormPageProps) => {
-  const altchaRef = useRef<{ verified?: boolean } | null>(null);
+  const altchaRef = useRef<{ value: string | null } | null>(null);
   const [verifyState] = useState("idle" as VerifyState);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -40,7 +40,7 @@ const FormPage: React.FC<FormPageProps> = ({
       return;
     }
 
-    const isVerified = altchaRef.current?.verified;
+    const isVerified = altchaRef.current?.value !== null;
     if (!isVerified) {
       e.preventDefault();
       alert("Please solve the ALTCHA first.");
