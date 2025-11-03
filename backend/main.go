@@ -12,12 +12,11 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	_ "embed"
 )
 
 type router struct {
-	ip InferenceProvider
+	ip     InferenceProvider
+	altcha *AltchaService
 }
 
 type PdfRequest struct {
@@ -27,6 +26,7 @@ type PdfRequest struct {
 	ReceiverAddress  string `json:"receiverAddress"`
 	ComplaintSummary string `json:"complaintSummary"`
 	Body             string `json:"body"`
+	Altcha           string `json:"altcha"`
 }
 
 type PdfResponseSuccess struct {
@@ -42,6 +42,7 @@ type PdfResponseError struct {
 
 type TextRequest struct {
 	Message string `json:"message"`
+	Altcha  string `json:"altcha"`
 }
 
 type TextResponseSuccess struct {
@@ -70,6 +71,18 @@ func (rt *router) text(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		_ = json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "failed to decode body"})
 		slog.ErrorContext(r.Context(), "failed to decode body", "err", err)
+		return
+	}
+	ok, err := rt.altcha.Verify(req.Altcha)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		_ = json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "failed to verify altcha"})
+		slog.ErrorContext(r.Context(), "failed to verify altcha", "err", err)
+		return
+	}
+	if !ok {
+		w.WriteHeader(http.StatusForbidden)
+		_ = json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "invalid altcha"})
 		return
 	}
 
@@ -123,6 +136,19 @@ func (rt *router) pdf(w http.ResponseWriter, r *http.Request) {
 		Date:             time.Now().Format("Mon, 02 Jan 2006"),
 	}
 
+	ok, err := rt.altcha.Verify(req.Altcha)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		_ = json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "failed to verify altcha"})
+		slog.ErrorContext(r.Context(), "failed to verify altcha", "err", err)
+		return
+	}
+	if !ok {
+		w.WriteHeader(http.StatusForbidden)
+		_ = json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "invalid altcha"})
+		return
+	}
+	
 	pdf, err := RenderPdf(r.Context(), params)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -179,6 +205,7 @@ func main() {
 	}
 	slog.Info("Available inference providers", "values", ipNames)
 
+	altchaService := NewAltchaService()
 	ipName := os.Getenv("INFERENCE_PROVIDER")
 	if ipName == "" {
 		ipName = "mock"
@@ -197,7 +224,8 @@ func main() {
 	}
 
 	rt := router{
-		ip: ip,
+		ip:     ip,
+		altcha: altchaService,
 	}
 
 	mux := http.NewServeMux()

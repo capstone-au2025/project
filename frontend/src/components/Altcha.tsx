@@ -93,8 +93,6 @@ const Altcha = forwardRef<{ value: string | null }, AltchaProps>(({ onStateChang
         setValue(ev.detail.payload || null)
         onStateChange?.(ev)
         if (detail?.state === 'verified' && payload) {
-          
-
           const res = await fetch('/api/altcha/verify', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

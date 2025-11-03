@@ -30,6 +30,7 @@ interface SubmittedPageProps {
 
 type TextRequest = {
   message: string;
+  altcha: string;
 };
 
 type PdfRequest = {
@@ -38,6 +39,7 @@ type PdfRequest = {
   receiverName: string;
   receiverAddress: string;
   body: string;
+  altcha: string;
 };
 
 const pdfResponseSchema = z.object({
@@ -70,6 +72,7 @@ async function generatePdf(
     method: "POST",
     body: JSON.stringify({
       message,
+      altcha: formData.altchaRef.valueOf() ?? "",
     } satisfies TextRequest),
   });
   const textJson = await textResponse.json();
@@ -83,6 +86,7 @@ async function generatePdf(
       receiverName: destination.name,
       receiverAddress: `${destination.address}, ${destination.city}, ${destination.state} ${destination.zip} `,
       body: text.content,
+      altcha: formData.altchaRef.valueOf() ?? "",
     } satisfies PdfRequest),
     headers: { "Content-Type": "application/json" },
   });

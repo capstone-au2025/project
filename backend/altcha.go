@@ -19,6 +19,32 @@ import (
 var challengeExpiration = 10 * time.Minute
 var usedStore = NewUsedChallengeStore(challengeExpiration)
 
+// used by /api/text and /api/pdf to verify the altcha token and prevent replay attacks
+type AltchaService struct {
+	secret    string
+	usedStore *UsedChallengeStore
+}
+
+func NewAltchaService() *AltchaService {
+	return &AltchaService{
+		secret:    getHMACKey(),
+		usedStore: NewUsedChallengeStore(challengeExpiration),
+	}
+}
+
+func (a *AltchaService) Verify(payload string) (bool, error) {
+	if a.usedStore.IsUsed(payload) {
+		return false, nil
+	}
+	ok, err := altcha.VerifySolutionSafe(payload, a.secret, true)
+	if err != nil || !ok {
+		return false, err
+	}
+
+	a.usedStore.Add(payload)
+	return ok, nil
+}
+
 type UsedChallengeStore struct {
 	store    sync.Map
 	lifetime time.Duration

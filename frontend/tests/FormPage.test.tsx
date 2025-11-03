@@ -141,6 +141,7 @@ describe("FormPage", () => {
           formData={mockFormData}
           onInputChange={mockOnInputChange}
           onSubmit={mockOnSubmit}
+          backPage="/form1"
           pageConfig={getConfig().formPages[0]}
         />,
       );
