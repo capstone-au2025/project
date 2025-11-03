@@ -164,7 +164,6 @@ const FormContainer = () => {
           backPage="/form2"
           pageConfig={config.formPages[2]}
           animationDirection={direction}
-          requireAltcha={true}
         />
       </Route>
 
