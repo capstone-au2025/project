@@ -2,7 +2,7 @@ package main
 
 import (
 	"crypto/hmac"
-	cr "crypto/rand"
+	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
@@ -73,7 +73,7 @@ func getHMACKey() string {
 
 func GenerateRandomBytes(n int) []byte {
 	b := make([]byte, n)
-	_, err := cr.Read(b)
+	_, err := rand.Read(b)
 
 	if err != nil {
 		slog.Error("Failed to generate random bytes", "err", err)
@@ -120,7 +120,11 @@ func altchaVerifyHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	r.ParseForm()
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, "failed to parse form", http.StatusInternalServerError)
+		return
+	}
 	formData := r.Form.Get("altcha")
 	if formData == "" {
 		http.Error(w, "Altcha payload missing", http.StatusBadRequest)
@@ -134,12 +138,11 @@ func altchaVerifyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	response, err := altcha.VerifySolutionSafe(formData, secret, true)
-	if err != nil || !response{
+	if err != nil || !response {
 		http.Error(w, "failed to verify challenge", http.StatusInternalServerError)
 		return
 	}
-	
-	
+
 	usedStore.Add(key)
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(map[string]bool{"verified": true})

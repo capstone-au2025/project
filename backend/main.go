@@ -148,7 +148,6 @@ func healthcheck(w http.ResponseWriter, _ *http.Request) {
 	_ = json.NewEncoder(w).Encode(response)
 }
 
-
 func main() {
 	maxInputTokens := uint64(2000)
 	if val := os.Getenv("MAX_INPUT_TOKENS"); val != "" {
