@@ -148,7 +148,7 @@ func (rt *router) pdf(w http.ResponseWriter, r *http.Request) {
 		_ = json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "invalid altcha"})
 		return
 	}
-	
+
 	pdf, err := RenderPdf(r.Context(), params)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
