@@ -54,7 +54,6 @@ func (o *OpenAi) Infer(ctx context.Context, input string) (string, error) {
 	systemPrompt := RenderSystemPrompt()
 
 	res, err := o.client.Chat.Completions.New(context.TODO(), openai.ChatCompletionNewParams{
-		// Prompt:    openai.CompletionNewParamsPromptUnion{OfString: param.NewOpt(systemPrompt + input)},
 		Messages: []openai.ChatCompletionMessageParamUnion{
 			openai.UserMessage(systemPrompt + input),
 		},
