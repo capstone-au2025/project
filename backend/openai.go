@@ -53,9 +53,11 @@ func NewOpenAI(maxOutputTokens int) (*OpenAi, error) {
 func (o *OpenAi) Infer(ctx context.Context, input string) (string, error) {
 	systemPrompt := RenderSystemPrompt()
 
+	// As of writing, nrp does not support the v3 API, the completion API, or the response API
 	res, err := o.client.Chat.Completions.New(context.TODO(), openai.ChatCompletionNewParams{
 		Messages: []openai.ChatCompletionMessageParamUnion{
-			openai.UserMessage(systemPrompt + input),
+			openai.SystemMessage(systemPrompt),
+			openai.UserMessage(input),
 		},
 		Model:     o.modelId,
 		MaxTokens: param.NewOpt(int64(o.maxOutputTokens))})
