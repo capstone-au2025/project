@@ -16,7 +16,8 @@ import (
 	altcha "github.com/altcha-org/altcha-lib-go"
 )
 
-var usedStore = NewUsedChallengeStore(10 * time.Minute)
+var challengeExpiration = 10 * time.Minute
+var usedStore = NewUsedChallengeStore(challengeExpiration)
 
 type UsedChallengeStore struct {
 	store    sync.Map
@@ -94,7 +95,7 @@ func altchaChallengeHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "server misconfigured", http.StatusInternalServerError)
 		return
 	}
-	expires := time.Now().Add(10 * time.Minute)
+	expires := time.Now().Add(challengeExpiration)
 
 	response, err := altcha.CreateChallenge(altcha.ChallengeOptions{
 		HMACKey: secret,
