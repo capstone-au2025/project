@@ -54,12 +54,20 @@ func (a *AltchaService) Verify(payload string) (bool, error) {
 type UsedChallengeStore struct {
 	store    sync.Map
 	lifetime time.Duration
+	stop     chan struct{}
 }
 
 func NewUsedChallengeStore(lifetime time.Duration) *UsedChallengeStore {
-	u := &UsedChallengeStore{lifetime: lifetime}
+	u := &UsedChallengeStore{
+		lifetime: lifetime,
+		stop:     make(chan struct{}),
+	}
 	go u.cleanupRoutine()
 	return u
+}
+
+func (u *UsedChallengeStore) Stop() {
+	close(u.stop)
 }
 
 func (u *UsedChallengeStore) Add(key string) {
@@ -81,16 +89,23 @@ func (u *UsedChallengeStore) IsUsed(key string) bool {
 }
 
 func (u *UsedChallengeStore) cleanupRoutine() {
+	ticker := time.NewTicker(time.Minute)
+	defer ticker.Stop()
+
 	for {
-		time.Sleep(time.Minute)
-		now := time.Now()
-		u.store.Range(func(key, value any) bool {
-			exp := value.(time.Time)
-			if now.After(exp) {
-				u.store.Delete(key)
-			}
-			return true
-		})
+		select {
+		case <-u.stop:
+			return
+		case <-ticker.C:
+			now := time.Now()
+			u.store.Range(func(key, value any) bool {
+				exp := value.(time.Time)
+				if now.After(exp) {
+					u.store.Delete(key)
+				}
+				return true
+			})
+		}
 	}
 }
 

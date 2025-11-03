@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   base64ToUint8Array,
@@ -17,6 +17,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import PageLayout from "./PageLayout";
 import { Link } from "wouter";
 import { getConfig } from "../config/configLoader";
+import Altcha from "./Altcha";
 
 GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -56,6 +57,7 @@ async function generatePdf(
   formData: Record<string, string>,
   sender: NameAndAddress,
   destination: NameAndAddress,
+  altchaPayload: string,
 ) {
   let message = "";
   const config = getConfig();
@@ -72,7 +74,7 @@ async function generatePdf(
     method: "POST",
     body: JSON.stringify({
       message,
-      altcha: formData.altchaRef.valueOf() ?? "",
+      altcha: altchaPayload,
     } satisfies TextRequest),
   });
   const textJson = await textResponse.json();
@@ -86,7 +88,7 @@ async function generatePdf(
       receiverName: destination.name,
       receiverAddress: `${destination.address}, ${destination.city}, ${destination.state} ${destination.zip} `,
       body: text.content,
-      altcha: formData.altchaRef.valueOf() ?? "",
+      altcha: altchaPayload,
     } satisfies PdfRequest),
     headers: { "Content-Type": "application/json" },
   });
@@ -99,6 +101,17 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
   backPage,
 }) => {
   const config = getConfig();
+  const altchaRef = useRef<{ value: string | null } | null>(null);
+  const [altchaPayload, setAltchaPayload] = useState<string | null>(null);
+
+  const handleAltchaStateChange = (ev: Event | CustomEvent) => {
+    if ("detail" in ev) {
+      const detail = (ev as CustomEvent<{ payload?: string; state?: string }>).detail;
+      if (detail?.state === "verified" && detail?.payload) {
+        setAltchaPayload(detail.payload);
+      }
+    }
+  };
 
   const sender: NameAndAddress = {
     name: formData.senderName,
@@ -119,9 +132,10 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
   };
 
   const { data } = useQuery({
-    queryKey: ["pdf", formData],
+    queryKey: ["pdf", formData, altchaPayload],
     staleTime: Infinity,
-    queryFn: () => generatePdf(formData, sender, destination),
+    enabled: altchaPayload !== null,
+    queryFn: () => generatePdf(formData, sender, destination, altchaPayload!),
   });
   const {
     width: pdfWidth,
@@ -195,6 +209,12 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
             )}
             {pdfLoading && loadingSkeleton}
           </div>
+          
+          {/* ALTCHA widget */}
+          <div className="w-full">
+            <Altcha ref={altchaRef} onStateChange={handleAltchaStateChange} />
+          </div>
+
           <div className="flex flex-col gap-2 self-stretch">
             {pdf ? (
               <button

@@ -1,9 +1,8 @@
-import React, { useRef, useState } from "react";
+import React from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import QuestionBox from "./QuestionBox";
 import ProgressIndicator from "./ProgressIndicator";
 import PageLayout from "./PageLayout";
-import Altcha from "./Altcha";
 import { Link, useLocation } from "wouter";
 import type { PageConfig } from "../config/configLoader";
 import { getConfig } from "../config/configLoader";
@@ -17,10 +16,7 @@ interface FormPageProps {
   backPage: string;
   pageConfig: PageConfig;
   animationDirection: string;
-  requireAltcha?: boolean;
 }
-
-type VerifyState = "idle" | "verifying" | "ok" | "fail";
 
 const FormPage: React.FC<FormPageProps> = ({
   formData,
@@ -29,26 +25,7 @@ const FormPage: React.FC<FormPageProps> = ({
   pageConfig,
   backPage,
   animationDirection,
-  requireAltcha = false,
-}: FormPageProps) => {
-  const altchaRef = useRef<{ value: string | null } | null>(null);
-  const [verifyState] = useState("idle" as VerifyState);
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    if (!requireAltcha) {
-      onSubmit(e);
-      return;
-    }
-
-    const isVerified = altchaRef.current?.value !== null;
-    if (!isVerified) {
-      e.preventDefault();
-      alert("Please solve the ALTCHA first.");
-      return;
-    }
-
-    onSubmit(e);
-  };
+}) => {
   const {
     pageNumber,
     title,
@@ -111,7 +88,7 @@ const FormPage: React.FC<FormPageProps> = ({
           </p>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={onSubmit}>
           {/* All Questions */}
           <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4 sm:space-y-5">
             {questions.map((question) => (
@@ -126,13 +103,6 @@ const FormPage: React.FC<FormPageProps> = ({
               />
             ))}
 
-            {/* Altcha (only on final page) */}
-            {requireAltcha && (
-              <div className="pt-2">
-                <Altcha ref={altchaRef} />
-              </div>
-            )}
-            
             {/* Buttons */}
             <div className="pt-4 sm:pt-6">
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
@@ -145,10 +115,9 @@ const FormPage: React.FC<FormPageProps> = ({
                 </Link>
                 <button
                   type="submit"
-                  disabled={requireAltcha && verifyState === "verifying"}
                   className="flex-1 py-3 sm:py-4 px-6 sm:px-8 bg-primary text-white rounded-md font-bold text-base sm:text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase"
                 >
-                  {requireAltcha && verifyState === "verifying" ? "Verifying..." : submitButtonText}
+                  {submitButtonText}
                 </button>
               </div>
               <p className="text-center text-xs sm:text-sm text-text-muted mt-3">
@@ -160,6 +129,6 @@ const FormPage: React.FC<FormPageProps> = ({
       </div>
     </PageLayout>
   );
-}
+};
 
 export default FormPage;
