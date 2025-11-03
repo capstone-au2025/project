@@ -22,6 +22,6 @@ COPY backend /app
 COPY app-config.yaml .
 
 COPY app-config.yaml .
-RUN yq '[.[].[].[]?.[]?] | map(select(objects))' app-config.yaml > app-config.json
+RUN yq '{"questions": [.[].[].[]?.[]?] | map(select(objects)), "systemPrompt": .inference.systemPrompt, "userPrompt": .inference.userPrompt}' app-config.yaml > app-config.json
 
 CMD ["air", "-build.cmd", "go build -tags=aws,ollama -o ./tmp/main ."]

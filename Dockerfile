@@ -14,6 +14,7 @@ RUN go get -u
 RUN go mod tidy
 ENV CGO_ENABLED=0
 RUN go build -tags=$BUILD_TAGS
+RUN yq '{"questions": [.[].[].[]?.[]?] | map(select(objects)), "systemPrompt": .inference.systemPrompt, "userPrompt": .inference.userPrompt}' app-config.yaml
 
 FROM golang:latest AS typst-wrapper
 WORKDIR /app

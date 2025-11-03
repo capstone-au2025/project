@@ -47,4 +47,4 @@ services:
   ollama:
     image: ollama/ollama
     volumes:
-      - ./ollama:/root/.ollama
+      - ./ollama:/root/.ollama:z
