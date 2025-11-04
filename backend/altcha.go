@@ -10,7 +10,6 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
-	"strings"
 	"sync"
 	"time"
 
@@ -43,6 +42,7 @@ func (a *AltchaService) Verify(payload string) (bool, error) {
 		return false, nil
 	}
 	ok, err := altcha.VerifySolutionSafe(payload, a.secret, true)
+	slog.Info("Secret", a.secret)
 	if err != nil || !ok {
 		return false, err
 	}
@@ -173,23 +173,14 @@ func altchaVerifyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	var payload string
 
-	contentType := r.Header.Get("Content-Type")
-	if strings.HasPrefix(contentType, "application/json") {
-		var data struct {
-			Payload string `json:"payload"`
-		}
-		if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
-			http.Error(w, "failed to parse JSON body", http.StatusBadRequest)
-			return
-		}
-		payload = data.Payload
-	} else {
-		if err := r.ParseForm(); err != nil {
-			http.Error(w, "failed to parse form", http.StatusBadRequest)
-			return
-		}
-		payload = r.Form.Get("altcha")
+	var data struct {
+		Payload string `json:"payload"`
 	}
+	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+		http.Error(w, "failed to parse JSON body", http.StatusBadRequest)
+		return
+	}
+	payload = data.Payload
 
 	if payload == "" {
 		http.Error(w, "Altcha payload missing", http.StatusBadRequest)
