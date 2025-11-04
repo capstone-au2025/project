@@ -19,10 +19,7 @@ import (
 var challengeExpiration = 10 * time.Minute
 var usedStore = NewUsedChallengeStore(challengeExpiration)
 
-var (
-	hmacKey     string
-	hmacKeyOnce sync.Once
-)
+var hmacKeyOnce sync.Once
 
 // used by /api/text and /api/pdf to verify the altcha token and prevent replay attacks
 type AltchaService struct {
@@ -32,7 +29,7 @@ type AltchaService struct {
 
 func NewAltchaService() *AltchaService {
 	return &AltchaService{
-		secret:    getHMACKey(),
+		secret:    "",
 		usedStore: NewUsedChallengeStore(challengeExpiration),
 	}
 }
@@ -109,16 +106,16 @@ func (u *UsedChallengeStore) cleanupRoutine() {
 	}
 }
 
-func getHMACKey() string {
+func (a *AltchaService) getHMACKey() string {
 	hmacKeyOnce.Do(func() {
-		hmacKey = os.Getenv("ALTCHA_HMAC_KEY")
+		a.secret = os.Getenv("ALTCHA_HMAC_KEY")
 
-		if hmacKey == "" {
-			hmacKey = GenerateRandomString(32)
-			slog.Info("Generated new HMAC key", "key", hmacKey)
+		if a.secret == "" {
+			a.secret = GenerateRandomString(32)
+			slog.Info("Generated new HMAC key", "key", a.secret)
 		}
 	})
-	return hmacKey
+	return a.secret
 }
 
 func GenerateRandomBytes(n int) []byte {
@@ -138,12 +135,9 @@ func GenerateRandomString(s int) string {
 	return base64.URLEncoding.EncodeToString(b)
 }
 
-func altchaChallengeHandler(w http.ResponseWriter, r *http.Request) {
-	secret := getHMACKey()
-	if secret == "" {
-		http.Error(w, "server misconfigured", http.StatusInternalServerError)
-		return
-	}
+func (a *AltchaService) altchaChallengeHandler(w http.ResponseWriter, r *http.Request) {
+	secret := a.getHMACKey()
+
 	expires := time.Now().Add(challengeExpiration)
 
 	response, err := altcha.CreateChallenge(altcha.ChallengeOptions{
@@ -161,12 +155,9 @@ func altchaChallengeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // Expects a JSON body with a "payload" field
-func altchaVerifyHandler(w http.ResponseWriter, r *http.Request) {
-	secret := getHMACKey()
-	if secret == "" {
-		http.Error(w, "server misconfigured", http.StatusInternalServerError)
-		return
-	}
+func (a *AltchaService) altchaVerifyHandler(w http.ResponseWriter, r *http.Request) {
+	secret := a.getHMACKey()
+
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return

@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os/exec"
-	"sync"
 	"testing"
 	"testing/synctest"
 	"time"
@@ -67,12 +66,11 @@ func TestHealthcheck(t *testing.T) {
 
 func TestHMACKeyConsistency(t *testing.T) {
 
-	hmacKey = ""
-	hmacKeyOnce = sync.Once{}
+	altchaService := NewAltchaService()
 
-	key1 := getHMACKey()
-	key2 := getHMACKey()
-	key3 := getHMACKey()
+	key1 := altchaService.getHMACKey()
+	key2 := altchaService.getHMACKey()
+	key3 := altchaService.getHMACKey()
 
 	if key1 != key2 {
 		t.Fatalf("key1 and key2 should be identical, got %s and %s", key1, key2)

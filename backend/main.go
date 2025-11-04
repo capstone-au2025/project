@@ -221,8 +221,8 @@ func main() {
 	mux.HandleFunc("POST /api/text", rt.text)
 	mux.HandleFunc("GET /healthz", healthcheck)
 
-	mux.HandleFunc("GET /api/altcha/challenge", altchaChallengeHandler)
-	mux.HandleFunc("POST /api/altcha/verify", altchaVerifyHandler)
+	mux.HandleFunc("GET /api/altcha/challenge", rt.altcha.altchaChallengeHandler)
+	mux.HandleFunc("POST /api/altcha/verify", rt.altcha.altchaVerifyHandler)
 
 	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ext := filepath.Ext(r.URL.Path)
