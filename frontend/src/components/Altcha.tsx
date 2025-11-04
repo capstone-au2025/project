@@ -6,7 +6,6 @@ import {
   useImperativeHandle,
 } from "react";
 
-// Importing altcha package will introduce a new element <altcha-widget>
 import "altcha";
 
 interface AltchaProps {

@@ -41,7 +41,7 @@ const INITIAL_FORM_DATA: FormData = {
   solutionToProblem: "",
   solutionDate: "",
   additionalInformation: "",
-  altchaPayload: "mock-altcha-payload", // TODO: Set this from actual Altcha widget
+  altchaPayload: "", 
 };
 
 const loadFromLocalStorage = <T,>(key: string, fallback: T): T => {

@@ -16,7 +16,6 @@ import (
 	altcha "github.com/altcha-org/altcha-lib-go"
 )
 
-// Helper function to create a valid altcha challenge and solution
 func createValidAltcha(secret string) (string, error) {
 	expires := time.Now().Add(10 * time.Minute)
 	challenge, err := altcha.CreateChallenge(altcha.ChallengeOptions{
@@ -27,7 +26,6 @@ func createValidAltcha(secret string) (string, error) {
 		return "", err
 	}
 
-	// Solve the challenge (using a done channel that stays open during solving)
 	done := make(chan struct{})
 	defer close(done)
 	solution, err := altcha.SolveChallenge(challenge.Challenge, challenge.Salt, altcha.Algorithm(challenge.Algorithm), 0, 100000, done)
@@ -38,7 +36,6 @@ func createValidAltcha(secret string) (string, error) {
 		return "", fmt.Errorf("failed to solve challenge: solution is nil")
 	}
 
-	// Create the payload
 	payload := altcha.Payload{
 		Algorithm: challenge.Algorithm,
 		Challenge: challenge.Challenge,
@@ -47,7 +44,6 @@ func createValidAltcha(secret string) (string, error) {
 		Signature: challenge.Signature,
 	}
 
-	// Encode the payload as JSON and then base64
 	payloadJSON, err := json.Marshal(payload)
 	if err != nil {
 		return "", err
@@ -70,16 +66,14 @@ func TestHealthcheck(t *testing.T) {
 }
 
 func TestHMACKeyConsistency(t *testing.T) {
-	// Reset the hmacKey to test generation
+
 	hmacKey = ""
 	hmacKeyOnce = sync.Once{}
 
-	// Call getHMACKey multiple times
 	key1 := getHMACKey()
 	key2 := getHMACKey()
 	key3 := getHMACKey()
 
-	// Verify all keys are the same
 	if key1 != key2 {
 		t.Fatalf("key1 and key2 should be identical, got %s and %s", key1, key2)
 	}
@@ -92,21 +86,20 @@ func TestHMACKeyConsistency(t *testing.T) {
 }
 
 func TestPdfHandlerSuccess(t *testing.T) {
-	// Skip test if typst-wrapper is not available
+
 	if _, err := exec.LookPath("typst-wrapper"); err != nil {
 		t.Skip("Skipping test: typst-wrapper not found in PATH")
 	}
 
 	synctest.Test(t, func(t *testing.T) {
 		altchaService := NewAltchaService()
-		defer altchaService.usedStore.Stop() // Stop cleanup goroutine after test
+		defer altchaService.usedStore.Stop()
 
 		r := router{
 			ip:     NewMockInferenceProvider(),
 			altcha: altchaService,
 		}
 
-		// Create a valid altcha token
 		altchaToken, err := createValidAltcha(altchaService.secret)
 		if err != nil {
 			t.Fatalf("failed to create altcha token: %v", err)
@@ -143,7 +136,6 @@ func TestPdfHandlerSuccess(t *testing.T) {
 			t.Fatalf("expected %q, got %q", statusSuccess, result.Status)
 		}
 
-		// Verify the content is valid base64
 		pdfBytes, err := base64.StdEncoding.DecodeString(result.PdfContent)
 		if err != nil {
 			t.Fatalf("expected valid base64 content, got decode error: %v", err)
@@ -177,14 +169,13 @@ func TestPDFHandlerBadRequest(t *testing.T) {
 func TestTextHandlerSuccess(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		altchaService := NewAltchaService()
-		defer altchaService.usedStore.Stop() // Stop cleanup goroutine after test
+		defer altchaService.usedStore.Stop()
 
 		r := router{
 			ip:     NewMockInferenceProvider(),
 			altcha: altchaService,
 		}
 
-		// Create a valid altcha token
 		altchaToken, err := createValidAltcha(altchaService.secret)
 		if err != nil {
 			t.Fatalf("failed to create altcha token: %v", err)
@@ -242,14 +233,13 @@ func TestTextHandlerInferenceError(t *testing.T) {
 		mockProvider := NewMockInferenceProvider()
 		mockProvider.shouldError = true
 		altchaService := NewAltchaService()
-		defer altchaService.usedStore.Stop() // Stop cleanup goroutine after test
+		defer altchaService.usedStore.Stop()
 
 		r := router{
 			ip:     mockProvider,
 			altcha: altchaService,
 		}
 
-		// Create a valid altcha token
 		altchaToken, err := createValidAltcha(altchaService.secret)
 		if err != nil {
 			t.Fatalf("failed to create altcha token: %v", err)
