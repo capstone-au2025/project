@@ -42,7 +42,7 @@ func (a *AltchaService) Verify(payload string) (bool, error) {
 		return false, nil
 	}
 	ok, err := altcha.VerifySolutionSafe(payload, a.secret, true)
-	slog.Info("Secret", a.secret)
+	slog.Info("Secret", "secret", a.secret)
 	if err != nil || !ok {
 		return false, err
 	}
