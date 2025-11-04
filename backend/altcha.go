@@ -10,7 +10,6 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -211,7 +210,7 @@ func altchaVerifyHandler(w http.ResponseWriter, r *http.Request) {
 	usedStore.Add(key)
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(map[string]any{
-		"success": strconv.FormatBool(response),
+		"success": response,
 		"payload": payload,
 	})
 }

@@ -230,10 +230,9 @@ const AddressPage: React.FC<AddressPageProps> = ({
               return;
             }
 
-            // store the verified token into formData before moving on
             formData.altchaPayload = altchaPayload;
 
-            onSubmit(e); // ✅ keep the original event so preventDefault() still works upstream
+            onSubmit(e);
           }}
         >
           <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-8 sm:space-y-10">
