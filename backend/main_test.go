@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"sync"
+	"os/exec"
 	"testing"
 	"testing/synctest"
 	"time"
@@ -85,6 +86,11 @@ func TestHMACKeyConsistency(t *testing.T) {
 }
 
 func TestPdfHandlerSuccess(t *testing.T) {
+	
+	if _, err := exec.LookPath("typst-wrapper"); err != nil {
+		t.Skip("Skipping test: typst-wrapper not found in PATH")
+	}
+
 	synctest.Test(t, func(t *testing.T) {
 		altchaService := NewAltchaService()
 		defer altchaService.usedStore.Stop()
