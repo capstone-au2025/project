@@ -41,7 +41,7 @@ const INITIAL_FORM_DATA: FormData = {
   solutionToProblem: "",
   solutionDate: "",
   additionalInformation: "",
-  altchaPayload: "", 
+  altchaPayload: "",
 };
 
 const loadFromLocalStorage = <T,>(key: string, fallback: T): T => {
