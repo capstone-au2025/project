@@ -10,6 +10,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -160,6 +161,7 @@ func altchaChallengeHandler(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(response)
 }
 
+// Expects a JSON body with a "payload" field
 func altchaVerifyHandler(w http.ResponseWriter, r *http.Request) {
 	secret := getHMACKey()
 	if secret == "" {
@@ -209,7 +211,7 @@ func altchaVerifyHandler(w http.ResponseWriter, r *http.Request) {
 	usedStore.Add(key)
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(map[string]any{
-		"success": "true",
+		"success": strconv.FormatBool(response),
 		"payload": payload,
 	})
 }

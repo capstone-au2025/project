@@ -58,6 +58,7 @@ describe("SubmittedPage", () => {
     whatTheyTried: "Called landlord",
     solutionToProblem: "Fix heater",
     solutionDate: "ASAP",
+    altchaPayload: "mock-altcha-payload",
     additionalInformation: "None",
     senderName: "John Sender",
     senderAddress: "1234 Sender St",

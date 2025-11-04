@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   base64ToUint8Array,
@@ -17,7 +17,6 @@ import "react-loading-skeleton/dist/skeleton.css";
 import PageLayout from "./PageLayout";
 import { Link } from "wouter";
 import { getConfig } from "../config/configLoader";
-import Altcha from "./Altcha";
 
 GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -101,18 +100,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
   backPage,
 }) => {
   const config = getConfig();
-  const altchaRef = useRef<{ value: string | null } | null>(null);
-  const [altchaPayload, setAltchaPayload] = useState<string | null>(null);
-
-  const handleAltchaStateChange = (ev: Event | CustomEvent) => {
-    if ("detail" in ev) {
-      const detail = (ev as CustomEvent<{ payload?: string; state?: string }>)
-        .detail;
-      if (detail?.state === "verified" && detail?.payload) {
-        setAltchaPayload(detail.payload);
-      }
-    }
-  };
+  const altchaPayload = formData.altchaPayload || null;
 
   const sender: NameAndAddress = {
     name: formData.senderName,
@@ -209,11 +197,6 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
               </a>
             )}
             {pdfLoading && loadingSkeleton}
-          </div>
-
-          {/* ALTCHA widget */}
-          <div className="w-full">
-            <Altcha ref={altchaRef} onStateChange={handleAltchaStateChange} />
           </div>
 
           <div className="flex flex-col gap-2 self-stretch">

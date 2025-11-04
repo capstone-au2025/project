@@ -17,6 +17,7 @@ export interface FormData extends Record<string, string> {
   solutionToProblem: string;
   solutionDate: string;
   additionalInformation: string;
+  altchaPayload: string;
 }
 
 type PageState =
@@ -40,6 +41,7 @@ const INITIAL_FORM_DATA: FormData = {
   solutionToProblem: "",
   solutionDate: "",
   additionalInformation: "",
+  altchaPayload: "mock-altcha-payload", // TODO: Set this from actual Altcha widget
 };
 
 const loadFromLocalStorage = <T,>(key: string, fallback: T): T => {
