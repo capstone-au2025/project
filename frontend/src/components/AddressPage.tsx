@@ -224,13 +224,15 @@ const AddressPage: React.FC<AddressPageProps> = ({
           onSubmit={(e) => {
             e.preventDefault();
             if (!altchaPayload) {
-              alert("Please complete the verification before generating the letter.");
+              alert(
+                "Please complete the verification before generating the letter.",
+              );
               return;
             }
-        
+
             // store the verified token into formData before moving on
             formData.altchaPayload = altchaPayload;
-        
+
             onSubmit(e); // ✅ keep the original event so preventDefault() still works upstream
           }}
         >

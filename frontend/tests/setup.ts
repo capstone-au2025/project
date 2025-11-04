@@ -22,24 +22,24 @@ vi.mock("../src/config/configLoader", () => ({
 }));
 
 // Mock the Altcha component to avoid loading the actual altcha library
-vi.mock('../src/components/Altcha', () => {
+vi.mock("../src/components/Altcha", () => {
   return {
     __esModule: true,
     default: React.forwardRef((props: any, ref: any) => {
       // Immediately trigger verification in tests
       React.useEffect(() => {
         if (props.onStateChange) {
-          const event = new CustomEvent('statechange', {
+          const event = new CustomEvent("statechange", {
             detail: {
-              state: 'verified',
-              payload: 'test-altcha-payload'
-            }
+              state: "verified",
+              payload: "test-altcha-payload",
+            },
           });
           props.onStateChange(event);
         }
       }, [props]);
-      
-      return React.createElement('div', { 'data-testid': 'altcha-mock' });
+
+      return React.createElement("div", { "data-testid": "altcha-mock" });
     }),
   };
 });
