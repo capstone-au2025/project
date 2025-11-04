@@ -26,7 +26,7 @@ func createValidAltcha(secret string) (string, error) {
 
 	done := make(chan struct{})
 	defer close(done)
-	solution, err := altcha.SolveChallenge(challenge.Challenge, challenge.Salt, altcha.Algorithm(challenge.Algorithm), 0, 1000000, done)
+	solution, err := altcha.SolveChallenge(challenge.Challenge, challenge.Salt, altcha.Algorithm(challenge.Algorithm), 1000000, 0, done)
 	if err != nil {
 		return "", err
 	}
