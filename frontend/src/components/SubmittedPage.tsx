@@ -39,7 +39,6 @@ type PdfRequest = {
   receiverName: string;
   receiverAddress: string;
   body: string;
-  altcha: string;
 };
 
 const pdfResponseSchema = z.object({
@@ -87,7 +86,6 @@ async function generatePdf(
       receiverName: destination.name,
       receiverAddress: `${destination.address}, ${destination.city}, ${destination.state} ${destination.zip} `,
       body: text.content,
-      altcha: altchaPayload,
     } satisfies PdfRequest),
     headers: { "Content-Type": "application/json" },
   });
