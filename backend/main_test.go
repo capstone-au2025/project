@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"os/exec"
 	"sync"
 	"testing"
 	"testing/synctest"
@@ -86,11 +85,6 @@ func TestHMACKeyConsistency(t *testing.T) {
 }
 
 func TestPdfHandlerSuccess(t *testing.T) {
-
-	if _, err := exec.LookPath("typst-wrapper"); err != nil {
-		t.Skip("Skipping test: typst-wrapper not found in PATH")
-	}
-
 	synctest.Test(t, func(t *testing.T) {
 		altchaService := NewAltchaService()
 		defer altchaService.usedStore.Stop()
@@ -100,11 +94,6 @@ func TestPdfHandlerSuccess(t *testing.T) {
 			altcha: altchaService,
 		}
 
-		altchaToken, err := createValidAltcha(altchaService.secret)
-		if err != nil {
-			t.Fatalf("failed to create altcha token: %v", err)
-		}
-
 		reqJSON := map[string]string{
 			"senderName":       "someone",
 			"senderAddress":    "somewhere",
@@ -112,7 +101,6 @@ func TestPdfHandlerSuccess(t *testing.T) {
 			"receiverAddress":  "somewhere else",
 			"complaintSummary": "Something Has Gone Wrong",
 			"body":             "Lorem ipsum dolor sit amet.",
-			"altcha":           altchaToken,
 		}
 		reqBodyBytes, _ := json.Marshal(reqJSON)
 		reqBody := bytes.NewReader(reqBodyBytes)
