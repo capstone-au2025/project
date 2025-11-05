@@ -8,6 +8,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import PageLayout from "./PageLayout";
 import { Link } from "wouter";
 import { getConfig } from "../config/configLoader";
+import type { ChangeEvent } from "react";
 
 GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -15,67 +16,14 @@ GlobalWorkerOptions.workerSrc = new URL(
 ).toString();
 
 interface EditPageProps {
-  formData: Record<string, string>;
   backPage: string;
+  letterBody: string;
 }
-
-type TextRequest = {
-  message: string;
-};
-
-const textResponseSchema = z.object({
-  status: z.literal("success"),
-  content: z.string(),
-});
-
-async function generateText(
-  formData: Record<string, string>,
-) {
-  let message = "";
-  const config = getConfig();
-  const keyToQuestion = Object.fromEntries(
-    config.formPages.flatMap((x) => x.questions).map((x) => [x.name, x.label]),
-  );
-  for (const [key, value] of Object.entries(formData)) {
-    const question = keyToQuestion[key];
-    if (question) {
-      message += `${question}\n${value}\n\n`;
-    }
-  }
-  const textResponse = await fetch("/api/text", {
-    method: "POST",
-    body: JSON.stringify({
-      message,
-    } satisfies TextRequest),
-  });
-  const textJson = await textResponse.json();
-  const text = textResponseSchema.parse(textJson);
-  return text;
-}
-
 const EditPage: React.FC<EditPageProps> = ({
-  formData,
   backPage,
   letterBody,
 }) => {
   const config = getConfig();
-
-  const { isLoading, isError, data, error } = useQuery({
-    queryKey: ["text", formData],
-    staleTime: Infinity,
-    queryFn: () => generateText(formData),
-  });
-
-
-  if (isLoading) {
-      return (<span>Loading...</span>)
-  }
-
-  if (isError) {
-      return (<span>Error: {error.message}</span>)
-  }
-
-  letterBody = data.content;
 
   return (
     <PageLayout>

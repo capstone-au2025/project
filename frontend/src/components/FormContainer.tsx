@@ -163,7 +163,7 @@ const FormContainer = () => {
         <FormPage
           formData={formData}
           onInputChange={handleInputChange}
-          onSubmit={handlePageSubmit("edit")}
+          onSubmit={handlePageSubmit("addresses")}
           backPage="/form2"
           pageConfig={config.formPages[2]}
           animationDirection={direction}
@@ -181,7 +181,7 @@ const FormContainer = () => {
       </Route>
 
       <Route path="/submitted">
-        <SubmittedPage formData={formData} backPage="addresses" />
+        <SubmittedPage formData={formData} backPage="addresses" letterBody={letterBody} />
       </Route>
 
       <Route path="/termsofservice">

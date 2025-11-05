@@ -51,9 +51,27 @@ const textResponseSchema = z.object({
 });
 
 async function generatePdf(
-  formData: Record<string, string>,
+  text: string,
   sender: NameAndAddress,
   destination: NameAndAddress,
+) {
+  const pdfResp = await fetch("/api/pdf", {
+    method: "POST",
+    body: JSON.stringify({
+      senderName: sender.name,
+      senderAddress: `${sender.address}, ${sender.city}, ${sender.state} ${sender.zip} `,
+      receiverName: destination.name,
+      receiverAddress: `${destination.address}, ${destination.city}, ${destination.state} ${destination.zip} `,
+      body: text,
+    } satisfies PdfRequest),
+    headers: { "Content-Type": "application/json" },
+  });
+  const pdfJson = await pdfResp.json();
+  return pdfResponseSchema.parse(pdfJson);
+}
+
+async function generateText(
+  formData: Record<string, string>,
 ) {
   let message = "";
   const config = getConfig();
@@ -66,6 +84,7 @@ async function generatePdf(
       message += `${question}\n${value}\n\n`;
     }
   }
+  console.log(JSON.stringify(message));
   const textResponse = await fetch("/api/text", {
     method: "POST",
     body: JSON.stringify({
@@ -74,21 +93,22 @@ async function generatePdf(
   });
   const textJson = await textResponse.json();
   const text = textResponseSchema.parse(textJson);
-
-  const pdfResp = await fetch("/api/pdf", {
-    method: "POST",
-    body: JSON.stringify({
-      senderName: sender.name,
-      senderAddress: `${sender.address}, ${sender.city}, ${sender.state} ${sender.zip} `,
-      receiverName: destination.name,
-      receiverAddress: `${destination.address}, ${destination.city}, ${destination.state} ${destination.zip} `,
-      body: text.content,
-    } satisfies PdfRequest),
-    headers: { "Content-Type": "application/json" },
-  });
-  const pdfJson = await pdfResp.json();
-  return pdfResponseSchema.parse(pdfJson);
+  return text;
 }
+
+/* async function generateLetter(
+ *   letterBody: string,
+ *   formData: Record<string, string>,
+ *   sender: NameAndAddress,
+ *   destination: NameAndAddress,
+ * ) {
+ *   console.log("started");
+ *
+ *
+ *   return data;
+ *
+ * } */
+
 
 const SubmittedPage: React.FC<SubmittedPageProps> = ({
   formData,
@@ -115,11 +135,6 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     zip: formData.destinationZip,
   };
 
-  const { data } = useQuery({
-    queryKey: ["pdf", formData],
-    staleTime: Infinity,
-    queryFn: () => generatePdf(formData, sender, destination),
-  });
   const {
     width: pdfWidth,
     height: pdfHeight,
@@ -127,6 +142,22 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
   } = useResizeDetector<HTMLDivElement>();
 
   const [pdfLoading, setPdfLoading] = useState(true);
+
+ if (letterBody === "") {
+    console.log(formData);
+    letterBody = useQuery({
+      queryKey: ['text'],
+      staleTime: Infinity,
+      queryFn: generateText(formData)}).data;
+  }
+  const { data } = useQuery({
+    queryKey: ["pdf", formData],
+    staleTime: Infinity,
+    queryFn: () => generatePdf(letterBody, sender, destination),
+  });
+
+
+
 
   let pdf:
     | {
@@ -157,6 +188,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     };
 
     pdf = { bytes: pdfBytes, blobUrl, handleCertifiedMail };
+    console.log(letterBody);
   }
 
   const loadingSkeleton = (
