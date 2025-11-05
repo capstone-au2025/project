@@ -93,6 +93,7 @@ async function generatePdf(
 const SubmittedPage: React.FC<SubmittedPageProps> = ({
   formData,
   backPage,
+  letterBody,
 }) => {
   const config = getConfig();
 

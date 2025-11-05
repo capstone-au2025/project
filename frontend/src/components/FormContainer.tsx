@@ -81,6 +81,7 @@ const FormContainer = () => {
   const [formData, setFormData] = useState<FormData>(() =>
     loadFromLocalStorage(STORAGE_KEY, INITIAL_FORM_DATA),
   );
+  const [letterBody, setLetterBody] = useState<String>("");
   const [location, setLocation] = useLocation();
   const previousLocation = usePreviousLocation();
   const [searchParams, setSearchParams] = useSearchParams();

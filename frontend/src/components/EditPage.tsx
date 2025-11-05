@@ -56,6 +56,7 @@ async function generateText(
 const EditPage: React.FC<EditPageProps> = ({
   formData,
   backPage,
+  letterBody,
 }) => {
   const config = getConfig();
 
@@ -74,15 +75,21 @@ const EditPage: React.FC<EditPageProps> = ({
       return (<span>Error: {error.message}</span>)
   }
 
-  let text: string = data.content;
+  letterBody = data.content;
 
   return (
     <PageLayout>
       <div className="w-full max-w-2xl lg:rounded-lg lg:shadow-lg lg:border lg:border-sky py-8 px-4">
         <div className="flex flex-col items-center gap-4 lg:gap-8 lg:px-4 leading-none">
           <h2 className="text-2xl">{config.submittedPage.heading}</h2>
-          <textarea>
-              {text}
+          <textarea
+            onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
+                     const {value} = e.target;
+                     letterBody = value;
+                     console.log(letterBody);
+            }}
+            value={letterBody}
+          >
           </textarea>
         </div>
       </div>
