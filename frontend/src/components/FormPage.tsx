@@ -1,6 +1,7 @@
 import React from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import QuestionBox from "./QuestionBox";
+import BackButton from "./BackButton";
 import ProgressIndicator from "./ProgressIndicator";
 import PageLayout from "./PageLayout";
 import { Link, useLocation } from "wouter";
@@ -106,13 +107,7 @@ const FormPage: React.FC<FormPageProps> = ({
             {/* Buttons */}
             <div className="pt-4 sm:pt-6">
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <Link
-                  href={backPage}
-                  type="button"
-                  className="px-6 sm:px-8 py-3 bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base leading-1 grid items-center"
-                >
-                  {getConfig().common.backButton}
-                </Link>
+                <BackButton backPage={backPage} />
                 <button
                   type="submit"
                   className="flex-1 py-3 sm:py-4 px-6 sm:px-8 bg-primary text-white rounded-md font-bold text-base sm:text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase"
