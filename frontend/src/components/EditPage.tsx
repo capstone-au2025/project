@@ -22,6 +22,7 @@ interface EditPageProps {
 const EditPage: React.FC<EditPageProps> = ({
   backPage,
   letterBody,
+  updateLetterBody,
 }) => {
   const config = getConfig();
 
@@ -33,7 +34,7 @@ const EditPage: React.FC<EditPageProps> = ({
           <textarea
             onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
                      const {value} = e.target;
-                     letterBody = value;
+              updateLetterBody(value);
                      console.log(letterBody);
             }}
             value={letterBody}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   base64ToUint8Array,
@@ -84,7 +84,7 @@ async function generateText(
       message += `${question}\n${value}\n\n`;
     }
   }
-  console.log(JSON.stringify(message));
+  /* console.log(JSON.stringify(message)); */
   const textResponse = await fetch("/api/text", {
     method: "POST",
     body: JSON.stringify({
@@ -114,8 +114,11 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
   formData,
   backPage,
   letterBody,
+  updateLetterBody,
 }) => {
   const config = getConfig();
+
+  var content: string = letterBody;
 
   const sender: NameAndAddress = {
     name: formData.senderName,
@@ -143,17 +146,21 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
 
   const [pdfLoading, setPdfLoading] = useState(true);
 
- if (letterBody === "") {
-    console.log(formData);
-    letterBody = useQuery({
-      queryKey: ['text'],
+ if (content === "" || content == null) {
+   /* console.log(formData); */
+    const result = useQuery({
+      queryKey: ['text', formData],
       staleTime: Infinity,
-      queryFn: generateText(formData)}).data;
+      queryFn: () => generateText(formData)});
+    if (result.data) {
+      content = result.data.content;
+    }
   }
   const { data } = useQuery({
-    queryKey: ["pdf", formData],
+    queryKey: ["pdf", letterBody],
     staleTime: Infinity,
-    queryFn: () => generatePdf(letterBody, sender, destination),
+    queryFn: () => generatePdf(content, sender, destination),
+    enabled: (content !== ""),
   });
 
 
@@ -188,15 +195,20 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     };
 
     pdf = { bytes: pdfBytes, blobUrl, handleCertifiedMail };
-    console.log(letterBody);
+    /* console.log(letterBody); */
   }
 
   const loadingSkeleton = (
     <Skeleton width={pdfWidth} height={pdfHeight} className="absolute" />
   );
 
+  const handlePDFLoad = () => {
+    setPdfLoading(false);
+  };
+
   return (
     <PageLayout>
+    {updateLetterBody(content)}
       <div className="w-full max-w-2xl lg:rounded-lg lg:shadow-lg lg:border lg:border-sky py-8 px-4">
         <div className="flex flex-col items-center gap-4 lg:gap-8 lg:px-4 leading-none">
           <h2 className="text-2xl">{config.submittedPage.heading}</h2>
@@ -216,7 +228,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
                     pageNumber={1}
                     width={pdfWidth}
                     renderTextLayer={false}
-                    onLoadSuccess={() => setPdfLoading(false)}
+                    onLoadSuccess={handlePDFLoad}
                     loading={loadingSkeleton}
                   />
                 </Document>
@@ -236,6 +248,17 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
               <Skeleton className="h-[56px] rounded-md" />
             )}
             {pdf ? (
+              <Link
+                href="/edit"
+                type="button"
+                className="h-[56px] bg-primary text-white rounded-md font-bold text-sm sm:text-base hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase flex items-center justify-center"
+              >
+                Edit
+              </Link>
+            ) : (
+              <Skeleton className="h-[56px] rounded-md" />
+            )}
+            {pdf ? (
               <a
                 href={pdf.blobUrl}
                 target="_blank"
@@ -247,6 +270,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
             ) : (
               <Skeleton className="h-[52px] box-border border-2 border-transparent rounded-md" />
             )}
+
             <Link
               href={backPage}
               className="py-3 bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base align-middle flex items-center justify-center"
