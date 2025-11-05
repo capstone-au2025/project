@@ -5,6 +5,7 @@ import FormPage from "./FormPage";
 import TOSPage from "./TOSPage";
 import AddressPage from "./AddressPage";
 import SubmittedPage from "./SubmittedPage";
+import EditPage from "./EditPage";
 import { Route, Switch, useLocation, useSearchParams } from "wouter";
 import { getConfig } from "../config/configLoader";
 
@@ -25,6 +26,7 @@ type PageState =
   | "form1"
   | "form2"
   | "form3"
+  | "edit"
   | "addresses"
   | "submitted";
 
@@ -160,7 +162,7 @@ const FormContainer = () => {
         <FormPage
           formData={formData}
           onInputChange={handleInputChange}
-          onSubmit={handlePageSubmit("addresses")}
+          onSubmit={handlePageSubmit("edit")}
           backPage="/form2"
           pageConfig={config.formPages[2]}
           animationDirection={direction}
@@ -184,6 +186,11 @@ const FormContainer = () => {
       <Route path="/termsofservice">
         <TOSPage nextPage="/form1" backPage="/" />
       </Route>
+
+      <Route path="/edit">
+        <EditPage formData={formData} nextPage="/addresses" />
+      </Route>
+
 
       <Route>
         <IntroPage nextPage="/form1" />
