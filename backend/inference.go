@@ -30,17 +30,20 @@ var (
 var inferenceProviders map[string]func(maxInputTokens uint64, maxOutputTokens uint64) (InferenceProvider, error) = make(map[string]func(uint64, uint64) (InferenceProvider, error))
 
 type MockInferenceProvider struct {
-	shouldError bool
+	shouldError   bool
+	sleepDuration time.Duration
 }
 
 var _ InferenceProvider = (*MockInferenceProvider)(nil)
 
 func NewMockInferenceProvider() *MockInferenceProvider {
-	return &MockInferenceProvider{}
+	return &MockInferenceProvider{
+		sleepDuration: 2 * time.Second,
+	}
 }
 
 func (m *MockInferenceProvider) Infer(ctx context.Context, input string) (string, error) {
-	time.Sleep(2 * time.Second)
+	time.Sleep(m.sleepDuration)
 	if m.shouldError {
 		return "", ErrTooManyInputTokens
 	}
