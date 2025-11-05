@@ -56,3 +56,19 @@ jobs:
       - name: Check format
         working-directory: frontend
         run: npm run check-format
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Test
+        working-directory: frontend
+        run: npm test

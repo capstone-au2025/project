@@ -1,0 +1,114 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: letter-generator
+  labels:
+    app: letter-generator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: letter-generator
+  template:
+    metadata:
+      labels:
+        app: letter-generator
+    spec:
+      containers:
+        - name: project
+          image: ghcr.io/capstone-au2025/project:ollama
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3001
+          resources:
+            requests:
+              cpu: 100m
+              memory: 32Mi
+            limits:
+              cpu: 250m
+              memory: 64Mi
+          env:
+            - name: INFERENCE_PROVIDER
+              value: ollama
+            - name: OLLAMA_HOST
+              value: http://ollama:11434
+            - name: OLLAMA_MODEL_ID
+              value: gemma3:270m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: letter-generator
+spec:
+  ports:
+    - port: 8080
+      protocol: TCP
+      targetPort: 3001
+  selector:
+    app: letter-generator
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama
+  labels:
+    app: ollama
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ollama
+  template:
+    metadata:
+      labels:
+        app: ollama
+    spec:
+      containers:
+        - name: project
+          image: docker.io/ollama/ollama
+          ports:
+            - containerPort: 11434
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+              nvidia.com/gpu: 1
+            limits:
+              cpu: 4000m
+              memory: 4096Mi
+              nvidia.com/gpu: 1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ollama
+spec:
+  ports:
+    - port: 11434
+      protocol: TCP
+      targetPort: 11434
+  selector:
+    app: ollama
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: letter-generator
+spec:
+  ingressClassName: haproxy
+  rules:
+    - host: &host letter-generator.nrp-nautilus.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: letter-generator
+                port:
+                  number: 8080
+  tls:
+    - hosts:
+        - *host

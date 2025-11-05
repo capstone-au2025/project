@@ -3,8 +3,11 @@ services:
     ports:
       - 3001:3001
     build:
-      context: ./backend
+      dockerfile: Dockerfile.backend-dev
     environment:
+      - INFERENCE_PROVIDER=ollama
+      - OLLAMA_HOST=http://ollama:11434
+      - OLLAMA_MODEL_ID=gemma3:4b
       - AWS_REGION=${AWS_REGION}
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
@@ -19,11 +22,13 @@ services:
           path: go.mod
         - action: rebuild
           path: go.sum
+    depends_on:
+      - ollama
   frontend:
     ports:
       - 5173:5173
     build:
-      context: ./frontend
+      dockerfile: Dockerfile.frontend-dev
     depends_on:
       - backend
     develop:
@@ -39,3 +44,7 @@ services:
           path: frontend/package-lock.json
         - action: rebuild
           path: frontend/vite.config.ts
+  ollama:
+    image: ollama/ollama
+    volumes:
+      - ./ollama:/root/.ollama

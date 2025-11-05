@@ -1,36 +1,102 @@
-:root {
-  font-family: sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@import "tailwindcss";
 
-  background-color: white;
+@theme {
+  /* Rentful Brand Fonts */
+  --font-family-primary: "Staatliches", "Tahoma Bold", sans-serif;
+  --font-family-secondary: "Merriweather", serif;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* Rentful Brand Colors */
+  --color-primary: #dc2626;
+  /* Vibrant Red */
+  --color-primary-hover: #060e66;
+  /* Indigo Blue for hover states */
+  --color-primary-light: rgb(220 38 38 / 0.05);
+  --color-primary-ring: rgb(220 38 38 / 0.3);
+
+  /* Brand Palette */
+  --color-indigo: #060e66;
+  /* Indigo Blue - Main text */
+  --color-sky: #bed7e9;
+  /* Sky Blue - Borders & accents */
+  --color-sky-light: #d5e7f1;
+  /* Light Sky Blue - Backgrounds */
+  --color-butterscotch: #f8c85e;
+  /* Butterscotch - Success/accent */
+  --color-indigo-dark: #121c29;
+  /* Dark Indigo - Graphics */
+
+  /* Semantic colors using brand palette */
+  --color-text-primary: #060e66;
+  /* Indigo Blue */
+  --color-text-muted: rgb(6 14 102 / 0.7);
+  /* Indigo Blue 70% opacity */
+  --color-border: #bed7e9;
+  /* Sky Blue */
+  --color-border-hover: #060e66;
+  /* Indigo Blue */
+  --color-bg-light: #d5e7f1;
+  /* Light Sky Blue */
+  --color-success: #f8c85e;
+  /* Butterscotch */
 }
 
+html,
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
+  padding: 0;
   min-width: 320px;
-  min-height: 100vh;
+  height: 100%;
+  font-family: var(--font-family-secondary);
+  background-color: white;
 }
 
 button {
-  border-radius: 300px;
-  border: none;
-  padding: 0.6em 1.2em;
-  font-size: 1.25em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: rgb(255, 200, 68);
   cursor: pointer;
-  color: black;
 }
 
-button:hover {
-  background-color: rgb(255, 216, 122);
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-family-primary);
+}
+
+/* Slide In Animation */
+.animate-slide-in {
+  animation: 150ms ease-in slide-in;
+  animation-direction: normal;
+}
+
+.animate-slide-out {
+  animation: 150ms ease-in slide-out;
+}
+
+@keyframes slide-in {
+  0% {
+    transform: translateX(50%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0%);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-out {
+  0% {
+    transform: translateX(-50%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0%);
+    opacity: 1;
+  }
 }

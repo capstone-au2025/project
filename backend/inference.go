@@ -8,6 +8,7 @@ import (
 	"time"
 
 	_ "embed"
+	_ "time/tzdata"
 )
 
 type InferenceProvider interface {
@@ -20,6 +21,8 @@ var (
 	ErrTooManyInputTokens  = errors.New("too many input tokens")
 	ErrTooManyOutputTokens = errors.New("too many output tokens")
 )
+
+var inferenceProviders map[string]func(maxInputTokens uint64, maxOutputTokens uint64) (InferenceProvider, error) = make(map[string]func(uint64, uint64) (InferenceProvider, error))
 
 type MockInferenceProvider struct {
 	shouldError bool
@@ -37,6 +40,12 @@ func (m *MockInferenceProvider) Infer(ctx context.Context, input string) (string
 		return "", ErrTooManyInputTokens
 	}
 	return "MOCKED INFERENCE PROVIDER\n\n" + input + "\n\nMOCKED INFERENCE PROVIDER", nil
+}
+
+func init() {
+	inferenceProviders["mock"] = func(uint64, uint64) (InferenceProvider, error) {
+		return NewMockInferenceProvider(), nil
+	}
 }
 
 //go:embed prompt.txt
