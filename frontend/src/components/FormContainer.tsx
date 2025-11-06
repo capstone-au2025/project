@@ -30,6 +30,7 @@ type PageState =
 
 const STORAGE_KEY = "justiceFormData";
 const PAGE_STATE_KEY = "justiceFormPageState";
+const TOS_ACCEPTANCE_KEY = "justiceTosAccepted";
 
 const INITIAL_FORM_DATA: FormData = {
   mainProblem: "",
@@ -79,6 +80,9 @@ const FormContainer = () => {
   const [formData, setFormData] = useState<FormData>(() =>
     loadFromLocalStorage(STORAGE_KEY, INITIAL_FORM_DATA),
   );
+  const [tosAccepted, setTosAccepted] = useState<boolean>(() =>
+    loadFromLocalStorage(TOS_ACCEPTANCE_KEY, false),
+  );
   const [location, setLocation] = useLocation();
   const previousLocation = usePreviousLocation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -103,6 +107,10 @@ const FormContainer = () => {
     saveToLocalStorage(PAGE_STATE_KEY, location);
   }, [location]);
 
+  useEffect(() => {
+    saveToLocalStorage(TOS_ACCEPTANCE_KEY, tosAccepted);
+  }, [tosAccepted]);
+
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) => {
@@ -120,6 +128,7 @@ const FormContainer = () => {
       return undefined;
     });
     setFormData(INITIAL_FORM_DATA);
+    setTosAccepted(false);
     localStorage.clear();
     setLocation("/");
   }
@@ -129,6 +138,24 @@ const FormContainer = () => {
       e.preventDefault();
       setLocation("/" + nextPage);
     };
+
+  const handleTosAccept = () => {
+    setTosAccepted(true);
+  };
+
+  // Route protection: redirect to intro if TOS not accepted
+  const protectedPages = [
+    "/form1",
+    "/form2",
+    "/form3",
+    "/addresses",
+    "/submitted",
+  ];
+  useEffect(() => {
+    if (!tosAccepted && protectedPages.includes(location)) {
+      setLocation("/");
+    }
+  }, [location, tosAccepted]);
 
   return (
     <Switch>
@@ -182,11 +209,15 @@ const FormContainer = () => {
       </Route>
 
       <Route path="/termsofservice">
-        <TOSPage nextPage="/form1" backPage="/" />
+        <TOSPage nextPage="/form1" backPage="/" onAccept={handleTosAccept} />
       </Route>
 
       <Route>
-        <IntroPage nextPage="/form1" />
+        <IntroPage
+          nextPage="/form1"
+          tosAccepted={tosAccepted}
+          onTosAccept={handleTosAccept}
+        />
       </Route>
     </Switch>
   );

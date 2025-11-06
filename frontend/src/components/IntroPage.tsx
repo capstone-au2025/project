@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import PageLayout from "./PageLayout";
 import {
   CheckCircleIcon,
@@ -7,11 +7,13 @@ import {
   LightningIcon,
   InfoIcon,
 } from "./icons";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { getConfig } from "../config/configLoader";
 
 interface IntroPageProps {
   nextPage: string;
+  tosAccepted: boolean;
+  onTosAccept: () => void;
 }
 
 interface FeatureCardProps {
@@ -34,14 +36,31 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
   </div>
 );
 
-const IntroPage: React.FC<IntroPageProps> = ({ nextPage }) => {
+const IntroPage: React.FC<IntroPageProps> = ({
+  nextPage,
+  tosAccepted,
+  onTosAccept,
+}) => {
   const config = getConfig();
+  const [, setLocation] = useLocation();
+  const [isChecked, setIsChecked] = useState(tosAccepted);
   const iconMap = [CheckCircleIcon, BookIcon, LockIcon, LightningIcon];
 
   const features = config.introPage.features.map((feature, index) => ({
     ...feature,
     icon: iconMap[index],
   }));
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsChecked(e.target.checked);
+  };
+
+  const handleGetStarted = () => {
+    if (isChecked) {
+      onTosAccept();
+      setLocation(nextPage);
+    }
+  };
 
   return (
     <PageLayout>
@@ -75,30 +94,38 @@ const IntroPage: React.FC<IntroPageProps> = ({ nextPage }) => {
               </p>
             </div>
 
-            <label className="cursor-pointer">
+            <label className="cursor-pointer flex items-center gap-2">
               <input
-                required
                 type="checkbox"
-                className="m-3"
+                className="w-4 h-4 cursor-pointer"
                 id="tos-confirmation"
                 name="tos-confirmation"
+                checked={isChecked}
+                onChange={handleCheckboxChange}
               />
-              I have read and agree to the&nbsp;
-              <Link
-                href="/termsofservice"
-                className="text-indigo underline hover:text-primary"
-              >
-                Terms of Service
-              </Link>
+              <span>
+                I have read and agree to the&nbsp;
+                <Link
+                  href="/termsofservice"
+                  className="text-indigo underline hover:text-primary"
+                >
+                  Terms of Service
+                </Link>
+              </span>
             </label>
 
             <div className="text-center">
-              <Link
-                href={nextPage}
-                className="inline-block w-full sm:w-auto px-8 sm:px-12 py-3 sm:py-4 bg-primary text-white rounded-md font-bold text-lg sm:text-xl cursor-pointer hover:bg-primary-hover transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 uppercase"
+              <button
+                onClick={handleGetStarted}
+                disabled={!isChecked}
+                className={`inline-block w-full sm:w-auto px-8 sm:px-12 py-3 sm:py-4 rounded-md font-bold text-lg sm:text-xl transition-all duration-200 shadow-lg uppercase ${
+                  isChecked
+                    ? "bg-primary text-white cursor-pointer hover:bg-primary-hover hover:shadow-xl transform hover:scale-105"
+                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                }`}
               >
                 {config.introPage.getStartedButton}
-              </Link>
+              </button>
               <p className="mt-3 sm:mt-4 text-xs sm:text-sm text-text-muted">
                 {config.introPage.footerText}
               </p>
