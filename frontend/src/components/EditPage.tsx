@@ -1,48 +1,53 @@
-import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import z from "zod";
-import { GlobalWorkerOptions } from "pdfjs-dist";
-import "react-pdf/dist/Page/AnnotationLayer.css";
-import "react-pdf/dist/Page/TextLayer.css";
-import "react-loading-skeleton/dist/skeleton.css";
+import React, { RefObject, useRef } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import PageLayout from "./PageLayout";
 import { Link } from "wouter";
 import { getConfig } from "../config/configLoader";
-import type { ChangeEvent } from "react";
-
-GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url,
-).toString();
 
 interface EditPageProps {
   backPage: string;
   letterBody: string;
+  onSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  updateLetterBody: (s: string) => void;
+  ref: RefObject<HTMLDialogElement>;
 }
 const EditPage: React.FC<EditPageProps> = ({
   backPage,
   letterBody,
   updateLetterBody,
+  onSubmit,
+  ref,
 }) => {
   const config = getConfig();
 
+  const textRef = useRef<HTMLTextAreaElement>(null);
+
   return (
-    <PageLayout>
+    <dialog ref={ref}>
       <div className="w-full max-w-2xl lg:rounded-lg lg:shadow-lg lg:border lg:border-sky py-8 px-4">
         <div className="flex flex-col items-center gap-4 lg:gap-8 lg:px-4 leading-none">
           <h2 className="text-2xl">{config.submittedPage.heading}</h2>
-          <textarea
-            onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                     const {value} = e.target;
-              updateLetterBody(value);
-                     console.log(letterBody);
-            }}
+          <form
+            method="dialog"
+          >
+          <textarea autofocus
+            ref={textRef}
             value={letterBody}
+            onChange={(e) => updateLetterBody(e.target.value)}
           >
           </textarea>
+          <button
+            type="submit"
+            className="flex-1 py-3 sm:py-4 px-6 sm:px-8 bg-primary text-white rounded-md font-bold text-base sm:text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase"
+            onClick={(e) => {e.preventDefault(); ref.current.close()}}
+          >
+            Save
+          </button>
+          </form>
+
         </div>
       </div>
-    </PageLayout>
+    </dialog>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   base64ToUint8Array,
@@ -15,6 +15,7 @@ import { Document, Page } from "react-pdf";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import PageLayout from "./PageLayout";
+import EditPage from "./EditPage";
 import { Link } from "wouter";
 import { getConfig } from "../config/configLoader";
 
@@ -113,12 +114,11 @@ async function generateText(
 const SubmittedPage: React.FC<SubmittedPageProps> = ({
   formData,
   backPage,
-  letterBody,
-  updateLetterBody,
 }) => {
   const config = getConfig();
 
-  var content: string = letterBody;
+
+  const [letterBody, setLetterBody] = useState<String>("");
 
   const sender: NameAndAddress = {
     name: formData.senderName,
@@ -146,25 +146,23 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
 
   const [pdfLoading, setPdfLoading] = useState(true);
 
- if (content === "" || content == null) {
-   /* console.log(formData); */
-    const result = useQuery({
+ if (letterBody === "" || letterBody == null) {
+   const result = useQuery({
       queryKey: ['text', formData],
       staleTime: Infinity,
       queryFn: () => generateText(formData)});
     if (result.data) {
-      content = result.data.content;
+      setLetterBody(result.data.content);
     }
   }
   const { data } = useQuery({
     queryKey: ["pdf", letterBody],
     staleTime: Infinity,
-    queryFn: () => generatePdf(content, sender, destination),
-    enabled: (content !== ""),
+    queryFn: () => generatePdf(letterBody, sender, destination),
+    enabled: (letterBody !== ""),
   });
 
-
-
+  const editModalRef = useRef<HTMLDialogElement>(null);
 
   let pdf:
     | {
@@ -208,7 +206,6 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
 
   return (
     <PageLayout>
-    {updateLetterBody(content)}
       <div className="w-full max-w-2xl lg:rounded-lg lg:shadow-lg lg:border lg:border-sky py-8 px-4">
         <div className="flex flex-col items-center gap-4 lg:gap-8 lg:px-4 leading-none">
           <h2 className="text-2xl">{config.submittedPage.heading}</h2>
@@ -248,13 +245,12 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
               <Skeleton className="h-[56px] rounded-md" />
             )}
             {pdf ? (
-              <Link
-                href="/edit"
-                type="button"
+              <button
+                onClick={() => editModalRef.current.showModal()}
                 className="h-[56px] bg-primary text-white rounded-md font-bold text-sm sm:text-base hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase flex items-center justify-center"
               >
                 Edit
-              </Link>
+              </button>
             ) : (
               <Skeleton className="h-[56px] rounded-md" />
             )}
@@ -277,6 +273,10 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
             >
               {config.submittedPage.backButton}
             </Link>
+            <EditPage
+              ref={editModalRef}
+              letterBody={letterBody}
+            />
           </div>
         </div>
       </div>

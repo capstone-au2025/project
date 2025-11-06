@@ -76,22 +76,12 @@ const usePreviousLocation = () => {
   return previousLocation;
 };
 
-const useLetterBody = () => {
-  const [letterBody, setLetterBody] = useState("");
-  return { letterBody, setLetterBody };
-
-}
-
-
 const FormContainer = () => {
   const config = getConfig();
   const [formData, setFormData] = useState<FormData>(() =>
     loadFromLocalStorage(STORAGE_KEY, INITIAL_FORM_DATA),
   );
-  const {letterBody, setLetterBody} = useLetterBody();
-  const updateLetterBody = (newValue: string) => {
-    setLetterBody(newValue);
-  };
+
 
 
   const [location, setLocation] = useLocation();
@@ -196,21 +186,12 @@ const FormContainer = () => {
         <SubmittedPage
           formData={formData}
           backPage="addresses"
-          letterBody={letterBody}
-          updateLetterBody={updateLetterBody}
         />
       </Route>
 
       <Route path="/termsofservice">
         <TOSPage nextPage="/form1" backPage="/" />
       </Route>
-
-      <Route path="/edit">
-        <EditPage formData={formData} nextPage="/submitted" letterBody={letterBody}
-                  updateLetterBody={(s) => setLetterBody(s)}
-        />
-      </Route>
-
 
       <Route>
         <IntroPage nextPage="/form1" />
