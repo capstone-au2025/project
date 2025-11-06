@@ -227,6 +227,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /api/pdf", rt.pdf)
 	mux.HandleFunc("POST /api/text", rt.text)
+	mux.HandleFunc("POST /api/teams/command", HandleTeamsCommand)
 	mux.HandleFunc("GET /healthz", healthcheck)
 
 	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -249,5 +250,11 @@ func main() {
 		ReadTimeout:    ServerTimeout,
 		WriteTimeout:   ServerTimeout,
 	}
-	log.Fatal(server.ListenAndServe())
+
+	// Setup graceful shutdown to send final analytics before stopping
+	setupGracefulShutdown(server)
+
+	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		log.Fatal(err)
+	}
 }
