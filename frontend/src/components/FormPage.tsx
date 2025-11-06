@@ -4,7 +4,7 @@ import QuestionBox from "./QuestionBox";
 import BackButton from "./BackButton";
 import ProgressIndicator from "./ProgressIndicator";
 import PageLayout from "./PageLayout";
-import { Link, useLocation } from "wouter";
+import { useLocation } from "wouter";
 import type { PageConfig } from "../config/configLoader";
 import { getConfig } from "../config/configLoader";
 

@@ -15,7 +15,6 @@ import { Document, Page } from "react-pdf";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import PageLayout from "./PageLayout";
-import { Link } from "wouter";
 import { getConfig } from "../config/configLoader";
 import BackButton from "./BackButton";
 
@@ -216,7 +215,6 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
               <Skeleton className="h-[52px] box-border border-2 border-transparent rounded-md" />
             )}
             <BackButton backPage={backPage} />
-
           </div>
         </div>
       </div>
