@@ -56,6 +56,7 @@ async function generatePdf(
   sender: NameAndAddress,
   destination: NameAndAddress,
 ) {
+  console.log("Generating PDF");
   const pdfResp = await fetch("/api/pdf", {
     method: "POST",
     body: JSON.stringify({
@@ -111,6 +112,7 @@ async function generateText(
  * } */
 
 
+
 const SubmittedPage: React.FC<SubmittedPageProps> = ({
   formData,
   backPage,
@@ -118,7 +120,6 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
   const config = getConfig();
 
 
-  const [letterBody, setLetterBody] = useState<String>("");
 
   const sender: NameAndAddress = {
     name: formData.senderName,
@@ -145,24 +146,24 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
   } = useResizeDetector<HTMLDivElement>();
 
   const [pdfLoading, setPdfLoading] = useState(true);
+  const [userLetter, setUserLetter] = useState<string>();
 
- if (letterBody === "" || letterBody == null) {
-   const result = useQuery({
-      queryKey: ['text', formData],
-      staleTime: Infinity,
-      queryFn: () => generateText(formData)});
-    if (result.data) {
-      setLetterBody(result.data.content);
-    }
-  }
+
+  const textQuery = useQuery({
+    queryKey: ['text', formData],
+    staleTime: Infinity,
+    queryFn: () => generateText(formData),
+  });
+
+  const letterBody: string = userLetter ?? textQuery.data?.content ?? "";
+
   const { data } = useQuery({
     queryKey: ["pdf", letterBody],
     staleTime: Infinity,
     queryFn: () => generatePdf(letterBody, sender, destination),
-    enabled: (letterBody !== ""),
+    enabled: (textQuery.isSuccess),
   });
 
-  const editModalRef = useRef<HTMLDialogElement>(null);
 
   let pdf:
     | {
@@ -203,6 +204,20 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
   const handlePDFLoad = () => {
     setPdfLoading(false);
   };
+
+  /* Edit letter modal */
+  const editModalRef = useRef<HTMLDialogElement>(null);
+  const editTextRef = useRef<HTMLTextAreaElement>(null);
+  const editModalSubmit = (e) => {
+    e.preventDefault();
+    if (editTextRef.current) {
+      setUserLetter(editTextRef.current.value);
+      console.log(letterBody);
+      console.log(textQuery.isSuccess);
+    }
+
+    editModalRef.current?.close();
+  }
 
   return (
     <PageLayout>
@@ -246,7 +261,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
             )}
             {pdf ? (
               <button
-                onClick={() => editModalRef.current.showModal()}
+                onClick={() => editModalRef.current?.showModal()}
                 className="h-[56px] bg-primary text-white rounded-md font-bold text-sm sm:text-base hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase flex items-center justify-center"
               >
                 Edit
@@ -274,8 +289,11 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
               {config.submittedPage.backButton}
             </Link>
             <EditPage
-              ref={editModalRef}
+              modalRef={editModalRef}
+              textRef={editTextRef}
               letterBody={letterBody}
+              onSubmit={editModalSubmit}
+
             />
           </div>
         </div>
