@@ -15,7 +15,7 @@ import { Document, Page } from "react-pdf";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import PageLayout from "./PageLayout";
-import EditPage from "./EditPage";
+import EditModal from "./EditModal.txt";
 import { Link } from "wouter";
 import { getConfig } from "../config/configLoader";
 
@@ -288,7 +288,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
             >
               {config.submittedPage.backButton}
             </Link>
-            <EditPage
+            <EditModal
               modalRef={editModalRef}
               textRef={editTextRef}
               letterBody={letterBody}
