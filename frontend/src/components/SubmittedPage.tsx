@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import type { FormEvent } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   base64ToUint8Array,
@@ -72,9 +73,7 @@ async function generatePdf(
   return pdfResponseSchema.parse(pdfJson);
 }
 
-async function generateText(
-  formData: Record<string, string>,
-) {
+async function generateText(formData: Record<string, string>) {
   let message = "";
   const config = getConfig();
   const keyToQuestion = Object.fromEntries(
@@ -111,15 +110,11 @@ async function generateText(
  *
  * } */
 
-
-
 const SubmittedPage: React.FC<SubmittedPageProps> = ({
   formData,
   backPage,
 }) => {
   const config = getConfig();
-
-
 
   const sender: NameAndAddress = {
     name: formData.senderName,
@@ -148,9 +143,8 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
   const [pdfLoading, setPdfLoading] = useState(true);
   const [userLetter, setUserLetter] = useState<string>();
 
-
   const textQuery = useQuery({
-    queryKey: ['text', formData],
+    queryKey: ["text", formData],
     staleTime: Infinity,
     queryFn: () => generateText(formData),
   });
@@ -161,9 +155,8 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     queryKey: ["pdf", letterBody],
     staleTime: Infinity,
     queryFn: () => generatePdf(letterBody, sender, destination),
-    enabled: (textQuery.isSuccess),
+    enabled: textQuery.isSuccess,
   });
-
 
   let pdf:
     | {
@@ -208,7 +201,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
   /* Edit letter modal */
   const editModalRef = useRef<HTMLDialogElement>(null);
   const editTextRef = useRef<HTMLTextAreaElement>(null);
-  const editModalSubmit = (e) => {
+  const editModalSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (editTextRef.current) {
       setUserLetter(editTextRef.current.value);
@@ -217,7 +210,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     }
 
     editModalRef.current?.close();
-  }
+  };
 
   return (
     <PageLayout>
@@ -293,7 +286,6 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
               textRef={editTextRef}
               letterBody={letterBody}
               onSubmit={editModalSubmit}
-
             />
           </div>
         </div>

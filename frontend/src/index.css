@@ -103,5 +103,5 @@ h6 {
 
 dialog::backdrop {
   backdrop-filter: blur(2px);
-  background-color: #000000AA;
+  background-color: #000000aa;
 }

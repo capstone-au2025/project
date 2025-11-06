@@ -206,10 +206,7 @@ const FormContainer = () => {
       </Route>
 
       <Route path="/submitted">
-        <SubmittedPage
-          formData={formData}
-          backPage="addresses"
-        />
+        <SubmittedPage formData={formData} backPage="addresses" />
       </Route>
 
       <Route path="/termsofservice">
