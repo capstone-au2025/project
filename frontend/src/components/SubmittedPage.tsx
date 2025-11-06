@@ -221,19 +221,19 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
 
   return (
     <PageLayout>
-      <div className="w-full max-w-2xl lg:rounded-lg lg:shadow-lg lg:border lg:border-sky py-8 px-4">
+      <div className="w-full max-w-5xl lg:rounded-lg lg:shadow-lg lg:border lg:border-sky py-8 px-4">
         <div className="flex flex-col items-center gap-4 lg:gap-8 lg:px-4 leading-none">
           <h2 className="text-2xl">{config.submittedPage.heading}</h2>
           <div
             ref={pdfRef}
-            className="w-[300px] h-[387px] shadow-md border border-sky relative"
+            className="w-full max-w-[700px] aspect-[8.5/11] shadow-md border border-sky relative"
           >
             {pdf && (
               <a
                 download="Letter.pdf"
                 target="_blank"
                 href={pdf.blobUrl}
-                className="absolute"
+                className="absolute w-full h-full"
               >
                 <Document file={pdf.blobUrl} loading={loadingSkeleton}>
                   <Page
