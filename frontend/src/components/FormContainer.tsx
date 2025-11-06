@@ -25,7 +25,6 @@ type PageState =
   | "form1"
   | "form2"
   | "form3"
-  | "edit"
   | "addresses"
   | "submitted";
 

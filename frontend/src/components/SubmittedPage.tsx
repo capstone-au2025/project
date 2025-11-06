@@ -57,7 +57,6 @@ async function generatePdf(
   sender: NameAndAddress,
   destination: NameAndAddress,
 ) {
-  console.log("Generating PDF");
   const pdfResp = await fetch("/api/pdf", {
     method: "POST",
     body: JSON.stringify({
@@ -85,7 +84,7 @@ async function generateText(formData: Record<string, string>) {
       message += `${question}\n${value}\n\n`;
     }
   }
-  /* console.log(JSON.stringify(message)); */
+
   const textResponse = await fetch("/api/text", {
     method: "POST",
     body: JSON.stringify({
@@ -96,19 +95,6 @@ async function generateText(formData: Record<string, string>) {
   const text = textResponseSchema.parse(textJson);
   return text;
 }
-
-/* async function generateLetter(
- *   letterBody: string,
- *   formData: Record<string, string>,
- *   sender: NameAndAddress,
- *   destination: NameAndAddress,
- * ) {
- *   console.log("started");
- *
- *
- *   return data;
- *
- * } */
 
 const SubmittedPage: React.FC<SubmittedPageProps> = ({
   formData,
@@ -187,16 +173,11 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     };
 
     pdf = { bytes: pdfBytes, blobUrl, handleCertifiedMail };
-    /* console.log(letterBody); */
   }
 
   const loadingSkeleton = (
     <Skeleton width={pdfWidth} height={pdfHeight} className="absolute" />
   );
-
-  const handlePDFLoad = () => {
-    setPdfLoading(false);
-  };
 
   /* Edit letter modal */
   const editModalRef = useRef<HTMLDialogElement>(null);
@@ -205,8 +186,6 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     e.preventDefault();
     if (editTextRef.current) {
       setUserLetter(editTextRef.current.value);
-      console.log(letterBody);
-      console.log(textQuery.isSuccess);
     }
 
     editModalRef.current?.close();
@@ -233,7 +212,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
                     pageNumber={1}
                     width={pdfWidth}
                     renderTextLayer={false}
-                    onLoadSuccess={handlePDFLoad}
+                    onLoadSuccess={() => setPdfLoading(false)}
                     loading={loadingSkeleton}
                   />
                 </Document>
