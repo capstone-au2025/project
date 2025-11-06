@@ -15,7 +15,7 @@ import { Document, Page } from "react-pdf";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import PageLayout from "./PageLayout";
-import EditModal from "./EditModal.txt";
+import EditModal from "./EditModal.tsx";
 import { Link } from "wouter";
 import { getConfig } from "../config/configLoader";
 
