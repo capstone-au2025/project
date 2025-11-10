@@ -29,6 +29,7 @@
             opentofu-ls
             kubectl
             kubelogin-oidc
+            typst
           ];
           GOFLAGS = "-tags=aws,ollama,openai";
         };
