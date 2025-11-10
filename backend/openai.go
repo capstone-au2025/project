@@ -57,13 +57,14 @@ func NewOpenAI(maxInputTokens int, maxOutputTokens int) (*OpenAi, error) {
 func (o *OpenAi) Infer(ctx context.Context, input string) (string, error) {
 	systemPrompt := RenderSystemPrompt()
 
+	// See AWS
 	estimatedSystemPromptTokens := len(systemPrompt) / 3
 	if len(input)+estimatedSystemPromptTokens > o.maxInputTokens {
 		return "", ErrTooManyInputTokens
 	}
 
 	// As of writing, nrp does not support the v3 API, the completion API, or the response API
-	res, err := o.client.Chat.Completions.New(context.TODO(), openai.ChatCompletionNewParams{
+	res, err := o.client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
 		Messages: []openai.ChatCompletionMessageParamUnion{
 			openai.SystemMessage(systemPrompt),
 			openai.UserMessage(input),
@@ -78,8 +79,8 @@ func (o *OpenAi) Infer(ctx context.Context, input string) (string, error) {
 	if res.Choices[0].Message.Refusal != "" {
 		return "", fmt.Errorf("model refused for reason: %v", res.Choices[0].Message.Refusal)
 	}
-	return res.Choices[0].Message.Content, nil
 
+	return res.Choices[0].Message.Content, nil
 }
 
 func init() {
