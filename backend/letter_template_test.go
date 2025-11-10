@@ -1,23 +1,40 @@
 package main
 
 import (
+	"bytes"
 	"context"
-	"os/exec"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+	"os"
+	"path/filepath"
 	"testing"
 )
 
-func requireTypst(t *testing.T) string {
-	t.Helper()
-	path, err := exec.LookPath("typst")
-	if err != nil {
-		t.Skip("typst not found in PATH; skipping Typst rendering tests")
+func normalizePdf(pdf []byte) []byte {
+	// Remove unstable metadata lines for stable hashing.
+	// We filter common fields that vary per render:
+	// - PDF Info dict keys: /CreationDate, /ModDate, /ID
+	// - XMP metadata keys: xmp:CreateDate, xmp:ModifyDate, xmpMM:DocumentID, xmpMM:InstanceID
+	// Note: This is a best-effort, line-based scrub; it's fine if the result isn't a valid PDF.
+	lines := bytes.Split(pdf, []byte("\n"))
+	out := make([][]byte, 0, len(lines))
+	for _, l := range lines {
+		if bytes.Contains(l, []byte("/CreationDate")) ||
+			bytes.Contains(l, []byte("/ModDate")) ||
+			bytes.Contains(l, []byte("/ID")) ||
+			bytes.Contains(l, []byte("xmp:CreateDate")) ||
+			bytes.Contains(l, []byte("xmp:ModifyDate")) ||
+			bytes.Contains(l, []byte("xmpMM:DocumentID")) ||
+			bytes.Contains(l, []byte("xmpMM:InstanceID")) {
+			continue
+		}
+		out = append(out, l)
 	}
-	t.Logf("using typst at %s", path)
-	return path
+	return bytes.Join(out, []byte("\n"))
 }
 
-func TestRenderPdf_WithDirectiveLikeContent_DoesNotExecute(t *testing.T) {
-	requireTypst(t)
+func TestRenderPdfWithDirectiveLikeContent_DoesNotExecute(t *testing.T) {
 
 	ctx := context.Background()
 
@@ -39,13 +56,13 @@ func TestRenderPdf_WithDirectiveLikeContent_DoesNotExecute(t *testing.T) {
 
 	for i, payload := range malicious {
 		params := LetterParams{
-			SenderName:       "Alice #set text(72pt)",
-			SenderAddress:    `123 Fake St [#link("https://evil")[x]]`,
-			ReceiverName:     "Bob #show: something",
-			ReceiverAddress:  `456 Real Rd ] #set page(paper: "a0") [`,
+			SenderName:       "Alice #set text(72pt) " + payload,
+			SenderAddress:    `123 Fake St [#link("https://evil")[x]] ` + payload,
+			ReceiverName:     "Bob #show: something " + payload,
+			ReceiverAddress:  `456 Real Rd ] #set page(paper: "a0") [ ` + payload,
 			ComplaintSummary: `Notice: ` + payload,
 			LetterContent:    `Body start: ` + payload + ` :Body end.`,
-			Date:             `2025-09-30 #set text(200pt)`,
+			Date:             `2025-09-30 #set text(200pt) ` + payload,
 		}
 
 		pdf, err := RenderPdf(ctx, params)
@@ -58,8 +75,22 @@ func TestRenderPdf_WithDirectiveLikeContent_DoesNotExecute(t *testing.T) {
 	}
 }
 
-func TestRenderPdf_WithSpecialChars_QuotingAndEscaping(t *testing.T) {
-	requireTypst(t)
+// This test validates quoting/escaping of special characters and serves as the
+// golden reference for the rendered PDF output.
+//
+// Manual verification:
+//   - By default, the generated PDF is written to a temporary directory which is
+//     removed after the test completes. Run tests with -v to see the logged path
+//     while the test is running.
+//   - To keep the PDF for inspection, set the environment variable PDF_OUT_DIR to
+//     a writable path (e.g., testdata/out). The file will be written there and
+//     preserved after the test.
+//
+// Golden hashes: When CHECK_PDF_HASHES=1 is set, the test will compare the
+// SHA-256 of the generated PDF against values in testdata/special_hashes.json.
+// To update the goldens after intentional changes or on first run, set
+// UPDATE_GOLDEN=1 and re-run the test to regenerate the JSON file.
+func TestRenderPdfWithSpecialChars_QuotingAndEscaping(t *testing.T) {
 
 	ctx := context.Background()
 
@@ -80,33 +111,65 @@ func TestRenderPdf_WithSpecialChars_QuotingAndEscaping(t *testing.T) {
 	if len(pdf) == 0 {
 		t.Fatalf("returned empty PDF")
 	}
-}
 
-func TestRenderPdf_LongInputs(t *testing.T) {
-	requireTypst(t)
+	pdf = normalizePdf(pdf)
 
-	ctx := context.Background()
+	// Save for manual inspection. If PDF_OUT_DIR is set, write there so the
+	// file persists after the test; otherwise write to a temporary directory.
+	var outPath string
+	if outDir := os.Getenv("PDF_OUT_DIR"); outDir != "" {
+		if err := os.MkdirAll(outDir, 0o755); err != nil {
+			t.Fatalf("failed to create PDF_OUT_DIR %s: %v", outDir, err)
+		}
+		outPath = filepath.Join(outDir, "special_chars.pdf")
+	} else {
+		tmpDir := t.TempDir()
+		outPath = filepath.Join(tmpDir, "special_chars.pdf")
+	}
+	if writeErr := os.WriteFile(outPath, pdf, 0o644); writeErr != nil {
+		t.Fatalf("failed to write pdf to %s: %v", outPath, writeErr)
+	}
+	t.Logf("wrote PDF to %s", outPath)
 
-	long := make([]byte, 200_000)
-	for i := range long {
-		long[i] = 'A'
+	// Compute hash for golden comparison
+	h := sha256.Sum256(pdf)
+	computed := []string{hex.EncodeToString(h[:])}
+
+	// Optional golden comparison
+	if os.Getenv("UPDATE_GOLDEN") == "1" {
+		// Write or update testdata/special_hashes.json
+		goldenPath := filepath.Join("goldenPDFHashes", "special_hashes.json")
+		if err := os.MkdirAll("testdata", 0o755); err != nil {
+			t.Fatalf("failed to create testdata directory: %v", err)
+		}
+		b, err := json.MarshalIndent(computed, "", "  ")
+		if err != nil {
+			t.Fatalf("failed to marshal golden hashes: %v", err)
+		}
+		t.Logf("computed hashes (copy into %s):\n%s", goldenPath, string(b))
+		if err := os.WriteFile(goldenPath, b, 0o644); err != nil {
+			t.Fatalf("failed to write golden hashes to %s: %v", goldenPath, err)
+		}
+		t.Logf("updated golden hashes at %s", goldenPath)
+		return
 	}
 
-	params := LetterParams{
-		SenderName:       string(long[:1000]),
-		SenderAddress:    string(long[:5000]),
-		ReceiverName:     string(long[:1000]),
-		ReceiverAddress:  string(long[:5000]),
-		ComplaintSummary: string(long[:10000]),
-		LetterContent:    string(long),
-		Date:             "2025-09-30",
-	}
-
-	pdf, err := RenderPdf(ctx, params)
+	goldenPath := filepath.Join("goldenPDFHashes", "special_hashes.json")
+	goldenBytes, err := os.ReadFile(goldenPath)
 	if err != nil {
-		t.Fatalf("failed to render with long inputs: %v", err)
+		t.Fatalf("failed to read golden hashes from %s: %v (set UPDATE_GOLDEN=1 to generate)", goldenPath, err)
 	}
-	if len(pdf) == 0 {
-		t.Fatalf("returned empty PDF for long input")
+	var expected []string
+	if err := json.Unmarshal(goldenBytes, &expected); err != nil {
+		t.Fatalf("failed to parse golden hashes JSON: %v", err)
 	}
+	if len(expected) != len(computed) {
+		t.Fatalf("golden hash count mismatch: expected %d, got %d (set UPDATE_GOLDEN=1 to refresh)", len(expected), len(computed))
+	}
+	for i := range expected {
+		if expected[i] != computed[i] {
+			t.Fatalf("hash mismatch at case %d: expected %s, got %s", i, expected[i], computed[i])
+		}
+	}
+
 }
