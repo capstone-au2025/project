@@ -30,7 +30,7 @@
             kubectl
             kubelogin-oidc
           ];
-          GOFLAGS = "-tags=aws,ollama";
+          GOFLAGS = "-tags=aws,ollama,openai";
         };
       }
     );
