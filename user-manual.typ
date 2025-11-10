@@ -37,10 +37,11 @@ There are multiple backend inference providers which require different configura
   `OLLAMA_MODEL_ID`, `gemma3:4b`, [Model ID. The list of model IDs are available at #link("https://ollama.com/search")[`ollama.com/search`]],
 )
 
-=== AWS
+=== Amazon Bedrock
 
 #link("https://aws.amazon.com/bedrock")[Amazon Bedrock] is a managed LLM inference runner.
 It provides very large and fast models, and is billed per token.
+Also, the user of Bedrock as an inference provider does not require running the rest of the application on AWS, so long as `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` are set to an IAM user which can assume the `AWS_ACCESS_KEY_ID` role.
 
 #table(
   columns: (auto, auto, 1fr),
@@ -72,6 +73,8 @@ It provides very large and fast models, and is billed per token.
     ]
 }
 ```
+
+=== OpenAI
 
 === Mock
 
