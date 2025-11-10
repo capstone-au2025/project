@@ -9,6 +9,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/bedrockruntime v1.41.0
 	github.com/aws/aws-sdk-go-v2/service/sts v1.38.6
 	github.com/ollama/ollama v0.12.5
+	gopkg.in/yaml.v3 v3.0.1
 	github.com/openai/openai-go v1.12.0
 )
 
