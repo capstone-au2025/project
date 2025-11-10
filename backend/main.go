@@ -43,7 +43,6 @@ type PdfResponseError struct {
 }
 
 type TextRequest struct {
-	Message string            `json:"message"`
 	Altcha  string            `json:"altcha"`
 	Answers map[string]string `json:"answers"`
 }

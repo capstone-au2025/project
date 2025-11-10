@@ -200,7 +200,6 @@ components:
     TextRequest:
       type: object
       required:
-        - message
         - altcha
         - answers
       properties:
