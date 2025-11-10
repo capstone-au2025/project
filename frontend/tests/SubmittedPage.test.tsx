@@ -258,6 +258,17 @@ describe("SubmittedPage", () => {
     });
     await user.click(mailButton);
 
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Send with Online Certified Mail\?/i),
+      ).toBeInTheDocument();
+    });
+
+    const continueButton = screen.getByRole("button", {
+      name: /continue to mail service/i,
+    });
+    await user.click(continueButton);
+
     expect(sendMail).toHaveBeenCalledTimes(1);
     expect(sendMail).toHaveBeenCalledWith(
       expect.objectContaining({

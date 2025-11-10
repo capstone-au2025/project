@@ -20,6 +20,7 @@ They should be set in your editor settings for `gopls` to provide accurate autoc
 
 - `aws`
 - `ollama`
+- `openai`
 
 Having multiple backends helps improve developer experience so that external services do not need to be configured or payed for.
 However different backends requires different golang packages.

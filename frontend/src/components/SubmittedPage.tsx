@@ -131,6 +131,10 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
   } = useResizeDetector<HTMLDivElement>();
 
   const [pdfLoading, setPdfLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [modalDetails, setModalDetails] = useState<{
+    handleConfirm: () => void;
+  } | null>(null);
 
   let pdf:
     | {
@@ -160,7 +164,16 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
       });
     };
 
-    pdf = { bytes: pdfBytes, blobUrl, handleCertifiedMail };
+    const handleCertifiedMailWithConfirm = () => {
+      setModalDetails({ handleConfirm: handleCertifiedMail });
+      setShowModal(true);
+    };
+
+    pdf = {
+      bytes: pdfBytes,
+      blobUrl,
+      handleCertifiedMail: handleCertifiedMailWithConfirm,
+    };
   }
 
   const loadingSkeleton = (
@@ -169,19 +182,50 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
 
   return (
     <PageLayout>
-      <div className="w-full max-w-2xl lg:rounded-lg lg:shadow-lg lg:border lg:border-sky py-8 px-4">
+      {showModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 space-y-6">
+            <h3 className="text-xl font-semibold text-text-primary">
+              Send with Online Certified Mail?
+            </h3>
+            <p className="text-text-primary">
+              You will be redirected to an external certified mail service to
+              finish mailing your letter. We will pass along the letter and your
+              address information.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-6 sm:px-8 py-3 bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setShowModal(false);
+                  modalDetails?.handleConfirm();
+                }}
+                className="flex-1 py-3 sm:py-4 px-6 sm:px-8 bg-primary text-white rounded-md font-bold text-base sm:text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase"
+              >
+                Continue to Mail Service
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      <div className="w-full max-w-5xl lg:rounded-lg lg:shadow-lg lg:border lg:border-sky py-8 px-4">
         <div className="flex flex-col items-center gap-4 lg:gap-8 lg:px-4 leading-none">
           <h2 className="text-2xl">{config.submittedPage.heading}</h2>
           <div
             ref={pdfRef}
-            className="w-[300px] h-[387px] shadow-md border border-sky relative"
+            className="w-full max-w-[700px] aspect-[8.5/11] shadow-md border border-sky relative"
           >
             {pdf && (
               <a
                 download="Letter.pdf"
                 target="_blank"
                 href={pdf.blobUrl}
-                className="absolute"
+                className="absolute w-full h-full"
               >
                 <Document file={pdf.blobUrl} loading={loadingSkeleton}>
                   <Page

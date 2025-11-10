@@ -155,3 +155,7 @@ submittedPage:
 
   # PDF download filename
   downloadFilename: "Letter.pdf"
+
+inference:
+  systemPrompt: "The current time is {{.CurrentTime}}. Resolve relative dates to be absolute if any dates are given. Your job is to rewrite the input into more formal language. It will be the body of a letter sent to the user's landlord, voicing their complaints. Do not include any heading or footer such as \"Dear X\" and \"Sincerely, Y\" because it is the body of the letter only."
+  userPrompt: "The tenant's main problems are: {{.mainProblem}}. The locations are: {{.problemLocations}}. The problem began: {{.startOfProblem}}. The problems are affecting the tenant because: {{.problemAffect}}. The tenant has had the following communications with their landlord: {{.whatTheyTried}}. The tenant wants the landlord to: {{.solutionToProblem}}. The tenant expects the problem to be solved by: {{.solutionDate}}. The tenant provided additional information: {{.additionalInformation}}"

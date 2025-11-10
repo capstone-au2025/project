@@ -1,16 +1,23 @@
 import React from "react";
 import PageLayout from "./PageLayout";
-import { Link } from "wouter";
+import { useLocation } from "wouter";
 import { getConfig } from "../config/configLoader";
 
 interface TOSPageProps {
   nextPage: string;
   backPage: string;
+  onAccept: () => void;
 }
 
-const TOSPage: React.FC<TOSPageProps> = ({ nextPage, backPage }) => {
+const TOSPage: React.FC<TOSPageProps> = ({ nextPage, backPage, onAccept }) => {
   const config = getConfig();
+  const [, setLocation] = useLocation();
   const terms: string = config.termsOfServicePage.terms;
+
+  const handleAccept = () => {
+    onAccept();
+    setLocation(nextPage);
+  };
   return (
     <PageLayout>
       <div className="w-full max-w-3xl px-4 sm:px-6 py-8 sm:py-12 bg-white lg:rounded-lg lg:shadow-lg lg:border lg:border-sky">
@@ -42,12 +49,12 @@ const TOSPage: React.FC<TOSPageProps> = ({ nextPage, backPage }) => {
             >
               {getConfig().common.backButton}
             </a>
-            <Link
-              href={nextPage}
-              className="inline-block text-center flex-1 py-3 sm:py-4 px-6 sm:px-8 bg-primary text-white rounded-md font-bold text-base sm:text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase"
+            <button
+              onClick={handleAccept}
+              className="inline-block text-center flex-1 py-3 sm:py-4 px-6 sm:px-8 bg-primary text-white rounded-md font-bold text-base sm:text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase cursor-pointer"
             >
               {config.termsOfServicePage.continueButton}
-            </Link>
+            </button>
           </section>
         </main>
       </div>
