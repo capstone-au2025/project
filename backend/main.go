@@ -61,19 +61,11 @@ const (
 	statusError   = "error"
 )
 
-type Question struct {
-	Name     string `json:"name"`
-	Question string `json:"label"`
-	Required bool   `json:"required"`
-}
-
 type Form struct {
-	// Pages of questions
-	Questions []Question `json:"questions"`
-	// The part of the system prompt specific to this Form
-	SystemPrompt string `json:"systemPrompt"`
-	// How question answers should be formatted into the user prompt
-	UserPrompt string `json:"userPrompt"`
+	Inference struct {
+		SystemPrompt string `yaml:"systemPrompt"`
+		UserPrompt   string `yaml:"userPrompt"`
+	}
 }
 
 // Given a message, get the body of a letter from LLM inference

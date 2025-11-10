@@ -7,8 +7,6 @@ ENV CGO_ENABLED=0
 RUN go build
 
 FROM golang:latest
-RUN apt-get update
-RUN apt-get install -y yq
 WORKDIR /app
 COPY --from=ghcr.io/typst/typst:v0.13.1 /bin/typst /bin/typst
 COPY --from=typst-wrapper /app/typst-wrapper /bin/typst-wrapper
@@ -22,6 +20,5 @@ COPY backend /app
 COPY app-config.yaml .
 
 COPY app-config.yaml .
-RUN yq '{"questions": [.[].[].[]?.[]?] | map(select(objects)), "systemPrompt": .inference.systemPrompt, "userPrompt": .inference.userPrompt}' app-config.yaml > app-config.json
 
 CMD ["air", "-build.cmd", "go build -tags=aws,ollama -o ./tmp/main ."]

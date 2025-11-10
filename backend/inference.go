@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"os"
 	"text/template"
@@ -11,6 +10,8 @@ import (
 
 	_ "embed"
 	_ "time/tzdata"
+
+	"gopkg.in/yaml.v3"
 )
 
 type InferenceProvider interface {
@@ -56,17 +57,17 @@ var userPromptTemplate *template.Template
 var form Form
 
 func init() {
-	f, err := os.Open("app-config.json")
+	f, err := os.Open("app-config.yaml")
 	if err != nil {
 		panic(err)
 	}
-	d := json.NewDecoder(f)
+	d := yaml.NewDecoder(f)
 	err = d.Decode(&form)
 	if err != nil {
 		panic(err)
 	}
-	systemPromptTemplate = template.Must(template.New("prompt.txt").Parse(form.SystemPrompt))
-	userPromptTemplate = template.Must(template.New("user-prompt.txt").Parse(form.UserPrompt))
+	systemPromptTemplate = template.Must(template.New("prompt.txt").Parse(form.Inference.SystemPrompt))
+	userPromptTemplate = template.Must(template.New("user-prompt.txt").Parse(form.Inference.UserPrompt))
 }
 
 func RenderSystemPrompt() string {
