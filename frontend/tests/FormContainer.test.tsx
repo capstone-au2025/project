@@ -47,6 +47,19 @@ describe("FormContainer", () => {
     );
   };
 
+  const acceptTOSAndGetStarted = async (
+    user: ReturnType<typeof userEvent.setup>,
+  ) => {
+    const tosCheckbox = screen.getByRole("checkbox", {
+      name: /I have read and agree to the Terms of Service/i,
+    });
+    await user.click(tosCheckbox);
+    const getStartedButton = screen.getByRole("button", {
+      name: /get started/i,
+    });
+    await user.click(getStartedButton);
+  };
+
   describe("Initial rendering", () => {
     it("should render IntroPage by default", () => {
       renderWithQueryClient(<FormContainer />);
@@ -55,7 +68,7 @@ describe("FormContainer", () => {
         screen.getByText("Landlord-Tenant Communication Tool"),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("link", { name: /get started/i }),
+        screen.getByRole("button", { name: /get started/i }),
       ).toBeInTheDocument();
     });
 
@@ -75,11 +88,7 @@ describe("FormContainer", () => {
       const user = userEvent.setup();
       renderWithQueryClient(<FormContainer />);
 
-      screen.debug();
-      const getStartedButton = screen.getByRole("link", {
-        name: /get started/i,
-      });
-      await user.click(getStartedButton);
+      await acceptTOSAndGetStarted(user);
 
       expect(
         screen.getByText("Tell Us About Your Concerns"),
@@ -94,7 +103,7 @@ describe("FormContainer", () => {
       renderWithQueryClient(<FormContainer />);
 
       // Navigate to form1
-      await user.click(screen.getByRole("link", { name: /get started/i }));
+      await acceptTOSAndGetStarted(user);
 
       // Fill required field
       const mainProblemField = screen.getByLabelText(
@@ -116,7 +125,7 @@ describe("FormContainer", () => {
       renderWithQueryClient(<FormContainer />);
 
       // Navigate to form1
-      await user.click(screen.getByRole("link", { name: /get started/i }));
+      await acceptTOSAndGetStarted(user);
 
       // Fill and submit form1
       await user.type(
@@ -147,7 +156,7 @@ describe("FormContainer", () => {
       renderWithQueryClient(<FormContainer />);
 
       // Navigate to form1
-      await user.click(screen.getByRole("link", { name: /get started/i }));
+      await acceptTOSAndGetStarted(user);
       expect(
         screen.getByText("Tell Us About Your Concerns"),
       ).toBeInTheDocument();
@@ -165,7 +174,7 @@ describe("FormContainer", () => {
       renderWithQueryClient(<FormContainer />);
 
       // Navigate to form2
-      await user.click(screen.getByRole("link", { name: /get started/i }));
+      await acceptTOSAndGetStarted(user);
       await user.type(
         screen.getByLabelText(
           /What problems are occurring with your house\/apartment\?/i,
@@ -187,7 +196,7 @@ describe("FormContainer", () => {
       renderWithQueryClient(<FormContainer />);
 
       // Navigate to form3
-      await user.click(screen.getByRole("link", { name: /get started/i }));
+      await acceptTOSAndGetStarted(user);
       await user.type(
         screen.getByLabelText(
           /What problems are occurring with your house\/apartment\?/i,
@@ -216,7 +225,7 @@ describe("FormContainer", () => {
       renderWithQueryClient(<FormContainer />);
 
       // Navigate to form1
-      await user.click(screen.getByRole("link", { name: /get started/i }));
+      await acceptTOSAndGetStarted(user);
 
       // Type in field
       const mainProblemField = screen.getByLabelText(
@@ -231,7 +240,7 @@ describe("FormContainer", () => {
       const user = userEvent.setup();
       renderWithQueryClient(<FormContainer />);
 
-      await user.click(screen.getByRole("link", { name: /get started/i }));
+      await acceptTOSAndGetStarted(user);
       await user.type(
         screen.getByLabelText(
           /What problems are occurring with your house\/apartment\?/i,
@@ -252,7 +261,7 @@ describe("FormContainer", () => {
       renderWithQueryClient(<FormContainer />);
 
       // Fill form1
-      await user.click(screen.getByRole("link", { name: /get started/i }));
+      await acceptTOSAndGetStarted(user);
       await user.type(
         screen.getByLabelText(
           /What problems are occurring with your house\/apartment\?/i,
@@ -283,7 +292,7 @@ describe("FormContainer", () => {
     });
 
     it("should load saved data from localStorage on mount", async () => {
-      // Pre-populate localStorage
+      // Pre-populate localStorage with form data AND TOS acceptance
       const savedData = {
         mainProblem: "Saved problem",
         problemLocations: "",
@@ -295,6 +304,7 @@ describe("FormContainer", () => {
         additionalInformation: "",
       };
       localStorage.setItem("justiceFormData", JSON.stringify(savedData));
+      localStorage.setItem("justiceTosAccepted", JSON.stringify(true));
 
       renderWithQueryClient(<FormContainer />, "/form1");
 
@@ -377,7 +387,7 @@ describe("FormContainer", () => {
       renderWithQueryClient(<FormContainer />);
 
       // Should not throw error when trying to save
-      await user.click(screen.getByRole("link", { name: /get started/i }));
+      await acceptTOSAndGetStarted(user);
       await user.type(
         screen.getByLabelText(
           /What problems are occurring with your house\/apartment\?/i,
@@ -408,7 +418,7 @@ describe("FormContainer", () => {
       renderWithQueryClient(<FormContainer />);
 
       // Navigate through all forms
-      await user.click(screen.getByRole("link", { name: /get started/i }));
+      await acceptTOSAndGetStarted(user);
 
       // Fill form1
       await user.type(
@@ -428,7 +438,35 @@ describe("FormContainer", () => {
       );
       await user.click(screen.getByRole("button", { name: /continue/i }));
 
-      // Submit form3
+      await user.click(screen.getByRole("button", { name: /continue/i }));
+
+      // Should navigate to addresses page
+      await waitFor(() => {
+        expect(screen.getByText("Addresses")).toBeInTheDocument();
+      });
+
+      await user.type(screen.getByLabelText(/Your Name/i), "Tenant Name");
+      await user.type(screen.getByLabelText(/Your Address/i), "123 Main St");
+      await user.type(screen.getByLabelText(/Your City/i), "Columbus");
+      await user.selectOptions(screen.getByLabelText(/Your State/i), "OH");
+      await user.type(screen.getByLabelText(/Your ZIP/i), "43215");
+
+      await user.type(
+        screen.getByLabelText(/Landlord's Name/i),
+        "Landlord Name",
+      );
+      await user.type(
+        screen.getByLabelText(/Landlord's Address/i),
+        "456 Landlord St",
+      );
+      await user.type(screen.getByLabelText(/Landlord's City/i), "Columbus");
+      await user.selectOptions(
+        screen.getByLabelText(/Landlord's State/i),
+        "OH",
+      );
+      await user.type(screen.getByLabelText(/Landlord's ZIP/i), "43216");
+
+      // Submit addresses to go to submitted page
       await user.click(
         screen.getByRole("button", { name: /generate letter/i }),
       );

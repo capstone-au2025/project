@@ -21,4 +21,4 @@ COPY app-config.yaml .
 
 COPY app-config.yaml .
 
-CMD ["air", "-build.cmd", "go build -tags=aws,ollama -o ./tmp/main ."]
+CMD ["air", "-build.cmd", "go build -tags=openai,ollama,aws -o ./tmp/main ."]

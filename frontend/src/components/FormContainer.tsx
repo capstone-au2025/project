@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import IntroPage from "./IntroPage";
 import FormPage from "./FormPage";
+import TOSPage from "./TOSPage";
+import AddressPage from "./AddressPage";
 import SubmittedPage from "./SubmittedPage";
 import { Route, Switch, useLocation, useSearchParams } from "wouter";
 import { getConfig } from "../config/configLoader";
@@ -17,10 +19,18 @@ export interface FormData extends Record<string, string> {
   additionalInformation: string;
 }
 
-type PageState = "intro" | "form1" | "form2" | "form3" | "submitted";
+type PageState =
+  | "intro"
+  | "tos"
+  | "form1"
+  | "form2"
+  | "form3"
+  | "addresses"
+  | "submitted";
 
 const STORAGE_KEY = "justiceFormData";
 const PAGE_STATE_KEY = "justiceFormPageState";
+const TOS_ACCEPTANCE_KEY = "justiceTosAccepted";
 
 const INITIAL_FORM_DATA: FormData = {
   mainProblem: "",
@@ -70,12 +80,15 @@ const FormContainer = () => {
   const [formData, setFormData] = useState<FormData>(() =>
     loadFromLocalStorage(STORAGE_KEY, INITIAL_FORM_DATA),
   );
+  const [tosAccepted, setTosAccepted] = useState<boolean>(() =>
+    loadFromLocalStorage(TOS_ACCEPTANCE_KEY, false),
+  );
   const [location, setLocation] = useLocation();
   const previousLocation = usePreviousLocation();
   const [searchParams, setSearchParams] = useSearchParams();
 
   let direction = "normal";
-  const locationOrder = ["/", "/form1", "/form2", "/form3"];
+  const locationOrder = ["/", "/form1", "/form2", "/form3", "/addresses"];
   if (previousLocation) {
     const deltaLocation =
       locationOrder.indexOf(location) - locationOrder.indexOf(previousLocation);
@@ -94,8 +107,18 @@ const FormContainer = () => {
     saveToLocalStorage(PAGE_STATE_KEY, location);
   }, [location]);
 
-  const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+  useEffect(() => {
+    saveToLocalStorage(TOS_ACCEPTANCE_KEY, tosAccepted);
+  }, [tosAccepted]);
+
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+  ) => {
+    const target = e.target as
+      | HTMLInputElement
+      | HTMLTextAreaElement
+      | HTMLSelectElement;
+    const { name, value } = target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -105,6 +128,7 @@ const FormContainer = () => {
       return undefined;
     });
     setFormData(INITIAL_FORM_DATA);
+    setTosAccepted(false);
     localStorage.clear();
     setLocation("/");
   }
@@ -115,6 +139,24 @@ const FormContainer = () => {
       setLocation("/" + nextPage);
     };
 
+  const handleTosAccept = () => {
+    setTosAccepted(true);
+  };
+
+  // Route protection: redirect to intro if TOS not accepted
+  const protectedPages = [
+    "/form1",
+    "/form2",
+    "/form3",
+    "/addresses",
+    "/submitted",
+  ];
+  useEffect(() => {
+    if (!tosAccepted && protectedPages.includes(location)) {
+      setLocation("/");
+    }
+  }, [location, tosAccepted]);
+
   return (
     <Switch>
       <Route path="/form1">
@@ -122,7 +164,9 @@ const FormContainer = () => {
           formData={formData}
           onInputChange={handleInputChange}
           onSubmit={handlePageSubmit("form2")}
-          backPage="/"
+          backPage={
+            previousLocation == "/termsofservice" ? "/termsofservice" : "/"
+          }
           pageConfig={config.formPages[0]}
           animationDirection={direction}
         />
@@ -143,19 +187,37 @@ const FormContainer = () => {
         <FormPage
           formData={formData}
           onInputChange={handleInputChange}
-          onSubmit={handlePageSubmit("submitted")}
+          onSubmit={handlePageSubmit("addresses")}
           backPage="/form2"
           pageConfig={config.formPages[2]}
           animationDirection={direction}
         />
       </Route>
 
+      <Route path="/addresses">
+        <AddressPage
+          formData={formData}
+          onInputChange={handleInputChange}
+          onSubmit={handlePageSubmit("submitted")}
+          backPage="/form3"
+          animationDirection={direction}
+        />
+      </Route>
+
       <Route path="/submitted">
-        <SubmittedPage formData={formData} backPage="form3" />
+        <SubmittedPage formData={formData} backPage="addresses" />
+      </Route>
+
+      <Route path="/termsofservice">
+        <TOSPage nextPage="/form1" backPage="/" onAccept={handleTosAccept} />
       </Route>
 
       <Route>
-        <IntroPage nextPage="/form1" />
+        <IntroPage
+          nextPage="/form1"
+          tosAccepted={tosAccepted}
+          onTosAccept={handleTosAccept}
+        />
       </Route>
     </Switch>
   );

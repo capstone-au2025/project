@@ -36,6 +36,12 @@ describe("App", () => {
     const button = await screen.findByText("Get Started");
     expect(button).toBeInTheDocument();
 
+    // Check TOS checkbox first
+    const tosCheckbox = screen.getByRole("checkbox", {
+      name: /I have read and agree to the Terms of Service/i,
+    });
+    await user.click(tosCheckbox);
+
     await user.click(button);
 
     expect(button).not.toBeInTheDocument();
