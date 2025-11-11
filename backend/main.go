@@ -233,9 +233,8 @@ func main() {
 	rateLimitedIP := NewRateLimitedProvider(ip)
 
 	rt := router{
-		ip:     ip,
 		altcha: altchaService,
-		ip: rateLimitedIP,
+		ip:     rateLimitedIP,
 	}
 
 	mux := http.NewServeMux()
