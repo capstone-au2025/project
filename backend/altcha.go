@@ -34,6 +34,13 @@ type AltchaService struct {
 	usedStore *UsedChallengeStore
 }
 
+type UsedChallengeStore struct {
+	store    sync.Map
+	lifetime time.Duration
+	stop     chan struct{}
+	stopOnce sync.Once
+}
+
 func NewAltchaService() *AltchaService {
 	return &AltchaService{
 		secret:    "",
@@ -52,12 +59,6 @@ func (a *AltchaService) Verify(key string) (bool, error) {
 	return ok, nil
 }
 
-type UsedChallengeStore struct {
-	store    sync.Map
-	lifetime time.Duration
-	stop     chan struct{}
-}
-
 func NewUsedChallengeStore(lifetime time.Duration) *UsedChallengeStore {
 	u := &UsedChallengeStore{
 		lifetime: lifetime,
@@ -68,7 +69,7 @@ func NewUsedChallengeStore(lifetime time.Duration) *UsedChallengeStore {
 }
 
 func (u *UsedChallengeStore) Stop() {
-	close(u.stop)
+	u.stopOnce.Do(func() { close(u.stop) })
 }
 
 func (u *UsedChallengeStore) Add(key string) {
@@ -87,16 +88,10 @@ func (u *UsedChallengeStore) IsUsed(key string) bool {
 	}
 	val := valRaw.(usedStoreValue)
 
-	if time.Now().After(val.expires) {
-		return true
-	}
 	val.uses++
-	if val.uses >= maxUses {
-		u.store.Store(key, val)
-		return true
-	}
 
-	return false // should never reach here
+	u.store.Store(key, val)
+	return val.uses >= maxUses
 }
 
 func (u *UsedChallengeStore) cleanupRoutine() {
