@@ -1,4 +1,5 @@
 import React from "react";
+import { getConfig } from "../config/configLoader";
 
 interface ProgressIndicatorProps {
   currentStep: number;
@@ -9,6 +10,7 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
   currentStep,
   totalSteps,
 }) => {
+  const config = getConfig();
   return (
     <div className="flex items-center justify-center mb-4 md:mb-8 gap-2 md:gap-4">
       {Array.from({ length: totalSteps }, (_, index) => {
@@ -47,7 +49,10 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
                 )}
               </div>
               <span className="text-xs text-text-primary mt-1 md:mt-2 hidden sm:block">
-                Page {stepNumber}
+                {config.common.pageLabel.replace(
+                  "{stepNumber}",
+                  String(stepNumber),
+                )}
               </span>
             </div>
             {stepNumber < totalSteps && (

@@ -4,11 +4,14 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"os"
 	"text/template"
 	"time"
 
 	_ "embed"
 	_ "time/tzdata"
+
+	"gopkg.in/yaml.v3"
 )
 
 // InferenceProvider defines the interface for any inference provider.
@@ -56,12 +59,23 @@ func init() {
 	}
 }
 
-//go:embed prompt.txt
-var systemPromptTemplateContent string
 var systemPromptTemplate *template.Template
+var userPromptTemplate *template.Template
+
+var form Form
 
 func init() {
-	systemPromptTemplate = template.Must(template.New("prompt.txt").Parse(systemPromptTemplateContent))
+	f, err := os.Open("app-config.yaml")
+	if err != nil {
+		panic(err)
+	}
+	d := yaml.NewDecoder(f)
+	err = d.Decode(&form)
+	if err != nil {
+		panic(err)
+	}
+	systemPromptTemplate = template.Must(template.New("prompt.txt").Parse(form.Inference.SystemPrompt))
+	userPromptTemplate = template.Must(template.New("user-prompt.txt").Parse(form.Inference.UserPrompt))
 }
 
 func RenderSystemPrompt() string {

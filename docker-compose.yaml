@@ -3,7 +3,7 @@ services:
     ports:
       - 3001:3001
     build:
-      context: ./backend
+      dockerfile: Dockerfile.backend-dev
     environment:
       - INFERENCE_PROVIDER=ollama
       - OLLAMA_HOST=http://ollama:11434
@@ -13,6 +13,9 @@ services:
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_BEDROCK_ROLE_ARN=${AWS_BEDROCK_ROLE_ARN}
       - AWS_BEDROCK_MODEL_ID=${AWS_BEDROCK_MODEL_ID}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL_ID=${OPENAI_MODEL_ID}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL}
     develop:
       watch:
         - action: sync
@@ -28,7 +31,7 @@ services:
     ports:
       - 5173:5173
     build:
-      context: ./frontend
+      dockerfile: Dockerfile.frontend-dev
     depends_on:
       - backend
     develop:
@@ -47,4 +50,4 @@ services:
   ollama:
     image: ollama/ollama
     volumes:
-      - ./ollama:/root/.ollama
+      - ./ollama:/root/.ollama:z

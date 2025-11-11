@@ -1,0 +1,161 @@
+# JusticeTech Frontend UI Configuration
+# This file contains all user-facing text for the application
+
+app:
+  # Main application title
+  title: "Landlord-Tenant Communication Tool"
+
+introPage:
+  # Main heading
+  heading: "Landlord-Tenant Communication Tool"
+
+  # Introductory description paragraph
+  description: |
+    This tool helps tenants communicate issues and concerns to their
+    landlords in a clear and organized way. By answering a few simple
+    questions, we'll help facilitate better communication and
+    understanding between you and your landlord.
+
+  # Feature cards (displayed in 2x2 grid)
+  features:
+    - title: "Quick & Easy"
+      description: "Answer just a few questions about your situation. The process takes less than 5 minutes."
+
+    - title: "Free to Use"
+      description: "This tool is completely free. No registration or payment required to get started."
+
+  # Info box section
+  infoBox:
+    title: "What you'll need"
+    description: |
+      Have information about your rental property and any specific
+      issues or concerns ready. Include dates, documentation, and any
+      relevant details about your housing situation.
+
+  # Call-to-action button
+  getStartedButton: "Get Started"
+
+  # Footer text under button
+  footerText: "Takes approximately 3-5 minutes to complete"
+
+termsOfServicePage:
+  heading: "Terms of Service"
+
+  terms: |
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec luctus porta metus, eu laoreet orci rhoncus at. Aenean consectetur convallis vestibulum. Aliquam sapien nulla, hendrerit id eleifend vitae, molestie sodales ex. Integer leo ligula, consequat aliquam libero sed, pulvinar posuere elit. Etiam imperdiet ultricies enim non hendrerit. Proin euismod gravida massa vitae blandit. Vestibulum fermentum id tortor id pretium. Nunc eros metus, tincidunt id ex vitae, auctor cursus nisl. Nulla dolor nulla, tristique tempor mi quis, tincidunt facilisis ante. Sed sagittis luctus metus vitae posuere. Nam semper, nibh at cursus lobortis, lectus justo dapibus dolor, vitae vulputate risus turpis at ligula. Vivamus fermentum, quam vel interdum volutpat, leo ligula blandit justo, id ultricies augue dolor sed nunc.
+
+    
+    Duis eget sapien vitae tortor laoreet porta. Morbi dolor enim, vehicula vitae lectus sit amet, condimentum congue felis. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nulla facilisi. Morbi interdum sollicitudin vulputate. Aenean elementum felis eget nisl suscipit, nec porta nibh placerat. Donec eget mattis nisl. Sed semper maximus magna vel sagittis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eget sodales erat. Morbi elementum ligula lacinia nulla vulputate, non tristique tellus cursus. Phasellus id erat nec erat tincidunt dignissim ut eget ante.
+
+    
+    Phasellus tincidunt venenatis placerat. Ut sagittis vulputate orci eu rutrum. Nulla mattis nunc et lacus scelerisque ultrices. Suspendisse lobortis, augue a aliquam tempor, felis metus vehicula massa, ultrices faucibus urna orci sit amet nunc. Nulla eros erat, ultricies vel augue et, pulvinar venenatis nunc. Fusce condimentum nisi augue, tincidunt tincidunt ipsum luctus in. Maecenas ut felis at mi suscipit consectetur in et metus. Ut urna magna, cursus eget mollis a, congue non arcu. Donec vitae metus tincidunt, maximus lacus et, maximus
+    velit. Sed in interdum urna. Donec congue pulvinar arcu id accumsan.
+
+    
+    Sed vel lorem vel erat fringilla accumsan. Nulla est leo, feugiat sed vestibulum id, dictum non arcu. Phasellus vitae consectetur nibh. Aenean enim tellus, aliquam faucibus dapibus quis, faucibus at lorem. Mauris ipsum tellus, viverra a porttitor vel, accumsan vel magna. Proin in nisl eu nisi vulputate pretium at a diam. Donec vitae risus vestibulum, tincidunt nisi a, pulvinar elit. Suspendisse nulla quam, molestie convallis tempor id, malesuada sit amet nisl. Nulla feugiat dictum sodales. Suspendisse non auctor libero. Etiam vitae consectetur ante.
+
+    
+    Nulla ac arcu urna. Ut sit amet ex fermentum, iaculis purus id, elementum diam. Aliquam sodales tristique faucibus. Pellentesque nec blandit ante, vitae blandit velit. Duis imperdiet dolor at est eleifend, vel feugiat metus condimentum. Mauris sit amet feugiat sapien. Ut lectus erat, mattis egestas consectetur ac, semper et lacus. Aenean sit amet purus rutrum, lobortis est sed, pulvinar lectus. Aliquam non augue pretium, porttitor massa at, sollicitudin metus. Duis pharetra ex pharetra maximus laoreet. Praesent blandit nisi turpis, id imperdiet felis elementum vitae. Vivamus dui quam, convallis eleifend metus nec, volutpat porta enim. Integer dapibus leo ut dolor accumsan hendrerit. Quisque elementum maximus lorem, a ultricies libero tristique eget. 
+
+  continueButton: "Agree and Continue"
+
+formPages:
+  # Page 1: Initial Concerns
+  - pageNumber: 1
+    title: "Tell Us About Your Concerns"
+    subtitle: "Please provide details about your housing situation below"
+    tipText: "Be as specific as possible. Include dates, locations, and any relevant documentation if available. Please do not Include any personal information in your answers."
+    tipType: "default"
+    submitButtonText: "Continue"
+    pageInfoText: "Page 1 of 3 - Let's get started!"
+    questions:
+      - name: "mainProblem"
+        label: "What problems are occurring with your house/apartment?"
+        placeholder: "Examples: no running water, no heat or A/C, lock is broken, etc"
+        required: true
+
+      - name: "problemLocations"
+        label: "Where is each problem described happening?"
+        placeholder: "Example: The bathroom sink is broken..."
+        required: false
+
+      - name: "startOfProblem"
+        label: "When did each problem start?"
+        placeholder: "Provide the date or time that the problem started"
+        required: false
+
+  # Page 2: Additional Details
+  - pageNumber: 2
+    title: "Additional Details"
+    subtitle: "Help us understand more about your situation"
+    tipText: "Continue to be specific with dates, locations, and any relevant details. This information helps create a clear record of your concerns."
+    tipType: "default"
+    submitButtonText: "Continue"
+    pageInfoText: "Page 2 of 3 - Almost there!"
+    questions:
+      - name: "problemAffect"
+        label: "How are these problems affecting your living situation?"
+        placeholder: "Example: I can't take a shower, I feel unsafe, the apartment is too cold for my kids, etc."
+        required: true
+
+      - name: "whatTheyTried"
+        label: "Have you informed your landlord about these problems and have they replied?"
+        placeholder: "Please include details about communications and replies from your landlord..."
+        required: false
+
+      - name: "solutionToProblem"
+        label: "What would you like your landlord to do to fix these problems?"
+        placeholder: "Provide details about what your landlord can do to fix this problem..."
+        required: false
+
+      - name: "solutionDate"
+        label: "When would you like to have a solution to these problems?"
+        placeholder: "Example: I would like this fixed as soon as possible, etc."
+        required: false
+
+  # Page 3: Final Question
+  - pageNumber: 3
+    title: "Final Question"
+    subtitle: "One last thing before we generate your letter"
+    tipText: "This final question helps us add context and information to your letter!"
+    tipType: "success"
+    submitButtonText: "Continue"
+    pageInfoText: "Page 3 of 3 - Ready to submit!"
+    questions:
+      - name: "additionalInformation"
+        label: "Do you have any additional information?"
+        placeholder: "Example: Any other details you'd like to include..."
+        required: false
+
+# Text used throughout the form pages and components
+common:
+  # Progress indicator label template (uses {stepNumber} placeholder)
+  pageLabel: "Page {stepNumber}"
+
+  # Button labels used across pages
+  backButton: "Back"
+
+  # Tip prefix text (shown when tipType is "default")
+  tipPrefix: "Tip:"
+
+  # Tip prefix text (shown when tipType is "success")
+  successTipPrefix: "Almost done!"
+
+  # Required field indicator
+  requiredIndicator: "*"
+
+submittedPage:
+  # Main heading
+  heading: "Here's your letter:"
+
+  # Buttons
+  mailButton: "Mail to your Landlord"
+  downloadButton: "Download PDF"
+  backButton: "Back"
+
+  # PDF download filename
+  downloadFilename: "Letter.pdf"
+
+inference:
+  systemPrompt: "The current time is {{.CurrentTime}}. Resolve relative dates to be absolute if any dates are given. Your job is to rewrite the input into more formal language. It will be the body of a letter sent to the user's landlord, voicing their complaints. Do not include any heading or footer such as \"Dear X\" and \"Sincerely, Y\" because it is the body of the letter only."
+  userPrompt: "The tenant's main problems are: {{.mainProblem}}. The locations are: {{.problemLocations}}. The problem began: {{.startOfProblem}}. The problems are affecting the tenant because: {{.problemAffect}}. The tenant has had the following communications with their landlord: {{.whatTheyTried}}. The tenant wants the landlord to: {{.solutionToProblem}}. The tenant expects the problem to be solved by: {{.solutionDate}}. The tenant provided additional information: {{.additionalInformation}}"
