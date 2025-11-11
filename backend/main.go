@@ -227,7 +227,6 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /api/pdf", rt.pdf)
 	mux.HandleFunc("POST /api/text", rt.text)
-	mux.HandleFunc("POST /api/teams/command", HandleTeamsCommand)
 	mux.HandleFunc("GET /healthz", healthcheck)
 
 	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
