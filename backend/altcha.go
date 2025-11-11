@@ -95,7 +95,7 @@ func (u *UsedChallengeStore) IsUsed(key string) bool {
 		u.store.Store(key, val)
 		return true
 	}
-	
+
 	return false // should never reach here
 }
 
