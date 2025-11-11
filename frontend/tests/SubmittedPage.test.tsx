@@ -59,6 +59,16 @@ describe("SubmittedPage", () => {
     solutionToProblem: "Fix heater",
     solutionDate: "ASAP",
     additionalInformation: "None",
+    senderName: "John Sender",
+    senderAddress: "1234 Sender St",
+    senderCity: "Sendertown",
+    senderState: "OH",
+    senderZip: "12345",
+    destinationName: "Jane Receiver",
+    destinationAddress: "5678 Receiver Ave",
+    destinationCity: "Receiverville",
+    destinationState: "OH",
+    destinationZip: "67890",
   };
 
   let queryClient: QueryClient;
@@ -166,7 +176,6 @@ describe("SubmittedPage", () => {
 
       expect(pdfCall).toBeDefined();
       const body = JSON.parse(pdfCall![1].body as string);
-
       expect(body).toHaveProperty("senderName");
       expect(body).toHaveProperty("senderAddress");
       expect(body).toHaveProperty("receiverName");
@@ -202,18 +211,6 @@ describe("SubmittedPage", () => {
     );
 
     expect(screen.getByRole("link", { name: /back/i })).toBeInTheDocument();
-  });
-
-  it("should call backPage="/form3Back button is clicked", async () => {
-    const user = userEvent.setup();
-    renderWithQueryClient(
-      <SubmittedPage formData={mockFormData} backPage="/form3" />,
-    );
-
-    const backButton = screen.getByRole("link", { name: /back/i });
-    await user.click(backButton);
-
-    expect(mockOnBack).toHaveBeenCalledTimes(1);
   });
 
   it("should render Mail to Landlord button after PDF loads", async () => {
@@ -260,6 +257,17 @@ describe("SubmittedPage", () => {
     });
     await user.click(mailButton);
 
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Send with Online Certified Mail\?/i),
+      ).toBeInTheDocument();
+    });
+
+    const continueButton = screen.getByRole("button", {
+      name: /continue to mail service/i,
+    });
+    await user.click(continueButton);
+
     expect(sendMail).toHaveBeenCalledTimes(1);
     expect(sendMail).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -295,7 +303,7 @@ describe("SubmittedPage", () => {
 
     // Should still render the page without crashing
     expect(screen.getByText("Here's your letter:")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /back/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /back/i })).toBeInTheDocument();
 
     consoleErrorSpy.mockRestore();
   });
@@ -314,7 +322,7 @@ describe("SubmittedPage", () => {
     // Re-render with same props should not trigger another fetch
     rerender(
       <QueryClientProvider client={queryClient}>
-        <SubmittedPage formData={mockFormData} backPage="/form3"} />
+        <SubmittedPage formData={mockFormData} backPage="/form3" />
       </QueryClientProvider>,
     );
 

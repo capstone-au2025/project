@@ -4,13 +4,21 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"os"
 	"text/template"
 	"time"
 
 	_ "embed"
 	_ "time/tzdata"
+
+	"gopkg.in/yaml.v3"
 )
 
+// InferenceProvider defines the interface for any inference provider.
+// Rate limiting is applied to all providers via the RateLimitedProvider wrapper
+// in main.go. Configure rate limits using environment variables:
+//   - RATE_LIMIT_REQUESTS_PER_SECOND: Number of requests per second (default: 1.0)
+//   - RATE_LIMIT_BURST: Maximum burst size (default: 3)
 type InferenceProvider interface {
 	// Runs user context input through inference provider.
 	// A system prompt may be included on creation of the inference provider.
@@ -25,17 +33,20 @@ var (
 var inferenceProviders map[string]func(maxInputTokens uint64, maxOutputTokens uint64) (InferenceProvider, error) = make(map[string]func(uint64, uint64) (InferenceProvider, error))
 
 type MockInferenceProvider struct {
-	shouldError bool
+	shouldError   bool
+	sleepDuration time.Duration
 }
 
 var _ InferenceProvider = (*MockInferenceProvider)(nil)
 
 func NewMockInferenceProvider() *MockInferenceProvider {
-	return &MockInferenceProvider{}
+	return &MockInferenceProvider{
+		sleepDuration: 2 * time.Second,
+	}
 }
 
 func (m *MockInferenceProvider) Infer(ctx context.Context, input string) (string, error) {
-	time.Sleep(2 * time.Second)
+	time.Sleep(m.sleepDuration)
 	if m.shouldError {
 		return "", ErrTooManyInputTokens
 	}
@@ -48,12 +59,23 @@ func init() {
 	}
 }
 
-//go:embed prompt.txt
-var systemPromptTemplateContent string
 var systemPromptTemplate *template.Template
+var userPromptTemplate *template.Template
+
+var form Form
 
 func init() {
-	systemPromptTemplate = template.Must(template.New("prompt.txt").Parse(systemPromptTemplateContent))
+	f, err := os.Open("app-config.yaml")
+	if err != nil {
+		panic(err)
+	}
+	d := yaml.NewDecoder(f)
+	err = d.Decode(&form)
+	if err != nil {
+		panic(err)
+	}
+	systemPromptTemplate = template.Must(template.New("prompt.txt").Parse(form.Inference.SystemPrompt))
+	userPromptTemplate = template.Must(template.New("user-prompt.txt").Parse(form.Inference.UserPrompt))
 }
 
 func RenderSystemPrompt() string {

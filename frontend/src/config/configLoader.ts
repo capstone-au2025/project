@@ -53,11 +53,18 @@ export interface SubmittedPageConfig {
   downloadFilename: string;
 }
 
+export interface TermsOfServicePageConfig {
+  heading: string;
+  terms: string;
+  continueButton: string;
+}
+
 export interface UIConfig {
   app: {
     title: string;
   };
   introPage: IntroPageConfig;
+  termsOfServicePage: TermsOfServicePageConfig;
   formPages: PageConfig[];
   common: CommonConfig;
   submittedPage: SubmittedPageConfig;

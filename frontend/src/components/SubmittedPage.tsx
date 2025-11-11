@@ -4,6 +4,7 @@ import {
   base64ToUint8Array,
   sendMail,
   type NameAndAddress,
+  type State,
 } from "../certifiedmail";
 import z from "zod";
 import { GlobalWorkerOptions } from "pdfjs-dist";
@@ -49,34 +50,22 @@ const textResponseSchema = z.object({
   content: z.string(),
 });
 
-const destination: NameAndAddress = {
-  address: "Destination Address",
-  city: "Destination City",
-  company: undefined,
-  name: "Destination Name",
-  state: "OH",
-  zip: "12345",
-};
-
-const sender: NameAndAddress = {
-  address: "Sender Address",
-  city: "Sender City",
-  company: undefined,
-  name: "Sender Name",
-  state: "OH",
-  zip: "12345",
-};
-
-async function generatePdf(formData: Record<string, string>) {
+async function generatePdf(
+  formData: Record<string, string>,
+  sender: NameAndAddress,
+  destination: NameAndAddress,
+) {
   let message = "";
   const config = getConfig();
   const keyToQuestion = Object.fromEntries(
     config.formPages.flatMap((x) => x.questions).map((x) => [x.name, x.label]),
   );
   for (const [key, value] of Object.entries(formData)) {
-    message += `${keyToQuestion[key]}\n${value}\n\n`;
+    const question = keyToQuestion[key];
+    if (question) {
+      message += `${question}\n${value}\n\n`;
+    }
   }
-
   const textResponse = await fetch("/api/text", {
     method: "POST",
     body: JSON.stringify({
@@ -91,7 +80,7 @@ async function generatePdf(formData: Record<string, string>) {
     body: JSON.stringify({
       senderName: sender.name,
       senderAddress: `${sender.address}, ${sender.city}, ${sender.state} ${sender.zip} `,
-      receiverName: destination.address,
+      receiverName: destination.name,
       receiverAddress: `${destination.address}, ${destination.city}, ${destination.state} ${destination.zip} `,
       body: text.content,
     } satisfies PdfRequest),
@@ -106,10 +95,29 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
   backPage,
 }) => {
   const config = getConfig();
+
+  const sender: NameAndAddress = {
+    name: formData.senderName,
+    company: formData.senderCompany,
+    address: formData.senderAddress,
+    city: formData.senderCity,
+    state: (formData.senderState ?? "OH") as State,
+    zip: formData.senderZip,
+  };
+
+  const destination: NameAndAddress = {
+    name: formData.destinationName,
+    company: formData.destinationCompany,
+    address: formData.destinationAddress,
+    city: formData.destinationCity,
+    state: (formData.destinationState ?? "OH") as State,
+    zip: formData.destinationZip,
+  };
+
   const { data } = useQuery({
     queryKey: ["pdf", formData],
     staleTime: Infinity,
-    queryFn: () => generatePdf(formData),
+    queryFn: () => generatePdf(formData, sender, destination),
   });
   const {
     width: pdfWidth,
@@ -118,6 +126,10 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
   } = useResizeDetector<HTMLDivElement>();
 
   const [pdfLoading, setPdfLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [modalDetails, setModalDetails] = useState<{
+    handleConfirm: () => void;
+  } | null>(null);
 
   let pdf:
     | {
@@ -131,7 +143,9 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     const pdfBytes = base64ToUint8Array(data.content);
     // Use blob url because mobile safari absolutely refuses to open data urls
     const blobUrl = URL.createObjectURL(
-      new Blob([pdfBytes], { type: "application/pdf" }),
+      new Blob([pdfBytes as unknown as ArrayBuffer], {
+        type: "application/pdf",
+      }),
     );
 
     const handleCertifiedMail = () => {
@@ -145,7 +159,16 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
       });
     };
 
-    pdf = { bytes: pdfBytes, blobUrl, handleCertifiedMail };
+    const handleCertifiedMailWithConfirm = () => {
+      setModalDetails({ handleConfirm: handleCertifiedMail });
+      setShowModal(true);
+    };
+
+    pdf = {
+      bytes: pdfBytes,
+      blobUrl,
+      handleCertifiedMail: handleCertifiedMailWithConfirm,
+    };
   }
 
   const loadingSkeleton = (
@@ -154,19 +177,50 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
 
   return (
     <PageLayout>
-      <div className="w-full max-w-2xl lg:rounded-lg lg:shadow-lg lg:border lg:border-sky py-8 px-4">
+      {showModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 space-y-6">
+            <h3 className="text-xl font-semibold text-text-primary">
+              Send with Online Certified Mail?
+            </h3>
+            <p className="text-text-primary">
+              You will be redirected to an external certified mail service to
+              finish mailing your letter. We will pass along the letter and your
+              address information.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-6 sm:px-8 py-3 bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setShowModal(false);
+                  modalDetails?.handleConfirm();
+                }}
+                className="flex-1 py-3 sm:py-4 px-6 sm:px-8 bg-primary text-white rounded-md font-bold text-base sm:text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase"
+              >
+                Continue to Mail Service
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      <div className="w-full max-w-5xl lg:rounded-lg lg:shadow-lg lg:border lg:border-sky py-8 px-4">
         <div className="flex flex-col items-center gap-4 lg:gap-8 lg:px-4 leading-none">
           <h2 className="text-2xl">{config.submittedPage.heading}</h2>
           <div
             ref={pdfRef}
-            className="w-[300px] h-[387px] shadow-md border border-sky relative"
+            className="w-full max-w-[700px] aspect-[8.5/11] shadow-md border border-sky relative"
           >
             {pdf && (
               <a
                 download="Letter.pdf"
                 target="_blank"
                 href={pdf.blobUrl}
-                className="absolute"
+                className="absolute w-full h-full"
               >
                 <Document file={pdf.blobUrl} loading={loadingSkeleton}>
                   <Page

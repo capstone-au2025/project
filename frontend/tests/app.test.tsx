@@ -16,7 +16,7 @@ describe("App", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Landlord-Tenant Communication Tool")
+        screen.getByText("Landlord-Tenant Communication Tool"),
       ).toBeInTheDocument();
     });
   });
@@ -36,13 +36,19 @@ describe("App", () => {
     const button = await screen.findByText("Get Started");
     expect(button).toBeInTheDocument();
 
+    // Check TOS checkbox first
+    const tosCheckbox = screen.getByRole("checkbox", {
+      name: /I have read and agree to the Terms of Service/i,
+    });
+    await user.click(tosCheckbox);
+
     await user.click(button);
 
     expect(button).not.toBeInTheDocument();
     expect(
       await screen.findByText(
-        "What problems are occurring with your house/apartment?"
-      )
+        "What problems are occurring with your house/apartment?",
+      ),
     ).toBeInTheDocument();
   });
 
@@ -50,7 +56,7 @@ describe("App", () => {
     render(
       <Router hook={memoryLocation().hook}>
         <App />
-      </Router>
+      </Router>,
     );
 
     await waitFor(() => {
