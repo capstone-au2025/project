@@ -119,7 +119,11 @@ func SendAnalyticsToTeams(ctx context.Context, stats AnalyticsStats) error {
 	if err != nil {
 		return fmt.Errorf("failed to send webhook: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if closeErr := resp.Body.Close(); closeErr != nil {
+			slog.ErrorContext(ctx, "Failed to close response body", "err", closeErr)
+		}
+	}()
 
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("webhook returned status %d", resp.StatusCode)
