@@ -214,8 +214,11 @@ func main() {
 		slog.Error("Failed to initialize inference provider", "name", ipName, "err", err)
 	}
 
+	// Wrapped provider with rate limiting
+	rateLimitedIP := NewRateLimitedProvider(ip)
+
 	rt := router{
-		ip: ip,
+		ip: rateLimitedIP,
 	}
 
 	mux := http.NewServeMux()
