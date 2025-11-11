@@ -16,12 +16,19 @@ import (
 	altcha "github.com/altcha-org/altcha-lib-go"
 )
 
-var challengeExpiration = 10 * time.Minute
-var usedStore = NewUsedChallengeStore(challengeExpiration)
+var (
+	challengeExpiration = 10 * time.Minute
+	usedStore           = NewUsedChallengeStore(challengeExpiration)
+	hmacKeyOnce         sync.Once
+	maxUses             = 2
+)
 
-var hmacKeyOnce sync.Once
+type usedStoreValue struct {
+	expires time.Time
+	uses    int
+}
 
-// used by /api/text and /api/pdf to verify the altcha token and prevent replay attacks
+// used by /api/text to verify the altcha token and prevent replay attacks
 type AltchaService struct {
 	secret    string
 	usedStore *UsedChallengeStore
@@ -30,21 +37,18 @@ type AltchaService struct {
 func NewAltchaService() *AltchaService {
 	return &AltchaService{
 		secret:    "",
-		usedStore: NewUsedChallengeStore(challengeExpiration),
+		usedStore: usedStore,
 	}
 }
 
-func (a *AltchaService) Verify(payload string) (bool, error) {
-	if a.usedStore.IsUsed(payload) {
+func (a *AltchaService) Verify(key string) (bool, error) {
+	if a.usedStore.IsUsed(key) {
 		return false, nil
 	}
-	ok, err := altcha.VerifySolutionSafe(payload, a.secret, true)
-
+	ok, err := altcha.VerifySolutionSafe(key, a.secret, true)
 	if err != nil || !ok {
 		return false, err
 	}
-
-	a.usedStore.Add(payload)
 	return ok, nil
 }
 
@@ -68,21 +72,31 @@ func (u *UsedChallengeStore) Stop() {
 }
 
 func (u *UsedChallengeStore) Add(key string) {
-	expires := time.Now().Add(u.lifetime)
-	u.store.Store(key, expires)
+	values := usedStoreValue{
+		expires: time.Now().Add(u.lifetime),
+		uses:    1,
+	}
+	u.store.Store(key, values)
 }
 
 func (u *UsedChallengeStore) IsUsed(key string) bool {
-	expires, ok := u.store.Load(key)
+	valRaw, ok := u.store.Load(key)
 	if !ok {
+		u.Add(key)
 		return false
 	}
-	exp := expires.(time.Time)
-	if time.Now().After(exp) {
-		u.store.Delete(key)
-		return false
+	val := valRaw.(usedStoreValue)
+
+	if time.Now().After(val.expires) {
+		return true
 	}
-	return true
+	val.uses++
+	if val.uses >= maxUses {
+		u.store.Store(key, val)
+		return true
+	}
+	
+	return false // should never reach here
 }
 
 func (u *UsedChallengeStore) cleanupRoutine() {
@@ -96,8 +110,8 @@ func (u *UsedChallengeStore) cleanupRoutine() {
 		case <-ticker.C:
 			now := time.Now()
 			u.store.Range(func(key, value any) bool {
-				exp := value.(time.Time)
-				if now.After(exp) {
+				v := value.(usedStoreValue)
+				if now.After(v.expires) {
 					u.store.Delete(key)
 				}
 				return true
@@ -188,8 +202,6 @@ func (a *AltchaService) altchaVerifyHandler(w http.ResponseWriter, r *http.Reque
 		http.Error(w, "failed to verify challenge", http.StatusInternalServerError)
 		return
 	}
-
-	usedStore.Add(key)
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(map[string]any{
 		"success": response,
