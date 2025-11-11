@@ -25,16 +25,8 @@ func TestSendAnalyticsToTeams(t *testing.T) {
 }
 
 func TestSendAnalyticsToTeamsNoWebhookURL(t *testing.T) {
-	// Temporarily clear webhook URL
-	originalURL := os.Getenv("TEAMS_WEBHOOK_URL")
-	if err := os.Unsetenv("TEAMS_WEBHOOK_URL"); err != nil {
-		t.Fatalf("Failed to unset env var: %v", err)
-	}
-	defer func() {
-		if originalURL != "" {
-			_ = os.Setenv("TEAMS_WEBHOOK_URL", originalURL)
-		}
-	}()
+	// Clear webhook URL for this test
+	t.Setenv("TEAMS_WEBHOOK_URL", "")
 
 	ctx := context.Background()
 	stats := AnalyticsStats{
