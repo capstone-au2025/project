@@ -1,0 +1,4 @@
+# Trivy ignore file
+# Add CVE IDs here that you want to ignore (with justification comments)
+# Example:
+# CVE-2024-1234  # Accepted risk: not exploitable in our use case
