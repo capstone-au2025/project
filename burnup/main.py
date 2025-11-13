@@ -101,6 +101,22 @@ class Event:
     type: Literal["create", "complete"]
 
 
+def parse_scope(scope_definition: str) -> tuple[list[int], list[int]]:
+    xs: list[int] = []
+    ys: list[int] = []
+    for thing in scope_definition.split(";"):
+        print("THING", repr(thing))
+        x, dy = thing.split(",")
+        if dy.startswith("+") or dy.startswith("-"):
+            y = ys[-1] + int(dy)
+        else:
+            y = int(dy)
+        x = int(x)
+        xs.append(x)
+        ys.append(y)
+    return xs, ys
+
+
 def main():
     start = datetime(2025, 9, 15)
     end = datetime(2025, 11, 26)
@@ -110,11 +126,12 @@ def main():
     parser = ArgumentParser()
     parser.add_argument("trello_export", type=Path)
     parser.add_argument("--out", "-o", type=Path, required=True)
-    parser.add_argument("--story-points", "-s", type=int, required=True)
+    parser.add_argument("--scope", "-s", type=str, required=True)
     parser.add_argument("--title", "-t", type=str, default="Burnup Chart")
     args = parser.parse_args()
 
-    total_scope = args.story_points
+    scope_xs, scope_ys = parse_scope(args.scope)
+    total_scope = scope_ys[-1]
 
     cards = parse_cards(args.trello_export)
 
@@ -158,10 +175,36 @@ def main():
         else:
             completed_x.append(day)
             completed_y.append(new_y)
+    projected_current_y = break_start_day * projected_slope + projected_slope * (
+        completed_x[-1] - break_start_day
+    )
+    print("Current day:", completed_x[-1])
+    print("Current points:", completed_y[-1])
+    print("Projected points for now:", projected_current_y)
 
     plt.figure(figsize=(8, 5))
     plt.plot(completed_x, completed_y, label="Actual")
-    plt.axhline(total_scope, label="Scope", color="red", linestyle=":")
+    scope_xs.append(end_day)
+    scope_ys.append(scope_ys[-1])
+    scope_line_xs = []
+    scope_line_ys = []
+    for i, (x, y) in enumerate(zip(scope_xs, scope_ys)):
+        if i == 0:
+            scope_line_xs.append(x)
+            scope_line_ys.append(y)
+        else:
+            scope_line_xs.append(x)
+            scope_line_ys.append(scope_ys[i - 1])
+            scope_line_xs.append(x)
+            scope_line_ys.append(y)
+    plt.plot(
+        scope_line_xs,
+        scope_line_ys,
+        total_scope,
+        label="Scope",
+        color="red",
+        linestyle=":",
+    )
     plt.plot(projected_x, projected_y, label="Projected", color="green", linestyle="--")
     plt.title(args.title)
     plt.xlabel("Day")
