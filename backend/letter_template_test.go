@@ -34,7 +34,7 @@ func normalizePdf(pdf []byte) []byte {
 	return bytes.Join(out, []byte("\n"))
 }
 
-func TestRenderPdfWithDirectiveLikeContent_DoesNotExecute(t *testing.T) {
+func TestRenderPdfWithDirectiveLikeContentDoesNotExecute(t *testing.T) {
 
 	ctx := context.Background()
 
@@ -90,7 +90,7 @@ func TestRenderPdfWithDirectiveLikeContent_DoesNotExecute(t *testing.T) {
 // SHA-256 of the generated PDF against values in testdata/special_hashes.json.
 // To update the goldens after intentional changes or on first run, set
 // UPDATE_GOLDEN=1 and re-run the test to regenerate the JSON file.
-func TestRenderPdfWithSpecialChars_QuotingAndEscaping(t *testing.T) {
+func TestRenderPdfWithSpecialCharsQuotingAndEscaping(t *testing.T) {
 
 	ctx := context.Background()
 
