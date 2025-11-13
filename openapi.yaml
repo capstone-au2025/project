@@ -76,6 +76,7 @@ paths:
               $ref: '#/components/schemas/TextRequest'
             example:
               message: "My sink has stopped working"
+              altcha: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
       responses:
         '200':
           description: Text letter generated successfully
@@ -95,6 +96,15 @@ paths:
               example:
                 status: "error"
                 message: "Invalid request data: message field is required"
+        '403':
+          description: Forbidden - invalid or missing ALTCHA verification
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TextResponseError'
+              example:
+                status: "error"
+                message: "invalid altcha"
         '500':
           description: Internal server error
           content:
@@ -190,12 +200,19 @@ components:
     TextRequest:
       type: object
       required:
+        - altcha
         - answers
       properties:
         answers:
           type: object
           description: The users form answers, keyed by question id
           example: '{"mainProblem": "The sink is broken"}'
+          minLength: 1
+          maxLength: 1000
+        altcha:
+          type: string
+          description: ALTCHA payload token for verification
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
           minLength: 1
           maxLength: 1000
           additionalProperties:
