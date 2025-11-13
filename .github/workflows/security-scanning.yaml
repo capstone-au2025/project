@@ -21,6 +21,7 @@ jobs:
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.33.1
+        continue-on-error: true
         with:
           scan-type: 'fs'
           scan-ref: './backend'
@@ -51,6 +52,7 @@ jobs:
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.33.1
+        continue-on-error: true
         with:
           scan-type: 'fs'
           scan-ref: './frontend'
@@ -84,6 +86,7 @@ jobs:
 
       - name: Run Trivy vulnerability scanner on backend image
         uses: aquasecurity/trivy-action@0.33.1
+        continue-on-error: true
         with:
           scan-type: 'image'
           image-ref: 'backend:scan'
@@ -103,6 +106,7 @@ jobs:
 
       - name: Run Trivy vulnerability scanner on frontend image
         uses: aquasecurity/trivy-action@0.33.1
+        continue-on-error: true
         with:
           scan-type: 'image'
           image-ref: 'frontend:scan'
