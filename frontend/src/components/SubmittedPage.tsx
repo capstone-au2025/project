@@ -125,7 +125,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     ref: pdfRef,
   } = useResizeDetector<HTMLDivElement>();
 
-  const [_, navigate] = useLocation();
+  const navigate = useLocation()[1];
   const [pdfLoading, setPdfLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [modalDetails, setModalDetails] = useState<{
