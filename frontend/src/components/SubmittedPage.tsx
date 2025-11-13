@@ -73,7 +73,10 @@ async function generatePdf(
   return pdfResponseSchema.parse(pdfJson);
 }
 
-async function generateText(formData: Record<string, string>, altchaPayload: string) {
+async function generateText(
+  formData: Record<string, string>,
+  altchaPayload: string,
+) {
   let message = "";
   const config = getConfig();
   const keyToQuestion = Object.fromEntries(
