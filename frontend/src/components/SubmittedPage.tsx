@@ -167,10 +167,10 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     const handleCertifiedMailWithConfirm = () => {
       setModalDetails({
         handleConfirm: handleCertifiedMail,
-        header: "Send with Online Certified Mail?",
-        body: "You will be redirected to an external certified mail service to finish mailing your letter. We will pass along the letter and your address information.",
-        confirmText: "Continue to Mail Service",
-        cancelText: "Cancel",
+          header: config.submittedPage.certifiedMailConfirmation.title,
+          confirmText: config.submittedPage.certifiedMailConfirmation.confirmButton,
+          body: config.submittedPage.certifiedMailConfirmation.body,
+          cancelText: config.submittedPage.certifiedMailConfirmation.cancelButton,
       });
       setShowModal(true);
     };
@@ -275,16 +275,16 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
               className="py-3 bg-white rounded-md font-semibold hover:bg-white transition-all duration-200 uppercase text-sm sm:text-base align-middle flex items-center justify-center self-center hover:underline"
               onClick={() => {
                 setModalDetails({
-                  header: "Start again?",
-                  confirmText: "Start again",
-                  body: "Your answers will be cleared, so make sure you download the PDF first.",
+                  header: config.submittedPage.startAgainConfirmation.title,
+                  confirmText: config.submittedPage.startAgainConfirmation.confirmButton,
+                  body: config.submittedPage.startAgainConfirmation.body,
+                  cancelText: config.submittedPage.startAgainConfirmation.cancelButton,
                   handleConfirm: () => navigate("/?reset=true"),
-                  cancelText: "Cancel",
                 });
                 setShowModal(true);
               }}
             >
-              Start again
+              {config.submittedPage.startAgainButton}
             </button>
           </div>
         </div>
