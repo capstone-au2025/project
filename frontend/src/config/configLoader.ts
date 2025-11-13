@@ -51,6 +51,19 @@ export interface SubmittedPageConfig {
   downloadButton: string;
   backButton: string;
   downloadFilename: string;
+  startAgainButton: string;
+  certifiedMailConfirmation: {
+    title: string;
+    body: string;
+    confirmButton: string;
+    cancelButton: string;
+  };
+  startAgainConfirmation: {
+    title: string;
+    body: string;
+    confirmButton: string;
+    cancelButton: string;
+  };
   editHeader: string;
 }
 

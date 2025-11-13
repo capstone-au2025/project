@@ -16,6 +16,7 @@ import { Document, Page } from "react-pdf";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import PageLayout from "./PageLayout";
+import { useLocation } from "wouter";
 import EditModal from "./EditModal.tsx";
 import { getConfig } from "../config/configLoader";
 import BackButton from "./BackButton";
@@ -126,11 +127,16 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     ref: pdfRef,
   } = useResizeDetector<HTMLDivElement>();
 
+  const navigate = useLocation()[1];
   const [pdfLoading, setPdfLoading] = useState(true);
   const [userLetter, setUserLetter] = useState<string>();
   const [showModal, setShowModal] = useState(false);
   const [modalDetails, setModalDetails] = useState<{
     handleConfirm: () => void;
+    header: string;
+    body: string;
+    confirmText: string;
+    cancelText: string;
   } | null>(null);
 
   const textQuery = useQuery({
@@ -177,7 +183,14 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     };
 
     const handleCertifiedMailWithConfirm = () => {
-      setModalDetails({ handleConfirm: handleCertifiedMail });
+      setModalDetails({
+        handleConfirm: handleCertifiedMail,
+        header: config.submittedPage.certifiedMailConfirmation.title,
+        confirmText:
+          config.submittedPage.certifiedMailConfirmation.confirmButton,
+        body: config.submittedPage.certifiedMailConfirmation.body,
+        cancelText: config.submittedPage.certifiedMailConfirmation.cancelButton,
+      });
       setShowModal(true);
     };
 
@@ -210,19 +223,15 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 space-y-6">
             <h3 className="text-xl font-semibold text-text-primary">
-              Send with Online Certified Mail?
+              {modalDetails?.header}
             </h3>
-            <p className="text-text-primary">
-              You will be redirected to an external certified mail service to
-              finish mailing your letter. We will pass along the letter and your
-              address information.
-            </p>
+            <p className="text-text-primary">{modalDetails?.body}</p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <button
                 onClick={() => setShowModal(false)}
                 className="px-6 sm:px-8 py-3 bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base"
               >
-                Cancel
+                {modalDetails?.cancelText}
               </button>
               <button
                 onClick={() => {
@@ -231,7 +240,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
                 }}
                 className="flex-1 py-3 sm:py-4 px-6 sm:px-8 bg-primary text-white rounded-md font-bold text-base sm:text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase"
               >
-                Continue to Mail Service
+                {modalDetails?.confirmText}
               </button>
             </div>
           </div>
@@ -304,6 +313,23 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
               onSubmit={editModalSubmit}
             />
             <BackButton backPage={backPage} />
+            <button
+              className="h-[52px] box-border bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base align-middle flex items-center justify-center"
+              onClick={() => {
+                setModalDetails({
+                  header: config.submittedPage.startAgainConfirmation.title,
+                  confirmText:
+                    config.submittedPage.startAgainConfirmation.confirmButton,
+                  body: config.submittedPage.startAgainConfirmation.body,
+                  cancelText:
+                    config.submittedPage.startAgainConfirmation.cancelButton,
+                  handleConfirm: () => navigate("/?reset=true"),
+                });
+                setShowModal(true);
+              }}
+            >
+              {config.submittedPage.startAgainButton}
+            </button>
           </div>
         </div>
       </div>
