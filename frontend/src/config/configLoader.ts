@@ -64,6 +64,7 @@ export interface SubmittedPageConfig {
     confirmButton: string;
     cancelButton: string;
   };
+  editHeader: string;
 }
 
 export interface TermsOfServicePageConfig {
