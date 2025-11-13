@@ -314,7 +314,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
             />
             <BackButton backPage={backPage} />
             <button
-              className="py-3 bg-white rounded-md font-semibold hover:bg-white transition-all duration-200 uppercase text-sm sm:text-base align-middle flex items-center justify-center self-center hover:underline"
+              className="h-[52px] box-border bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base align-middle flex items-center justify-center"
               onClick={() => {
                 setModalDetails({
                   header: config.submittedPage.startAgainConfirmation.title,
