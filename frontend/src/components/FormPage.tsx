@@ -107,7 +107,6 @@ const FormPage: React.FC<FormPageProps> = ({
             {/* Buttons */}
             <div className="pt-4 sm:pt-6">
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-
                 <BackButton backPage={backPage} />
 
                 <button
