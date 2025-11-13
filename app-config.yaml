@@ -159,10 +159,10 @@ submittedPage:
   # Send certified mail confirmation 
   startAgainButton: "Start again"
   certifiedMailConfirmation:
-    header: "Send with Online Certified Mail?"
+    title: "Send with Online Certified Mail?"
     body: "You will be redirected to an external certified mail service to finish mailing your letter. We will pass along the letter and your address information."
-    confirmText: "Continue to Mail Service"
-    cancelText: "Cancel"
+    confirmButton: "Continue to Mail Service"
+    cancelButton: "Cancel"
   startAgainConfirmation:
     title: "Start again?"
     body: "Your answers will be cleared, so make sure you download the PDF first."

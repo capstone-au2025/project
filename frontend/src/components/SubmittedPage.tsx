@@ -167,10 +167,11 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     const handleCertifiedMailWithConfirm = () => {
       setModalDetails({
         handleConfirm: handleCertifiedMail,
-          header: config.submittedPage.certifiedMailConfirmation.title,
-          confirmText: config.submittedPage.certifiedMailConfirmation.confirmButton,
-          body: config.submittedPage.certifiedMailConfirmation.body,
-          cancelText: config.submittedPage.certifiedMailConfirmation.cancelButton,
+        header: config.submittedPage.certifiedMailConfirmation.title,
+        confirmText:
+          config.submittedPage.certifiedMailConfirmation.confirmButton,
+        body: config.submittedPage.certifiedMailConfirmation.body,
+        cancelText: config.submittedPage.certifiedMailConfirmation.cancelButton,
       });
       setShowModal(true);
     };
@@ -276,9 +277,11 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
               onClick={() => {
                 setModalDetails({
                   header: config.submittedPage.startAgainConfirmation.title,
-                  confirmText: config.submittedPage.startAgainConfirmation.confirmButton,
+                  confirmText:
+                    config.submittedPage.startAgainConfirmation.confirmButton,
                   body: config.submittedPage.startAgainConfirmation.body,
-                  cancelText: config.submittedPage.startAgainConfirmation.cancelButton,
+                  cancelText:
+                    config.submittedPage.startAgainConfirmation.cancelButton,
                   handleConfirm: () => navigate("/?reset=true"),
                 });
                 setShowModal(true);

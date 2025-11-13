@@ -53,17 +53,17 @@ export interface SubmittedPageConfig {
   downloadFilename: string;
   startAgainButton: string;
   certifiedMailConfirmation: {
-    title: string,
-    body: string,
-    confirmButton: string,
-    cancelButton: string,
-  },
+    title: string;
+    body: string;
+    confirmButton: string;
+    cancelButton: string;
+  };
   startAgainConfirmation: {
-    title: string,
-    body: string,
-    confirmButton: string,
-    cancelButton: string,
-  },
+    title: string;
+    body: string;
+    confirmButton: string;
+    cancelButton: string;
+  };
 }
 
 export interface TermsOfServicePageConfig {

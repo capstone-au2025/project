@@ -4,6 +4,8 @@ import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import SubmittedPage from "../src/components/SubmittedPage";
 import "@testing-library/jest-dom";
+import { memoryLocation } from "wouter/memory-location";
+import { Route, Router } from "wouter";
 
 // Mock react-pdf
 vi.mock("react-pdf", () => ({
@@ -109,9 +111,15 @@ describe("SubmittedPage", () => {
   });
 
   const renderWithQueryClient = (component: React.ReactElement) => {
+    const { navigate, hook } = memoryLocation();
+    navigate("/submitted");
     return render(
       <QueryClientProvider client={queryClient}>
-        {component}
+        <Router hook={hook}>
+          <Route path="submitted">{component}</Route>
+          <Route path="/">Intro page </Route>
+        </Router>
+        ,
       </QueryClientProvider>,
     );
   };
@@ -276,6 +284,43 @@ describe("SubmittedPage", () => {
         duplex: false,
       }),
     );
+  });
+
+  it("should reset when starting again", async () => {
+    const user = userEvent.setup();
+
+    renderWithQueryClient(
+      <SubmittedPage formData={mockFormData} backPage="/form3" />,
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /start again/i }),
+      ).toBeInTheDocument();
+    });
+
+    const startAgain = screen.getByRole("button", {
+      name: /start again/i,
+    });
+    await user.click(startAgain);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          /Your answers will be cleared, so make sure you download the PDF first/i,
+        ),
+      ).toBeInTheDocument();
+    });
+
+    const allStartAgainButtons = screen.getAllByRole("button", {
+      name: /start again/i,
+    });
+    const startAgainConfirmButton = allStartAgainButtons.filter(
+      (x) => x != startAgain,
+    )[0];
+    await user.click(startAgainConfirmButton);
+
+    expect(screen.getByText(/intro page/i)).toBeInTheDocument();
   });
 
   it("should create blob URL for PDF", async () => {
