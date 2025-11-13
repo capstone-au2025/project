@@ -128,6 +128,10 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
 
   const [pdfLoading, setPdfLoading] = useState(true);
   const [userLetter, setUserLetter] = useState<string>();
+  const [showModal, setShowModal] = useState(false);
+  const [modalDetails, setModalDetails] = useState<{
+    handleConfirm: () => void;
+  } | null>(null);
 
   const textQuery = useQuery({
     queryKey: ["text", formData],
