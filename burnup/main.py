@@ -61,7 +61,9 @@ def parse_cards(trello_export: Path) -> list[Card]:
                 id=id,
                 name=name,
                 creation_time=date,
-                completion_time=None,
+                completion_time=(
+                    date if "done" in action["data"]["list"]["name"].lower() else None
+                ),
                 story_points=0,
                 closed=False,
             )
@@ -69,12 +71,13 @@ def parse_cards(trello_export: Path) -> list[Card]:
             id = action["data"]["card"]["id"]
             name = action["data"]["card"]["name"]
             closed = action["data"]["card"].get("closed", False)
-            if id in cards and "idLabels" in action["data"]["card"]:
+            if id in cards:
                 cards[id].name = name
-                cards[id].story_points = get_story_points(
-                    labels, action["data"]["card"]
-                )
                 cards[id].closed = closed
+                if "idLabels" in action["data"]["card"]:
+                    cards[id].story_points = get_story_points(
+                        labels, action["data"]["card"]
+                    )
         if is_completion_action(action):
             id = action["data"]["card"]["id"]
             date = isoparse(action["date"])
@@ -91,7 +94,17 @@ def parse_cards(trello_export: Path) -> list[Card]:
         )
     print()
 
-    return [card for card in cards.values() if not card.closed and card.story_points]
+    uncompleted_cards = [
+        card for card in cards.values() if not card.completion_time and not card.closed
+    ]
+    print("Uncompleted cards")
+    uncompleted_cards.sort(key=lambda card: card.creation_time)
+    print("=" * (max(len(x.name) for x in uncompleted_cards) + 4))
+    for card in uncompleted_cards:
+        print(f"{card.story_points:2}  {card.name}")
+    print()
+
+    return [card for card in cards.values() if (not card.closed) and card.story_points]
 
 
 @dataclass(order=True)
@@ -105,7 +118,6 @@ def parse_scope(scope_definition: str) -> tuple[list[int], list[int]]:
     xs: list[int] = []
     ys: list[int] = []
     for thing in scope_definition.split(";"):
-        print("THING", repr(thing))
         x, dy = thing.split(",")
         if dy.startswith("+") or dy.startswith("-"):
             y = ys[-1] + int(dy)
@@ -180,7 +192,21 @@ def main():
     )
     print("Current day:", completed_x[-1])
     print("Current points:", completed_y[-1])
-    print("Projected points for now:", projected_current_y)
+    print("Projected points for now:", int(projected_current_y))
+    uncompleted_points = sum(
+        card.story_points
+        for card in cards
+        if not card.completion_time and not card.closed
+    )
+    print(
+        "Total uncompleted points:",
+        uncompleted_points,
+    )
+    print("Total scope:", total_scope)
+    print(
+        "How many more points need to be created in trello:",
+        total_scope - completed_y[-1] - uncompleted_points,
+    )
 
     plt.figure(figsize=(8, 5))
     plt.plot(completed_x, completed_y, label="Actual")
