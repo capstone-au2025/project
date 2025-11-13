@@ -200,7 +200,6 @@ def main():
     plt.plot(
         scope_line_xs,
         scope_line_ys,
-        total_scope,
         label="Scope",
         color="red",
         linestyle=":",
