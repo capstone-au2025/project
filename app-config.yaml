@@ -152,6 +152,7 @@ submittedPage:
   mailButton: "Mail to your Landlord"
   downloadButton: "Download PDF"
   backButton: "Back"
+  editHeader: "Edit your letter"
 
   # PDF download filename
   downloadFilename: "Letter.pdf"
