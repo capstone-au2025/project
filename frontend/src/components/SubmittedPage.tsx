@@ -19,6 +19,10 @@ import PageLayout from "./PageLayout";
 import EditModal from "./EditModal.tsx";
 import { getConfig } from "../config/configLoader";
 import BackButton from "./BackButton";
+import {
+  InfoIcon,
+} from "./icons";
+
 
 GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -189,7 +193,9 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
   }
 
   const loadingSkeleton = (
-    <Skeleton width={pdfWidth} height={pdfHeight} className="absolute" />
+      <>
+          <Skeleton width={pdfWidth} height={pdfHeight} className="absolute" />
+          </>
   );
 
   /* Edit letter modal */
@@ -239,7 +245,21 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
       )}
       <div className="w-full max-w-5xl lg:rounded-lg lg:shadow-lg lg:border lg:border-sky py-8 px-4">
         <div className="flex flex-col items-center gap-4 lg:gap-8 lg:px-4 leading-none">
-          <h2 className="text-2xl">{config.submittedPage.heading}</h2>
+          {pdf && (<h2 className="text-2xl">{config.submittedPage.heading}</h2>)}
+
+          {/* Loading tooltip */}
+          {pdfLoading && (
+             <div className="bg-white p-4 sm:p-6 rounded-lg border-l-4 border-primary shadow-sm">
+                <h3 className="text-base sm:text-lg font-bold mb-2 text-indigo flex items-center gap-2 uppercase">
+                {InfoIcon}
+             Generating your letter!
+            </h3>
+                <p className="text-sm sm:text-base text-text-primary leading-relaxed">
+                  This can take a little while so get comfy.
+            </p>
+           </div>
+          )}
+
           <div
             ref={pdfRef}
             className="w-full max-w-[700px] aspect-[8.5/11] shadow-md border border-sky relative"
@@ -264,16 +284,18 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
             )}
             {pdfLoading && loadingSkeleton}
           </div>
-          <div className="flex flex-col gap-2 self-stretch">
+          <div className="flex w-full flex-wrap gap-2 self-stretch">
             {pdf ? (
               <button
                 onClick={pdf.handleCertifiedMail}
-                className="h-[56px] bg-primary text-white rounded-md font-bold text-sm sm:text-base hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase flex items-center justify-center"
+                className="h-[56px] basis-md bg-primary text-white rounded-md font-bold text-sm sm:text-base hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase flex items-center justify-center"
               >
                 {config.submittedPage.mailButton}
               </button>
             ) : (
-              <Skeleton className="h-[56px] rounded-md" />
+                <div className="basis-xs grow">
+              <Skeleton className="h-[56px] w-full basis-md grow rounded-md" />
+                    </div>
             )}
             {pdf ? (
               <button
@@ -283,7 +305,9 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
                 Edit
               </button>
             ) : (
+                <div className="basis-xs grow">
               <Skeleton className="h-[56px] rounded-md" />
+                    </div>
             )}
             {pdf ? (
               <a
@@ -295,7 +319,9 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
                 {config.submittedPage.downloadButton}
               </a>
             ) : (
+                <div className="basis-xs grow">
               <Skeleton className="h-[52px] box-border border-2 border-transparent rounded-md" />
+                    </div>
             )}
             <EditModal
               modalRef={editModalRef}
