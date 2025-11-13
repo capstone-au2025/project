@@ -15,8 +15,8 @@ import { Document, Page } from "react-pdf";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import PageLayout from "./PageLayout";
-import { Link } from "wouter";
 import { getConfig } from "../config/configLoader";
+import BackButton from "./BackButton";
 
 GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -263,12 +263,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
             ) : (
               <Skeleton className="h-[52px] box-border border-2 border-transparent rounded-md" />
             )}
-            <Link
-              href={backPage}
-              className="py-3 bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base align-middle flex items-center justify-center"
-            >
-              {config.submittedPage.backButton}
-            </Link>
+            <BackButton backPage={backPage} />
           </div>
         </div>
       </div>
