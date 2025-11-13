@@ -265,6 +265,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
             className="w-full max-w-[700px] aspect-[8.5/11] shadow-md border border-sky relative"
           >
             {pdf && (
+                <>
               <a
                 download="Letter.pdf"
                 target="_blank"
@@ -281,10 +282,22 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
                   />
                 </Document>
               </a>
+
+              {/* Edit button */}
+              <button
+                onClick={() => editModalRef.current?.showModal()}
+                className="relative h-[56px] bg-primary text-white rounded-md font-bold text-sm sm:text-base hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase flex items-center justify-center"
+              >
+                Edit
+              </button>
+                    </>
+
             )}
             {pdfLoading && loadingSkeleton}
           </div>
           <div className="flex w-full flex-wrap gap-2 self-stretch">
+
+            {/* Mail Button */}
             {pdf ? (
               <button
                 onClick={pdf.handleCertifiedMail}
@@ -293,22 +306,15 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
                 {config.submittedPage.mailButton}
               </button>
             ) : (
-                <div className="basis-xs grow">
-              <Skeleton className="h-[56px] w-full basis-md grow rounded-md" />
-                    </div>
-            )}
-            {pdf ? (
-              <button
-                onClick={() => editModalRef.current?.showModal()}
-                className="h-[56px] bg-primary text-white rounded-md font-bold text-sm sm:text-base hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase flex items-center justify-center"
-              >
-                Edit
-              </button>
-            ) : (
-                <div className="basis-xs grow">
+                <div className="basis-sm grow">
               <Skeleton className="h-[56px] rounded-md" />
                     </div>
             )}
+
+            {/* Back Button */}
+            <BackButton backPage={backPage} />
+
+            {/* Download button */}
             {pdf ? (
               <a
                 href={pdf.blobUrl}
@@ -329,7 +335,6 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
               letterBody={letterBody}
               onSubmit={editModalSubmit}
             />
-            <BackButton backPage={backPage} />
           </div>
         </div>
       </div>
