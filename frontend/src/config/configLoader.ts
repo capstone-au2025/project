@@ -51,6 +51,7 @@ export interface SubmittedPageConfig {
   downloadButton: string;
   backButton: string;
   downloadFilename: string;
+  editHeader: string;
 }
 
 export interface TermsOfServicePageConfig {

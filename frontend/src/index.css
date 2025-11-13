@@ -100,3 +100,8 @@ h6 {
     opacity: 1;
   }
 }
+
+dialog::backdrop {
+  backdrop-filter: blur(2px);
+  background-color: #000000aa;
+}

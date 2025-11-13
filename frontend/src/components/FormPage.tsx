@@ -108,6 +108,7 @@ const FormPage: React.FC<FormPageProps> = ({
             <div className="pt-4 sm:pt-6">
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <BackButton backPage={backPage} />
+
                 <button
                   type="submit"
                   className="flex-1 py-3 sm:py-4 px-6 sm:px-8 bg-primary text-white rounded-md font-bold text-base sm:text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase"

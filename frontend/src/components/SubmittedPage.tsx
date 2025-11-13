@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import type { FormEvent } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   base64ToUint8Array,
@@ -15,6 +16,7 @@ import { Document, Page } from "react-pdf";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import PageLayout from "./PageLayout";
+import EditModal from "./EditModal.tsx";
 import { getConfig } from "../config/configLoader";
 import BackButton from "./BackButton";
 
@@ -51,10 +53,26 @@ const textResponseSchema = z.object({
 });
 
 async function generatePdf(
-  formData: Record<string, string>,
+  text: string,
   sender: NameAndAddress,
   destination: NameAndAddress,
 ) {
+  const pdfResp = await fetch("/api/pdf", {
+    method: "POST",
+    body: JSON.stringify({
+      senderName: sender.name,
+      senderAddress: `${sender.address}, ${sender.city}, ${sender.state} ${sender.zip} `,
+      receiverName: destination.name,
+      receiverAddress: `${destination.address}, ${destination.city}, ${destination.state} ${destination.zip} `,
+      body: text,
+    } satisfies PdfRequest),
+    headers: { "Content-Type": "application/json" },
+  });
+  const pdfJson = await pdfResp.json();
+  return pdfResponseSchema.parse(pdfJson);
+}
+
+async function generateText(formData: Record<string, string>) {
   let message = "";
   const config = getConfig();
   const keyToQuestion = Object.fromEntries(
@@ -66,6 +84,7 @@ async function generatePdf(
       message += `${question}\n${value}\n\n`;
     }
   }
+
   const textResponse = await fetch("/api/text", {
     method: "POST",
     body: JSON.stringify({
@@ -74,20 +93,7 @@ async function generatePdf(
   });
   const textJson = await textResponse.json();
   const text = textResponseSchema.parse(textJson);
-
-  const pdfResp = await fetch("/api/pdf", {
-    method: "POST",
-    body: JSON.stringify({
-      senderName: sender.name,
-      senderAddress: `${sender.address}, ${sender.city}, ${sender.state} ${sender.zip} `,
-      receiverName: destination.name,
-      receiverAddress: `${destination.address}, ${destination.city}, ${destination.state} ${destination.zip} `,
-      body: text.content,
-    } satisfies PdfRequest),
-    headers: { "Content-Type": "application/json" },
-  });
-  const pdfJson = await pdfResp.json();
-  return pdfResponseSchema.parse(pdfJson);
+  return text;
 }
 
 const SubmittedPage: React.FC<SubmittedPageProps> = ({
@@ -114,11 +120,6 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     zip: formData.destinationZip,
   };
 
-  const { data } = useQuery({
-    queryKey: ["pdf", formData],
-    staleTime: Infinity,
-    queryFn: () => generatePdf(formData, sender, destination),
-  });
   const {
     width: pdfWidth,
     height: pdfHeight,
@@ -126,10 +127,26 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
   } = useResizeDetector<HTMLDivElement>();
 
   const [pdfLoading, setPdfLoading] = useState(true);
+  const [userLetter, setUserLetter] = useState<string>();
   const [showModal, setShowModal] = useState(false);
   const [modalDetails, setModalDetails] = useState<{
     handleConfirm: () => void;
   } | null>(null);
+
+  const textQuery = useQuery({
+    queryKey: ["text", formData],
+    staleTime: Infinity,
+    queryFn: () => generateText(formData),
+  });
+
+  const letterBody: string = userLetter ?? textQuery.data?.content ?? "";
+
+  const { data } = useQuery({
+    queryKey: ["pdf", letterBody],
+    staleTime: Infinity,
+    queryFn: () => generatePdf(letterBody, sender, destination),
+    enabled: textQuery.isSuccess,
+  });
 
   let pdf:
     | {
@@ -174,6 +191,18 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
   const loadingSkeleton = (
     <Skeleton width={pdfWidth} height={pdfHeight} className="absolute" />
   );
+
+  /* Edit letter modal */
+  const editModalRef = useRef<HTMLDialogElement>(null);
+  const editTextRef = useRef<HTMLTextAreaElement>(null);
+  const editModalSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (editTextRef.current) {
+      setUserLetter(editTextRef.current.value);
+    }
+
+    editModalRef.current?.close();
+  };
 
   return (
     <PageLayout>
@@ -247,6 +276,16 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
               <Skeleton className="h-[56px] rounded-md" />
             )}
             {pdf ? (
+              <button
+                onClick={() => editModalRef.current?.showModal()}
+                className="h-[56px] bg-primary text-white rounded-md font-bold text-sm sm:text-base hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase flex items-center justify-center"
+              >
+                Edit
+              </button>
+            ) : (
+              <Skeleton className="h-[56px] rounded-md" />
+            )}
+            {pdf ? (
               <a
                 href={pdf.blobUrl}
                 target="_blank"
@@ -258,6 +297,12 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
             ) : (
               <Skeleton className="h-[52px] box-border border-2 border-transparent rounded-md" />
             )}
+            <EditModal
+              modalRef={editModalRef}
+              textRef={editTextRef}
+              letterBody={letterBody}
+              onSubmit={editModalSubmit}
+            />
             <BackButton backPage={backPage} />
           </div>
         </div>
