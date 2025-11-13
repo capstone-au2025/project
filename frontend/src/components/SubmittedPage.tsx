@@ -15,7 +15,7 @@ import { Document, Page } from "react-pdf";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import PageLayout from "./PageLayout";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { getConfig } from "../config/configLoader";
 
 GlobalWorkerOptions.workerSrc = new URL(
@@ -125,10 +125,15 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     ref: pdfRef,
   } = useResizeDetector<HTMLDivElement>();
 
+  const [_, navigate] = useLocation();
   const [pdfLoading, setPdfLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [modalDetails, setModalDetails] = useState<{
     handleConfirm: () => void;
+    header: string;
+    body: string;
+    confirmText: string;
+    cancelText: string;
   } | null>(null);
 
   let pdf:
@@ -160,7 +165,13 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     };
 
     const handleCertifiedMailWithConfirm = () => {
-      setModalDetails({ handleConfirm: handleCertifiedMail });
+      setModalDetails({
+        handleConfirm: handleCertifiedMail,
+        header: "Send with Online Certified Mail?",
+        body: "You will be redirected to an external certified mail service to finish mailing your letter. We will pass along the letter and your address information.",
+        confirmText: "Continue to Mail Service",
+        cancelText: "Cancel",
+      });
       setShowModal(true);
     };
 
@@ -181,19 +192,15 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 space-y-6">
             <h3 className="text-xl font-semibold text-text-primary">
-              Send with Online Certified Mail?
+              {modalDetails?.header}
             </h3>
-            <p className="text-text-primary">
-              You will be redirected to an external certified mail service to
-              finish mailing your letter. We will pass along the letter and your
-              address information.
-            </p>
+            <p className="text-text-primary">{modalDetails?.body}</p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <button
                 onClick={() => setShowModal(false)}
                 className="px-6 sm:px-8 py-3 bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base"
               >
-                Cancel
+                {modalDetails?.cancelText}
               </button>
               <button
                 onClick={() => {
@@ -202,7 +209,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
                 }}
                 className="flex-1 py-3 sm:py-4 px-6 sm:px-8 bg-primary text-white rounded-md font-bold text-base sm:text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase"
               >
-                Continue to Mail Service
+                {modalDetails?.confirmText}
               </button>
             </div>
           </div>
@@ -264,6 +271,21 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
             >
               {config.submittedPage.backButton}
             </Link>
+            <button
+              className="py-3 bg-white rounded-md font-semibold hover:bg-white transition-all duration-200 uppercase text-sm sm:text-base align-middle flex items-center justify-center self-center hover:underline"
+              onClick={() => {
+                setModalDetails({
+                  header: "Start again?",
+                  confirmText: "Start again",
+                  body: "Your answers will be cleared, so make sure you download the PDF first.",
+                  handleConfirm: () => navigate("/?reset=true"),
+                  cancelText: "Cancel",
+                });
+                setShowModal(true);
+              }}
+            >
+              Start again
+            </button>
           </div>
         </div>
       </div>
