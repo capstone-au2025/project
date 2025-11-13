@@ -10,10 +10,13 @@ FROM golang:latest AS backend
 ARG BUILD_TAGS="aws"
 WORKDIR /app
 COPY backend /app
+COPY app-config.yaml ./app-config.yaml
 RUN go get -u
 RUN go mod tidy
 ENV CGO_ENABLED=0
 RUN go build -tags=$BUILD_TAGS
+
+
 
 FROM golang:latest AS typst-wrapper
 WORKDIR /app
@@ -29,5 +32,6 @@ COPY --from=ghcr.io/typst/typst:v0.13.1 /bin/typst /bin/typst
 ENV PATH=/bin
 COPY --from=frontend /app/dist /app/frontend
 COPY --from=backend /app/backend /app/backend
+COPY --from=backend /app/app-config.yaml /app/app-config.yaml
 COPY --from=typst-wrapper /app/typst-wrapper /bin/typst-wrapper
 CMD ["./backend"]

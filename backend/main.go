@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -41,7 +42,7 @@ type PdfResponseError struct {
 }
 
 type TextRequest struct {
-	Message string `json:"message"`
+	Answers map[string]string `json:"answers"`
 }
 
 type TextResponseSuccess struct {
@@ -60,12 +61,20 @@ const (
 	statusError   = "error"
 )
 
+type Form struct {
+	Inference struct {
+		SystemPrompt string `yaml:"systemPrompt"`
+		UserPrompt   string `yaml:"userPrompt"`
+	}
+}
+
 // Given a message, get the body of a letter from LLM inference
 func (rt *router) text(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var req TextRequest
 	err := json.NewDecoder(http.MaxBytesReader(w, r.Body, MaxRequestBodySize)).Decode(&req)
+
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		_ = json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "failed to decode body"})
@@ -73,7 +82,16 @@ func (rt *router) text(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := rt.ip.Infer(r.Context(), req.Message)
+	var buff bytes.Buffer
+	err = userPromptTemplate.Execute(&buff, req.Answers)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "failed to template answers"})
+		slog.ErrorContext(r.Context(), "failed to template answers", "err", err)
+		return
+	}
+
+	resp, err := rt.ip.Infer(r.Context(), buff.String())
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		_ = json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "failed to run inference"})
@@ -196,8 +214,11 @@ func main() {
 		slog.Error("Failed to initialize inference provider", "name", ipName, "err", err)
 	}
 
+	// Wrapped provider with rate limiting
+	rateLimitedIP := NewRateLimitedProvider(ip)
+
 	rt := router{
-		ip: ip,
+		ip: rateLimitedIP,
 	}
 
 	mux := http.NewServeMux()
