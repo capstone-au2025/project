@@ -34,8 +34,12 @@ func normalizePdf(pdf []byte) []byte {
 	return bytes.Join(out, []byte("\n"))
 }
 
+// Compares normalized-PDF SHA-256 hashes against goldens in `backend/goldenPDFHashes/malicious_hashes.json`.
+// Goldens were generated in Docker with:
+//
+//	docker build . -t backend -f Dockerfile.backend-dev && \
+//	docker run --rm -e UPDATE_GOLDEN=1 -v $(pwd)/backend:/app backend go test -v
 func TestRenderPdfWithDirectiveLikeContentDoesNotExecute(t *testing.T) {
-
 	ctx := context.Background()
 
 	malicious := []string{
@@ -53,6 +57,8 @@ func TestRenderPdfWithDirectiveLikeContentDoesNotExecute(t *testing.T) {
 		`${ not-typst }`,
 		`#image("file:../../etc/passwd")`,
 	}
+
+	computed := make([]string, 0, len(malicious))
 
 	for i, payload := range malicious {
 		params := LetterParams{
@@ -72,24 +78,59 @@ func TestRenderPdfWithDirectiveLikeContentDoesNotExecute(t *testing.T) {
 		if len(pdf) == 0 {
 			t.Fatalf("case %d returned empty PDF", i)
 		}
+
+		pdf = normalizePdf(pdf)
+
+		h := sha256.Sum256(pdf)
+		computed = append(computed, hex.EncodeToString(h[:]))
+	}
+
+	goldenPath := filepath.Join("goldenPDFHashes", "malicious_hashes.json")
+
+	// Regenerate golden hashes when UPDATE_GOLDEN=1
+	if os.Getenv("UPDATE_GOLDEN") == "1" {
+		b, err := json.MarshalIndent(computed, "", "  ")
+		if err != nil {
+			t.Fatalf("failed to marshal golden hashes: %v", err)
+		}
+
+		if err := os.WriteFile(goldenPath, b, 0o644); err != nil {
+			t.Fatalf("failed to write golden hashes to %s: %v", goldenPath, err)
+		}
+
+		t.Logf("updated golden hashes at %s", goldenPath)
+		return
+	}
+
+	// --- Normal comparison ---
+	goldenBytes, err := os.ReadFile(goldenPath)
+	if err != nil {
+		t.Fatalf("failed to read golden hashes from %s: %v (set UPDATE_GOLDEN=1 to generate)", goldenPath, err)
+	}
+
+	var expected []string
+	if err := json.Unmarshal(goldenBytes, &expected); err != nil {
+		t.Fatalf("failed to parse golden hashes JSON: %v", err)
+	}
+
+	if len(expected) != len(computed) {
+		t.Fatalf("golden hash count mismatch: expected %d, got %d (set UPDATE_GOLDEN=1 to refresh)",
+			len(expected), len(computed))
+	}
+
+	for i := range expected {
+		if expected[i] != computed[i] {
+			t.Fatalf("hash mismatch at case %d:\nexpected %s\ngot      %s",
+				i, expected[i], computed[i])
+		}
 	}
 }
 
-// This test validates quoting/escaping of special characters and serves as the
-// golden reference for the rendered PDF output.
+// Compares normalized-PDF SHA-256 hash against goldens in `backend/goldenPDFHashes/special_hashes.json`.
+// Goldens were generated in Docker with:
 //
-// Manual verification:
-//   - By default, the generated PDF is written to a temporary directory which is
-//     removed after the test completes. Run tests with -v to see the logged path
-//     while the test is running.
-//   - To keep the PDF for inspection, set the environment variable PDF_OUT_DIR to
-//     a writable path (e.g., testdata/out). The file will be written there and
-//     preserved after the test.
-//
-// Golden hashes: When CHECK_PDF_HASHES=1 is set, the test will compare the
-// SHA-256 of the generated PDF against values in testdata/special_hashes.json.
-// To update the goldens after intentional changes or on first run, set
-// UPDATE_GOLDEN=1 and re-run the test to regenerate the JSON file.
+//	docker build . -t backend -f Dockerfile.backend-dev && \
+//	docker run --rm -e UPDATE_GOLDEN=1 -v $(pwd)/backend:/app backend go test -v
 func TestRenderPdfWithSpecialCharsQuotingAndEscaping(t *testing.T) {
 
 	ctx := context.Background()
@@ -113,23 +154,6 @@ func TestRenderPdfWithSpecialCharsQuotingAndEscaping(t *testing.T) {
 	}
 
 	pdf = normalizePdf(pdf)
-
-	// Save for manual inspection. If PDF_OUT_DIR is set, write there so the
-	// file persists after the test; otherwise write to a temporary directory.
-	var outPath string
-	if outDir := os.Getenv("PDF_OUT_DIR"); outDir != "" {
-		if err := os.MkdirAll(outDir, 0o755); err != nil {
-			t.Fatalf("failed to create PDF_OUT_DIR %s: %v", outDir, err)
-		}
-		outPath = filepath.Join(outDir, "special_chars.pdf")
-	} else {
-		tmpDir := t.TempDir()
-		outPath = filepath.Join(tmpDir, "special_chars.pdf")
-	}
-	if writeErr := os.WriteFile(outPath, pdf, 0o644); writeErr != nil {
-		t.Fatalf("failed to write pdf to %s: %v", outPath, writeErr)
-	}
-	t.Logf("wrote PDF to %s", outPath)
 
 	// Compute hash for golden comparison
 	h := sha256.Sum256(pdf)
