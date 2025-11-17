@@ -159,26 +159,21 @@ func TestRenderPdfWithSpecialCharsQuotingAndEscaping(t *testing.T) {
 	h := sha256.Sum256(pdf)
 	computed := []string{hex.EncodeToString(h[:])}
 
-	// Optional golden comparison
+	goldenPath := filepath.Join("goldenPDFHashes", "special_hashes.json")
 	if os.Getenv("UPDATE_GOLDEN") == "1" {
-		// Write or update testdata/special_hashes.json
-		goldenPath := filepath.Join("goldenPDFHashes", "special_hashes.json")
-		if err := os.MkdirAll("testdata", 0o755); err != nil {
-			t.Fatalf("failed to create testdata directory: %v", err)
-		}
 		b, err := json.MarshalIndent(computed, "", "  ")
 		if err != nil {
 			t.Fatalf("failed to marshal golden hashes: %v", err)
 		}
-		t.Logf("computed hashes (copy into %s):\n%s", goldenPath, string(b))
+
 		if err := os.WriteFile(goldenPath, b, 0o644); err != nil {
 			t.Fatalf("failed to write golden hashes to %s: %v", goldenPath, err)
 		}
+
 		t.Logf("updated golden hashes at %s", goldenPath)
 		return
 	}
 
-	goldenPath := filepath.Join("goldenPDFHashes", "special_hashes.json")
 	goldenBytes, err := os.ReadFile(goldenPath)
 	if err != nil {
 		t.Fatalf("failed to read golden hashes from %s: %v (set UPDATE_GOLDEN=1 to generate)", goldenPath, err)
