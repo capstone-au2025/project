@@ -33,6 +33,7 @@ interface SubmittedPageProps {
 
 type TextRequest = {
   message: string;
+  altcha: string;
 };
 
 type PdfRequest = {
@@ -73,7 +74,10 @@ async function generatePdf(
   return pdfResponseSchema.parse(pdfJson);
 }
 
-async function generateText(formData: Record<string, string>) {
+async function generateText(
+  formData: Record<string, string>,
+  altchaPayload: string,
+) {
   let message = "";
   const config = getConfig();
   const keyToQuestion = Object.fromEntries(
@@ -90,6 +94,7 @@ async function generateText(formData: Record<string, string>) {
     method: "POST",
     body: JSON.stringify({
       message,
+      altcha: altchaPayload,
     } satisfies TextRequest),
   });
   const textJson = await textResponse.json();
@@ -102,6 +107,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
   backPage,
 }) => {
   const config = getConfig();
+  const altchaPayload = formData.altchaPayload;
 
   const sender: NameAndAddress = {
     name: formData.senderName,
@@ -142,7 +148,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
   const textQuery = useQuery({
     queryKey: ["text", formData],
     staleTime: Infinity,
-    queryFn: () => generateText(formData),
+    queryFn: () => generateText(formData, altchaPayload),
   });
 
   const letterBody: string = userLetter ?? textQuery.data?.content ?? "";

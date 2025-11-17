@@ -18,7 +18,8 @@ import (
 )
 
 type router struct {
-	ip InferenceProvider
+	ip     InferenceProvider
+	altcha *AltchaService
 }
 
 type PdfRequest struct {
@@ -42,6 +43,7 @@ type PdfResponseError struct {
 }
 
 type TextRequest struct {
+	Altcha  string            `json:"altcha"`
 	Answers map[string]string `json:"answers"`
 }
 
@@ -79,6 +81,18 @@ func (rt *router) text(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		_ = json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "failed to decode body"})
 		slog.ErrorContext(r.Context(), "failed to decode body", "err", err)
+		return
+	}
+	ok, err := rt.altcha.Verify(req.Altcha)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		_ = json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "failed to verify altcha"})
+		slog.ErrorContext(r.Context(), "failed to verify altcha", "err", err)
+		return
+	}
+	if !ok {
+		w.WriteHeader(http.StatusForbidden)
+		_ = json.NewEncoder(w).Encode(TextResponseError{Status: statusError, Message: "invalid altcha"})
 		return
 	}
 
@@ -197,6 +211,7 @@ func main() {
 	}
 	slog.Info("Available inference providers", "values", ipNames)
 
+	altchaService := NewAltchaService()
 	ipName := os.Getenv("INFERENCE_PROVIDER")
 	if ipName == "" {
 		ipName = "mock"
@@ -218,13 +233,17 @@ func main() {
 	rateLimitedIP := NewRateLimitedProvider(ip)
 
 	rt := router{
-		ip: rateLimitedIP,
+		altcha: altchaService,
+		ip:     rateLimitedIP,
 	}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /api/pdf", rt.pdf)
 	mux.HandleFunc("POST /api/text", rt.text)
 	mux.HandleFunc("GET /healthz", healthcheck)
+
+	mux.HandleFunc("GET /api/altcha/challenge", rt.altcha.altchaChallengeHandler)
+	mux.HandleFunc("POST /api/altcha/verify", rt.altcha.altchaVerifyHandler)
 
 	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ext := filepath.Ext(r.URL.Path)
