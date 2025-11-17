@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
-	"os"
 	"sync"
 	"time"
 
@@ -117,12 +116,7 @@ func (u *UsedChallengeStore) cleanupRoutine() {
 
 func (a *AltchaService) getHMACKey() string {
 	hmacKeyOnce.Do(func() {
-		a.secret = os.Getenv("ALTCHA_HMAC_KEY")
-
-		if a.secret == "" {
-			a.secret = GenerateRandomString(32)
-			slog.Info("Generated new HMAC key", "key", a.secret)
-		}
+		a.secret = GenerateRandomString(32)
 	})
 	return a.secret
 }

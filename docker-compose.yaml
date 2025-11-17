@@ -8,7 +8,6 @@ services:
       - INFERENCE_PROVIDER=ollama
       - OLLAMA_HOST=http://ollama:11434
       - OLLAMA_MODEL_ID=gemma3:4b
-      - ALTCHA_HMAC_KEY=dev-secret-key-for-testing
       - AWS_REGION=${AWS_REGION}
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
