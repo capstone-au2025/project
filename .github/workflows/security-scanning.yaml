@@ -12,6 +12,11 @@ on:
     - cron: '0 0 * * 0'
   workflow_dispatch:
 
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
 jobs:
   trivy-backend:
     name: Trivy - Backend
