@@ -125,8 +125,9 @@ func SendAnalyticsToTeams(ctx context.Context, stats AnalyticsStats) error {
 		}
 	}()
 
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("webhook returned status %d", resp.StatusCode)
+	// Webhook response with non 202 or 200 status
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusAccepted {
+		return fmt.Errorf("webhook returned unexpected status %d: %s", resp.StatusCode, resp.Status)
 	}
 
 	slog.InfoContext(ctx, "Successfully sent analytics to Teams", "inferences", stats.InferencesRun, "pdfs", stats.PDFsGenerated)
