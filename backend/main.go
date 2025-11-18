@@ -9,9 +9,8 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
-	"path/filepath"
+	"path"
 	"strconv"
-	"strings"
 	"time"
 
 	_ "embed"
@@ -245,16 +244,16 @@ func main() {
 	mux.HandleFunc("GET /api/altcha/challenge", rt.altcha.altchaChallengeHandler)
 	mux.HandleFunc("POST /api/altcha/verify", rt.altcha.altchaVerifyHandler)
 
-	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ext := filepath.Ext(r.URL.Path)
+	fs := http.Dir("frontend")
+	fileServer := http.FileServer(fs)
 
-		// If there is no file extension, and it does not end with a slash,
-		// assume it's an HTML file and append .html
-		if ext == "" && !strings.HasSuffix(r.URL.Path, "/") {
-			r.URL.Path += ".html"
+	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, err := fs.Open(path.Clean(r.URL.Path))
+		if os.IsNotExist(err) {
+			r.URL.Path = "/"
 		}
 
-		http.FileServer(http.Dir("frontend")).ServeHTTP(w, r)
+		fileServer.ServeHTTP(w, r)
 	}))
 
 	fmt.Println("Listening on :3001")
