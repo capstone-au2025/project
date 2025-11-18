@@ -166,9 +166,9 @@ describe("SubmittedPage", () => {
 
       expect(textCall).toBeDefined();
       const body = JSON.parse(textCall![1].body as string);
-      expect(body).toHaveProperty("message");
+      expect(body).toHaveProperty("answers");
       // Message should contain form question labels and values
-      expect(body.message).toContain("No heat");
+      expect(body.answers.mainProblem).toContain("No heat");
     });
   });
 
