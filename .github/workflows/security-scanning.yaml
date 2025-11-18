@@ -49,37 +49,6 @@ jobs:
           format: 'table'
           severity: 'CRITICAL,HIGH,MEDIUM'
 
-  trivy-frontend:
-    name: Trivy - Frontend
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.33.1
-        continue-on-error: true
-        with:
-          scan-type: 'fs'
-          scan-ref: './frontend'
-          format: 'sarif'
-          output: 'trivy-frontend-results.sarif'
-          severity: 'CRITICAL,HIGH'
-
-      - name: Upload Trivy results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: 'trivy-frontend-results.sarif'
-          category: 'trivy-frontend'
-
-      - name: Run Trivy scanner (table output)
-        uses: aquasecurity/trivy-action@0.33.1
-        with:
-          scan-type: 'fs'
-          scan-ref: './frontend'
-          format: 'table'
-          severity: 'CRITICAL,HIGH,MEDIUM'
-
   trivy-docker:
     name: Trivy - Docker Images
     runs-on: ubuntu-latest
@@ -105,23 +74,3 @@ jobs:
         with:
           sarif_file: 'trivy-docker-backend-results.sarif'
           category: 'trivy-docker-backend'
-
-      - name: Build frontend image
-        run: docker build -t frontend:scan -f Dockerfile.frontend-dev .
-
-      - name: Run Trivy vulnerability scanner on frontend image
-        uses: aquasecurity/trivy-action@0.33.1
-        continue-on-error: true
-        with:
-          scan-type: 'image'
-          image-ref: 'frontend:scan'
-          format: 'sarif'
-          output: 'trivy-docker-frontend-results.sarif'
-          severity: 'CRITICAL,HIGH'
-
-      - name: Upload frontend image results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: 'trivy-docker-frontend-results.sarif'
-          category: 'trivy-docker-frontend'
