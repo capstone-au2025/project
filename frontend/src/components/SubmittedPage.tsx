@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import type { FormEvent } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -148,15 +148,10 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     enabled: textQuery.isSuccess,
   });
 
-  let pdf:
-    | {
-        bytes: Uint8Array;
-        blobUrl: string;
-        handleCertifiedMail: () => void;
-      }
-    | undefined = undefined;
-
-  if (data) {
+  const pdf = useMemo(() => {
+    if (!data) {
+      return undefined;
+    }
     const pdfBytes = base64ToUint8Array(data.content);
     // Use blob url because mobile safari absolutely refuses to open data urls
     const blobUrl = URL.createObjectURL(
@@ -188,12 +183,12 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
       setShowModal(true);
     };
 
-    pdf = {
+    return {
       bytes: pdfBytes,
       blobUrl,
       handleCertifiedMail: handleCertifiedMailWithConfirm,
     };
-  }
+  }, [data]);
 
   const loadingSkeleton = (
     <Skeleton width={pdfWidth} height={pdfHeight} className="absolute" />
@@ -211,10 +206,35 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     editModalRef.current?.close();
   };
 
+  console.log("RENDER");
+  const pdfElement = useMemo(() => {
+    console.log("USE MEMO", pdf?.blobUrl);
+    return (
+      pdf && (
+        <a
+          download="Letter.pdf"
+          target="_blank"
+          href={pdf.blobUrl}
+          className="absolute w-full h-full"
+        >
+          <Document file={pdf.blobUrl} loading={loadingSkeleton}>
+            <Page
+              pageNumber={1}
+              width={pdfWidth}
+              renderTextLayer={false}
+              onLoadSuccess={() => setPdfLoading(false)}
+              loading={loadingSkeleton}
+            />
+          </Document>
+        </a>
+      )
+    );
+  }, [pdf?.blobUrl]);
+
   return (
     <PageLayout>
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 space-y-6">
             <h3 className="text-xl font-semibold text-text-primary">
               {modalDetails?.header}
@@ -247,24 +267,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
             ref={pdfRef}
             className="w-full max-w-[700px] aspect-[8.5/11] shadow-md border border-sky relative"
           >
-            {pdf && (
-              <a
-                download="Letter.pdf"
-                target="_blank"
-                href={pdf.blobUrl}
-                className="absolute w-full h-full"
-              >
-                <Document file={pdf.blobUrl} loading={loadingSkeleton}>
-                  <Page
-                    pageNumber={1}
-                    width={pdfWidth}
-                    renderTextLayer={false}
-                    onLoadSuccess={() => setPdfLoading(false)}
-                    loading={loadingSkeleton}
-                  />
-                </Document>
-              </a>
-            )}
+            {pdf && pdfElement}
             {pdfLoading && loadingSkeleton}
           </div>
           <div className="flex flex-col gap-2 self-stretch">
