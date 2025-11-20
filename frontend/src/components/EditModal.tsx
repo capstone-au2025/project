@@ -14,6 +14,8 @@ interface EditPageProps {
   formData: Record<string, string>;
   backPage: string;
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  onChange: (e) => void;
+  userLetter: string;
   /* textRef: RefObject<HTMLTextAreaElement | null>; */
 }
 
@@ -47,9 +49,10 @@ const EditPage: React.FC<EditPageProps> = ({
   formData,
   backPage,
   onSubmit,
+  userLetter,
+  onChange,
   /* textRef, */
 }) => {
-  const [userLetter, setUserLetter] = useState<string>();
 
   const altchaPayload = formData.altchaPayload;
   const config = getConfig();
@@ -65,7 +68,7 @@ const EditPage: React.FC<EditPageProps> = ({
   return (
     <PageLayout>
       <div
-        className={`w-full max-w-2xl bg-white lg:rounded-lg lg:shadow-lg lg:border lg:border-sky px-4 py-8 sm:px-6 pb-4 sm:pb-6 space-y-4 sm:space-y-5`}
+        className="w-full max-w-2xl bg-white lg:rounded-lg lg:shadow-lg lg:border lg:border-sky px-4 py-8 sm:px-6 pb-4 sm:pb-6 space-y-4 sm:space-y-5"
       >
         {/* Header */}
         <div className="px-4 sm:px-6 pb-4 sm:pb-6">
@@ -89,15 +92,11 @@ const EditPage: React.FC<EditPageProps> = ({
           ) : (
             <textarea
               autoFocus
-              onChange={(e) => {
-                setUserLetter(e.target.value);
-              }}
+              onChange={onChange}
               rows={20}
               defaultValue={letterBody}
               className="h-full w-full min-h-[100px] p-3 sm:p-4 border-2 border-border rounded-md text-sm sm:text-base leading-relaxed font-secondary resize-y focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-ring transition-colors duration-200 placeholder:text-text-muted hover:border-border-hover"
             ></textarea>
-
-
           )}
 
           <div className="pt-4 sm:pt-6">

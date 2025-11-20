@@ -32,13 +32,9 @@ GlobalWorkerOptions.workerSrc = new URL(
 
 interface SubmittedPageProps {
   formData: Record<string, string>;
+  letterBody: string;
   backPage: string;
 }
-
-type TextRequest = {
-  answers: Record<string, string>;
-  altcha: string;
-};
 
 type PdfRequest = {
   senderName: string;
@@ -46,6 +42,7 @@ type PdfRequest = {
   receiverName: string;
   receiverAddress: string;
   body: string;
+  altcha: string;
 };
 
 const pdfResponseSchema = z.object({
@@ -53,15 +50,11 @@ const pdfResponseSchema = z.object({
   content: z.base64(),
 });
 
-const textResponseSchema = z.object({
-  status: z.literal("success"),
-  content: z.string(),
-});
-
 async function generatePdf(
   text: string,
   sender: NameAndAddress,
   destination: NameAndAddress,
+  payload: string,
 ) {
   const pdfResp = await fetch("/api/pdf", {
     method: "POST",
@@ -71,6 +64,7 @@ async function generatePdf(
       receiverName: destination.name,
       receiverAddress: `${destination.address}, ${destination.city}, ${destination.state} ${destination.zip} `,
       body: text,
+      altcha: payload,
     } satisfies PdfRequest),
     headers: { "Content-Type": "application/json" },
   });
@@ -78,24 +72,9 @@ async function generatePdf(
   return pdfResponseSchema.parse(pdfJson);
 }
 
-async function generateText(
-  formData: Record<string, string>,
-  altchaPayload: string,
-) {
-  const textResponse = await fetch("/api/text", {
-    method: "POST",
-    body: JSON.stringify({
-      answers: formData,
-      altcha: altchaPayload,
-    } satisfies TextRequest),
-  });
-  const textJson = await textResponse.json();
-  const text = textResponseSchema.parse(textJson);
-  return text;
-}
-
 const SubmittedPage: React.FC<SubmittedPageProps> = ({
   formData,
+  letterBody,
   backPage,
 }) => {
   const config = getConfig();
@@ -127,7 +106,6 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
 
   const navigate = useLocation()[1];
   const [pdfLoading, setPdfLoading] = useState(true);
-  const [userLetter, setUserLetter] = useState<string>();
   const [showModal, setShowModal] = useState(false);
   const [modalDetails, setModalDetails] = useState<{
     handleConfirm: () => void;
@@ -137,19 +115,10 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     cancelText: string;
   } | null>(null);
 
-  const textQuery = useQuery({
-    queryKey: ["text", formData],
-    staleTime: Infinity,
-    queryFn: () => generateText(formData, altchaPayload),
-  });
-
-  const letterBody: string = userLetter ?? textQuery.data?.content ?? "";
-
   const { data } = useQuery({
     queryKey: ["pdf", letterBody],
     staleTime: Infinity,
-    queryFn: () => generatePdf(letterBody, sender, destination),
-    enabled: textQuery.isSuccess,
+    queryFn: () => generatePdf(letterBody, sender, destination, altchaPayload),
   });
 
   const pdf = useMemo(() => {
@@ -199,18 +168,6 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
           <Skeleton width={pdfWidth} height={pdfHeight} className="absolute" />
           </>
   );
-
-  /* Edit letter modal */
-  const editModalRef = useRef<HTMLDialogElement>(null);
-  const editTextRef = useRef<HTMLTextAreaElement>(null);
-  const editModalSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (editTextRef.current) {
-      setUserLetter(editTextRef.current.value);
-    }
-
-    editModalRef.current?.close();
-  };
 
   console.log("RENDER");
   const pdfElement = useMemo(() => {
@@ -324,13 +281,8 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
               <Skeleton className="h-[52px] box-border border-2 border-transparent rounded-md" />
                     </div>
             )}
-            <EditModal
-              modalRef={editModalRef}
-              textRef={editTextRef}
-              letterBody={letterBody}
-              onSubmit={editModalSubmit}
-            />
-            <BackButton backPage={backPage} />
+
+            {/* Start Again */}
             <button
               className="h-[52px] box-border bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base align-middle flex items-center justify-center"
               onClick={() => {

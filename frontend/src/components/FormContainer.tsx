@@ -91,6 +91,7 @@ const FormContainer = () => {
   const [location, setLocation] = useLocation();
   const previousLocation = usePreviousLocation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [userLetter, setUserLetter] = useState<string>();
 
   let direction = "normal";
   const locationOrder = ["/", "/form1", "/form2", "/form3", "/addresses"];
@@ -175,6 +176,7 @@ const FormContainer = () => {
           }
           pageConfig={config.formPages[0]}
           animationDirection={direction}
+          captcha={false}
         />
       </Route>
 
@@ -186,6 +188,7 @@ const FormContainer = () => {
           backPage="/form1"
           pageConfig={config.formPages[1]}
           animationDirection={direction}
+          captcha={false}
         />
       </Route>
 
@@ -205,6 +208,8 @@ const FormContainer = () => {
         <EditPage
           formData={formData}
           backPage="form3"
+          onChange={(e) => {setUserLetter(e.target.value);}}
+          userLetter={userLetter}
           onSubmit={handlePageSubmit("addresses")}
         />
 
@@ -221,7 +226,11 @@ const FormContainer = () => {
       </Route>
 
       <Route path="/submitted">
-        <SubmittedPage formData={formData} backPage="addresses" />
+        <SubmittedPage
+          formData={formData}
+          letterBody={userLetter}
+          backPage="addresses"
+        />
       </Route>
 
       <Route path="/termsofservice">
