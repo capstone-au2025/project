@@ -1,7 +1,13 @@
-import React, { type ChangeEvent, type FormEvent } from "react";
+import React, {
+  useRef,
+  useState,
+  type ChangeEvent,
+  type FormEvent,
+} from "react";
 import { useLocation } from "wouter";
 import { STATES } from "../certifiedmail";
 import PageLayout from "./PageLayout";
+import Altcha from "./Altcha";
 import BackButton from "./BackButton";
 
 interface AddressInfoProps {
@@ -171,6 +177,20 @@ const AddressPage: React.FC<AddressPageProps> = ({
   animationDirection,
 }) => {
   const location = useLocation()[0];
+  const altchaRef = useRef<{ value: string | null } | null>(null);
+  const [altchaPayload, setAltchaPayload] = useState<string | null>(null);
+
+  const handleAltchaStateChange = (ev: Event | CustomEvent) => {
+    if ("detail" in ev) {
+      const detail = (ev as CustomEvent<{ payload?: string; state?: string }>)
+        .detail;
+      if (detail?.state === "verified" && detail?.payload) {
+        setAltchaPayload(detail.payload);
+      } else {
+        setAltchaPayload(null);
+      }
+    }
+  };
 
   const getAnimationName = () => {
     if (animationDirection === "normal") return "animate-slide-in";
@@ -201,7 +221,21 @@ const AddressPage: React.FC<AddressPageProps> = ({
           </p>
         </div>
 
-        <form onSubmit={onSubmit}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!altchaPayload) {
+              alert(
+                "Please complete the verification before generating the letter.",
+              );
+              return;
+            }
+
+            formData.altchaPayload = altchaPayload;
+
+            onSubmit(e);
+          }}
+        >
           <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-8 sm:space-y-10">
             <AddressInfo
               type="sender"
@@ -213,6 +247,10 @@ const AddressPage: React.FC<AddressPageProps> = ({
               formData={formData}
               onChange={onInputChange}
             />
+
+            <div className="w-full mb-4">
+              <Altcha ref={altchaRef} onStateChange={handleAltchaStateChange} />
+            </div>
 
             <div className="pt-4 sm:pt-6">
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
