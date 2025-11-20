@@ -63,12 +63,5 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v5
-
-      - name: Install dependencies
-        working-directory: frontend
-        run: npm ci
-
       - name: Test
-        working-directory: frontend
-        run: npm test
+        run: docker build . -t frontend -f Dockerfile.frontend-dev && docker run frontend npm run test
