@@ -7,6 +7,7 @@ import AddressPage from "./AddressPage";
 import SubmittedPage from "./SubmittedPage";
 import { Route, Switch, useLocation, useSearchParams } from "wouter";
 import { getConfig } from "../config/configLoader";
+import EditPage from "./EditModal";
 
 export interface FormData extends Record<string, string> {
   mainProblem: string;
@@ -26,6 +27,7 @@ type PageState =
   | "form1"
   | "form2"
   | "form3"
+  | "edit"
   | "addresses"
   | "submitted";
 
@@ -85,6 +87,7 @@ const FormContainer = () => {
   const [tosAccepted, setTosAccepted] = useState<boolean>(() =>
     loadFromLocalStorage(TOS_ACCEPTANCE_KEY, false),
   );
+
   const [location, setLocation] = useLocation();
   const previousLocation = usePreviousLocation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -189,11 +192,20 @@ const FormContainer = () => {
         <FormPage
           formData={formData}
           onInputChange={handleInputChange}
-          onSubmit={handlePageSubmit("addresses")}
+          onSubmit={handlePageSubmit("edit")}
           backPage="/form2"
           pageConfig={config.formPages[2]}
           animationDirection={direction}
         />
+      </Route>
+
+      <Route path="/edit">
+        <EditPage
+          formData={formData}
+          backPage="form3"
+          onSubmit={handlePageSubmit("addresses")}
+        />
+
       </Route>
 
       <Route path="/addresses">
