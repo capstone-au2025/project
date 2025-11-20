@@ -1,0 +1,30 @@
+# Trivy configuration file
+# See: https://aquasecurity.github.io/trivy/latest/docs/configuration/
+
+# Severity levels to check
+severity:
+  - CRITICAL
+  - HIGH
+  - MEDIUM
+
+# Vulnerability database
+db:
+  # Skip database update
+  skip-update: false
+
+# Scanning options
+scan:
+  # Security checks to enable
+  security-checks:
+    - vuln
+    - config
+    - secret
+
+# Output format
+format: table
+
+# Exit code when vulnerabilities are found
+exit-code: 1
+
+# Suppress specific vulnerabilities
+# ignore-unfixed: true  # Uncomment to ignore vulnerabilities without fixes

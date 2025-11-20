@@ -61,7 +61,9 @@ def parse_cards(trello_export: Path) -> list[Card]:
                 id=id,
                 name=name,
                 creation_time=date,
-                completion_time=None,
+                completion_time=(
+                    date if "done" in action["data"]["list"]["name"].lower() else None
+                ),
                 story_points=0,
                 closed=False,
             )
@@ -69,12 +71,13 @@ def parse_cards(trello_export: Path) -> list[Card]:
             id = action["data"]["card"]["id"]
             name = action["data"]["card"]["name"]
             closed = action["data"]["card"].get("closed", False)
-            if id in cards and "idLabels" in action["data"]["card"]:
+            if id in cards:
                 cards[id].name = name
-                cards[id].story_points = get_story_points(
-                    labels, action["data"]["card"]
-                )
                 cards[id].closed = closed
+                if "idLabels" in action["data"]["card"]:
+                    cards[id].story_points = get_story_points(
+                        labels, action["data"]["card"]
+                    )
         if is_completion_action(action):
             id = action["data"]["card"]["id"]
             date = isoparse(action["date"])
@@ -91,7 +94,17 @@ def parse_cards(trello_export: Path) -> list[Card]:
         )
     print()
 
-    return [card for card in cards.values() if not card.closed and card.story_points]
+    uncompleted_cards = [
+        card for card in cards.values() if not card.completion_time and not card.closed
+    ]
+    print("Uncompleted cards")
+    uncompleted_cards.sort(key=lambda card: card.creation_time)
+    print("=" * (max(len(x.name) for x in uncompleted_cards) + 4))
+    for card in uncompleted_cards:
+        print(f"{card.story_points:2}  {card.name}")
+    print()
+
+    return [card for card in cards.values() if (not card.closed) and card.story_points]
 
 
 @dataclass(order=True)
@@ -99,6 +112,21 @@ class Event:
     time: datetime
     card: Card
     type: Literal["create", "complete"]
+
+
+def parse_scope(scope_definition: str) -> tuple[list[int], list[int]]:
+    xs: list[int] = []
+    ys: list[int] = []
+    for thing in scope_definition.split(";"):
+        x, dy = thing.split(",")
+        if dy.startswith("+") or dy.startswith("-"):
+            y = ys[-1] + int(dy)
+        else:
+            y = int(dy)
+        x = int(x)
+        xs.append(x)
+        ys.append(y)
+    return xs, ys
 
 
 def main():
@@ -110,11 +138,12 @@ def main():
     parser = ArgumentParser()
     parser.add_argument("trello_export", type=Path)
     parser.add_argument("--out", "-o", type=Path, required=True)
-    parser.add_argument("--story-points", "-s", type=int, required=True)
+    parser.add_argument("--scope", "-s", type=str, required=True)
     parser.add_argument("--title", "-t", type=str, default="Burnup Chart")
     args = parser.parse_args()
 
-    total_scope = args.story_points
+    scope_xs, scope_ys = parse_scope(args.scope)
+    total_scope = scope_ys[-1]
 
     cards = parse_cards(args.trello_export)
 
@@ -158,10 +187,49 @@ def main():
         else:
             completed_x.append(day)
             completed_y.append(new_y)
+    projected_current_y = break_start_day * projected_slope + projected_slope * (
+        completed_x[-1] - break_start_day
+    )
+    print("Current day:", completed_x[-1])
+    print("Current points:", completed_y[-1])
+    print("Projected points for now:", int(projected_current_y))
+    uncompleted_points = sum(
+        card.story_points
+        for card in cards
+        if not card.completion_time and not card.closed
+    )
+    print(
+        "Total uncompleted points:",
+        uncompleted_points,
+    )
+    print("Total scope:", total_scope)
+    print(
+        "How many more points need to be created in trello:",
+        total_scope - completed_y[-1] - uncompleted_points,
+    )
 
     plt.figure(figsize=(8, 5))
     plt.plot(completed_x, completed_y, label="Actual")
-    plt.axhline(total_scope, label="Scope", color="red", linestyle=":")
+    scope_xs.append(end_day)
+    scope_ys.append(scope_ys[-1])
+    scope_line_xs = []
+    scope_line_ys = []
+    for i, (x, y) in enumerate(zip(scope_xs, scope_ys)):
+        if i == 0:
+            scope_line_xs.append(x)
+            scope_line_ys.append(y)
+        else:
+            scope_line_xs.append(x)
+            scope_line_ys.append(scope_ys[i - 1])
+            scope_line_xs.append(x)
+            scope_line_ys.append(y)
+    plt.plot(
+        scope_line_xs,
+        scope_line_ys,
+        label="Scope",
+        color="red",
+        linestyle=":",
+    )
     plt.plot(projected_x, projected_y, label="Projected", color="green", linestyle="--")
     plt.title(args.title)
     plt.xlabel("Day")

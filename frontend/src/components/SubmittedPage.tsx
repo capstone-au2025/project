@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import type { FormEvent } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -16,6 +16,7 @@ import { Document, Page } from "react-pdf";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import PageLayout from "./PageLayout";
+import { useLocation } from "wouter";
 import EditModal from "./EditModal.tsx";
 import { getConfig } from "../config/configLoader";
 import BackButton from "./BackButton";
@@ -35,7 +36,8 @@ interface SubmittedPageProps {
 }
 
 type TextRequest = {
-  message: string;
+  answers: Record<string, string>;
+  altcha: string;
 };
 
 type PdfRequest = {
@@ -76,23 +78,15 @@ async function generatePdf(
   return pdfResponseSchema.parse(pdfJson);
 }
 
-async function generateText(formData: Record<string, string>) {
-  let message = "";
-  const config = getConfig();
-  const keyToQuestion = Object.fromEntries(
-    config.formPages.flatMap((x) => x.questions).map((x) => [x.name, x.label]),
-  );
-  for (const [key, value] of Object.entries(formData)) {
-    const question = keyToQuestion[key];
-    if (question) {
-      message += `${question}\n${value}\n\n`;
-    }
-  }
-
+async function generateText(
+  formData: Record<string, string>,
+  altchaPayload: string,
+) {
   const textResponse = await fetch("/api/text", {
     method: "POST",
     body: JSON.stringify({
-      message,
+      answers: formData,
+      altcha: altchaPayload,
     } satisfies TextRequest),
   });
   const textJson = await textResponse.json();
@@ -105,6 +99,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
   backPage,
 }) => {
   const config = getConfig();
+  const altchaPayload = formData.altchaPayload;
 
   const sender: NameAndAddress = {
     name: formData.senderName,
@@ -130,17 +125,22 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     ref: pdfRef,
   } = useResizeDetector<HTMLDivElement>();
 
+  const navigate = useLocation()[1];
   const [pdfLoading, setPdfLoading] = useState(true);
   const [userLetter, setUserLetter] = useState<string>();
   const [showModal, setShowModal] = useState(false);
   const [modalDetails, setModalDetails] = useState<{
     handleConfirm: () => void;
+    header: string;
+    body: string;
+    confirmText: string;
+    cancelText: string;
   } | null>(null);
 
   const textQuery = useQuery({
     queryKey: ["text", formData],
     staleTime: Infinity,
-    queryFn: () => generateText(formData),
+    queryFn: () => generateText(formData, altchaPayload),
   });
 
   const letterBody: string = userLetter ?? textQuery.data?.content ?? "";
@@ -152,15 +152,10 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     enabled: textQuery.isSuccess,
   });
 
-  let pdf:
-    | {
-        bytes: Uint8Array;
-        blobUrl: string;
-        handleCertifiedMail: () => void;
-      }
-    | undefined = undefined;
-
-  if (data) {
+  const pdf = useMemo(() => {
+    if (!data) {
+      return undefined;
+    }
     const pdfBytes = base64ToUint8Array(data.content);
     // Use blob url because mobile safari absolutely refuses to open data urls
     const blobUrl = URL.createObjectURL(
@@ -181,16 +176,23 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     };
 
     const handleCertifiedMailWithConfirm = () => {
-      setModalDetails({ handleConfirm: handleCertifiedMail });
+      setModalDetails({
+        handleConfirm: handleCertifiedMail,
+        header: config.submittedPage.certifiedMailConfirmation.title,
+        confirmText:
+          config.submittedPage.certifiedMailConfirmation.confirmButton,
+        body: config.submittedPage.certifiedMailConfirmation.body,
+        cancelText: config.submittedPage.certifiedMailConfirmation.cancelButton,
+      });
       setShowModal(true);
     };
 
-    pdf = {
+    return {
       bytes: pdfBytes,
       blobUrl,
       handleCertifiedMail: handleCertifiedMailWithConfirm,
     };
-  }
+  }, [data]);
 
   const loadingSkeleton = (
       <>
@@ -210,25 +212,46 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     editModalRef.current?.close();
   };
 
+  console.log("RENDER");
+  const pdfElement = useMemo(() => {
+    console.log("USE MEMO", pdf?.blobUrl);
+    return (
+      pdf && (
+        <a
+          download="Letter.pdf"
+          target="_blank"
+          href={pdf.blobUrl}
+          className="absolute w-full h-full"
+        >
+          <Document file={pdf.blobUrl} loading={loadingSkeleton}>
+            <Page
+              pageNumber={1}
+              width={pdfWidth}
+              renderTextLayer={false}
+              onLoadSuccess={() => setPdfLoading(false)}
+              loading={loadingSkeleton}
+            />
+          </Document>
+        </a>
+      )
+    );
+  }, [pdf?.blobUrl]);
+
   return (
     <PageLayout>
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 space-y-6">
             <h3 className="text-xl font-semibold text-text-primary">
-              Send with Online Certified Mail?
+              {modalDetails?.header}
             </h3>
-            <p className="text-text-primary">
-              You will be redirected to an external certified mail service to
-              finish mailing your letter. We will pass along the letter and your
-              address information.
-            </p>
+            <p className="text-text-primary">{modalDetails?.body}</p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <button
                 onClick={() => setShowModal(false)}
                 className="px-6 sm:px-8 py-3 bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base"
               >
-                Cancel
+                {modalDetails?.cancelText}
               </button>
               <button
                 onClick={() => {
@@ -237,7 +260,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
                 }}
                 className="flex-1 py-3 sm:py-4 px-6 sm:px-8 bg-primary text-white rounded-md font-bold text-base sm:text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase"
               >
-                Continue to Mail Service
+                {modalDetails?.confirmText}
               </button>
             </div>
           </div>
@@ -264,35 +287,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
             ref={pdfRef}
             className="w-full max-w-[700px] aspect-[8.5/11] shadow-md border border-sky relative"
           >
-            {pdf && (
-                <>
-              <a
-                download="Letter.pdf"
-                target="_blank"
-                href={pdf.blobUrl}
-                className="absolute w-full h-full"
-              >
-                <Document file={pdf.blobUrl} loading={loadingSkeleton}>
-                  <Page
-                    pageNumber={1}
-                    width={pdfWidth}
-                    renderTextLayer={false}
-                    onLoadSuccess={() => setPdfLoading(false)}
-                    loading={loadingSkeleton}
-                  />
-                </Document>
-              </a>
-
-              {/* Edit button */}
-              <button
-                onClick={() => editModalRef.current?.showModal()}
-                className="absolute rounded-full p-2 bottom-4 right-4 w-max h-[56px] bg-primary text-white font-bold text-sm sm:text-base hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase flex items-center justify-center"
-              >
-                Edit
-              </button>
-                    </>
-
-            )}
+            {pdf && pdfElement}
             {pdfLoading && loadingSkeleton}
           </div>
           <div className="flex w-full flex-wrap gap-2 self-stretch">
@@ -335,6 +330,24 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
               letterBody={letterBody}
               onSubmit={editModalSubmit}
             />
+            <BackButton backPage={backPage} />
+            <button
+              className="h-[52px] box-border bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base align-middle flex items-center justify-center"
+              onClick={() => {
+                setModalDetails({
+                  header: config.submittedPage.startAgainConfirmation.title,
+                  confirmText:
+                    config.submittedPage.startAgainConfirmation.confirmButton,
+                  body: config.submittedPage.startAgainConfirmation.body,
+                  cancelText:
+                    config.submittedPage.startAgainConfirmation.cancelButton,
+                  handleConfirm: () => navigate("/?reset=true"),
+                });
+                setShowModal(true);
+              }}
+            >
+              {config.submittedPage.startAgainButton}
+            </button>
           </div>
         </div>
       </div>

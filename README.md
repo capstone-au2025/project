@@ -74,6 +74,53 @@ docker build -t backend backend && docker run --env-file .env -it backend go tes
 
 Note that the required environment variables must be set to run the tests for each inference provider.
 
+## Security Scanning
+
+The project uses [Trivy](https://trivy.dev/) for vulnerability scanning of dependencies.
+
+### Running Trivy Locally
+
+First, install Trivy:
+
+```bash
+# macOS
+brew install trivy
+
+# Or download from: https://github.com/aquasecurity/trivy/releases
+```
+
+Then scan the Go dependencies:
+
+```bash
+# Scan with default configuration
+trivy fs --config trivy.yaml ./backend
+
+# Scan and show only critical/high severity issues
+trivy fs --severity CRITICAL,HIGH ./backend
+
+# Scan Go modules specifically
+trivy fs --scanners vuln ./backend/go.mod
+
+# Generate a report
+trivy fs --format json --output trivy-report.json ./backend
+```
+
+### CI/CD Integration
+
+The security scan runs automatically on:
+- Pull requests to `main`
+- Pushes to `main`
+- Manual workflow dispatch
+
+Results are uploaded to the GitHub Security tab under Code Scanning alerts.
+
+### Configuration
+
+- `trivy.yaml` - Trivy configuration file
+- `.trivyignore` - List of CVEs to ignore (with justification)
+
+To suppress a vulnerability, add its CVE ID to `.trivyignore` with a comment explaining why.
+
 ## Testing on mobile with Tailscale
 
 Create a free [Tailscale](https://tailscale.com/) account.

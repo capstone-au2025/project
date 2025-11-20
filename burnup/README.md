@@ -31,24 +31,14 @@ or `XMw7FaHx - escrow-navigator-complaint-generator.json`.
 This script takes:
 
 - Exported json path
-- `-s`: Total story points, eg `388` (frontend team release plan total) or `147` (backend)
+- `-s`: Total story points over time, as a semicolon separated list of day,points pairs. You can use +N or -N for the
+  points to change it by an amount.
 
-  This makes a flat line for the scope, if we need to in the future we can add support for
-  scope that changes over time.
+   eg `0,388;24,-15` (frontend team release plan total) or `0,147;24,-6` (backend)
 
 - `-t`: Chart title, eg `Frontend Team Burnup Chart`
 
 - `-o`: Output path, eg `burnup.png`
-
-Example:
-
-```sh
-uv run main.py "tkvH0QHf - escrow-navigator-website-compatibility.json" -t "Frontend Team Burnup Chart" -o burnup.png -s 388
-```
-
-```sh
-uv run main.py "XMw7FaHx - escrow-navigator-complaint-generator.json" -t "Backend Team Burnup Chart" -o burnup.png -s 147
-```
 
 Example output:
 
