@@ -154,6 +154,7 @@ const FormContainer = () => {
     "/form2",
     "/form3",
     "/addresses",
+    "/edit",
     "/submitted",
   ];
   useEffect(() => {
@@ -196,6 +197,7 @@ const FormContainer = () => {
           backPage="/form2"
           pageConfig={config.formPages[2]}
           animationDirection={direction}
+          captcha={true}
         />
       </Route>
 

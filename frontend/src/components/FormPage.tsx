@@ -29,7 +29,7 @@ const FormPage: React.FC<FormPageProps> = ({
   pageConfig,
   backPage,
   animationDirection,
-  captcha,
+  captcha = false,
 }) => {
   const {
     pageNumber,
@@ -111,14 +111,16 @@ const FormPage: React.FC<FormPageProps> = ({
 
         <form onSubmit={(e) => {
           e.preventDefault();
-          if (!altchaPayload) {
-            alert(
-              "Please complete the verification before generating the letter.",
-            );
-            return;
-          }
+          if (captcha) {
+            if (!altchaPayload) {
+              alert(
+                "Please complete the verification before generating the letter.",
+              );
+              return;
+            }
 
-          formData.altchaPayload = altchaPayload;
+            formData.altchaPayload = altchaPayload;
+          }
 
           onSubmit(e);
         }}>
@@ -136,14 +138,17 @@ const FormPage: React.FC<FormPageProps> = ({
               />
             ))}
 
-            <div className="w-full mb-4">
-              <Altcha ref={altchaRef} onStateChange={handleAltchaStateChange} />
-            </div>
-
 
             {/* Buttons */}
             <div className="pt-4 sm:pt-6">
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <div className="flex flex-row flex-wrap gap-3 sm:gap-4">
+                {captcha && (
+                  <div className="basis-full mb-4">
+                    <Altcha ref={altchaRef} onStateChange={handleAltchaStateChange} />
+                  </div>
+                )}
+
+
                 <BackButton backPage={backPage} />
 
                 <button

@@ -1,5 +1,6 @@
 import yaml from "js-yaml";
 import appConfigRaw from "../../app-config.yaml?raw";
+import LegalDisclaimer from "../components/LegalDisclaimer";
 
 // TypeScript interfaces for config structure
 export interface QuestionConfig {
@@ -73,9 +74,16 @@ export interface TermsOfServicePageConfig {
   continueButton: string;
 }
 
+export interface Disclaimer {
+  heading: string;
+  description: string;
+}
+
+
 export interface UIConfig {
   app: {
     title: string;
+    legalDisclaimers: Disclaimer[];
   };
   introPage: IntroPageConfig;
   termsOfServicePage: TermsOfServicePageConfig;

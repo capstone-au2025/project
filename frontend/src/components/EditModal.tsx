@@ -3,9 +3,12 @@ import { useState } from "react";
 import type { RefObject, FormEvent } from "react";
 import { getConfig } from "../config/configLoader";
 import { useQuery } from "@tanstack/react-query";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import z from "zod";
 import PageLayout from "./PageLayout";
 import BackButton from "./BackButton";
+import LegalDisclaimer from "./LegalDisclaimer";
 
 interface EditPageProps {
   formData: Record<string, string>;
@@ -67,28 +70,35 @@ const EditPage: React.FC<EditPageProps> = ({
         {/* Header */}
         <div className="px-4 sm:px-6 pb-4 sm:pb-6">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3 text-primary text-center uppercase leading-tight">
-            {config.submittedPage.editHeader}
+            { letterBody == "" ? "Generating your letter" : config.submittedPage.editHeader }
           </h1>
           <p className="text-base sm:text-lg text-text-primary text-center">
-            This may take a while.
+            { letterBody == "" ? "This may take a while. In the meantime, feel free to review our legal disclaimers." : "Feel free to edit before continuing."}
           </p>
         </div>
 
+        <LegalDisclaimer />
 
         <form
           className="h-full flex flex-col gap-8 padding-8"
           onSubmit={onSubmit}
           method="dialog"
         >
-          <textarea
-            autoFocus
-            onChange={(e) => {
-              setUserLetter(e.target.value);
-            }}
-            rows={20}
-            defaultValue={letterBody}
-            className="h-full w-full min-h-[100px] p-3 sm:p-4 border-2 border-border rounded-md text-sm sm:text-base leading-relaxed font-secondary resize-y focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-ring transition-colors duration-200 placeholder:text-text-muted hover:border-border-hover"
-          ></textarea>
+          {letterBody == "" ? (
+            <Skeleton height="40ch" />
+          ) : (
+            <textarea
+              autoFocus
+              onChange={(e) => {
+                setUserLetter(e.target.value);
+              }}
+              rows={20}
+              defaultValue={letterBody}
+              className="h-full w-full min-h-[100px] p-3 sm:p-4 border-2 border-border rounded-md text-sm sm:text-base leading-relaxed font-secondary resize-y focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-ring transition-colors duration-200 placeholder:text-text-muted hover:border-border-hover"
+            ></textarea>
+
+
+          )}
 
           <div className="pt-4 sm:pt-6">
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
