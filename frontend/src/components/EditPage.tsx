@@ -16,7 +16,7 @@ interface EditPageProps {
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
   onChange: (e) => void;
   userLetter: string;
-  /* textRef: RefObject<HTMLTextAreaElement | null>; */
+  animationDirection: string;
 }
 
 type TextRequest = {
@@ -51,7 +51,7 @@ const EditPage: React.FC<EditPageProps> = ({
   onSubmit,
   userLetter,
   onChange,
-  /* textRef, */
+  animationDirection,
 }) => {
 
   const altchaPayload = formData.altchaPayload;
@@ -65,10 +65,21 @@ const EditPage: React.FC<EditPageProps> = ({
 
   const letterBody: string = userLetter ?? textQuery.data?.content ?? "";
 
+  const getAnimationName = () => {
+    if (animationDirection == "normal") {
+      return "animate-slide-in";
+    } else if (animationDirection == "reverse") {
+      return "animate-slide-out";
+    }
+    return "";
+  };
+
+
+
   return (
     <PageLayout>
       <div
-        className="w-full max-w-2xl bg-white lg:rounded-lg lg:shadow-lg lg:border lg:border-sky px-4 py-8 sm:px-6 pb-4 sm:pb-6 space-y-4 sm:space-y-5"
+        className={`w-full max-w-2xl bg-white lg:rounded-lg lg:shadow-lg lg:border lg:border-sky px-4 py-8 sm:px-6 pb-4 sm:pb-6 space-y-4 sm:space-y-5 ${getAnimationName()}`}
       >
         {/* Header */}
         <div className="px-4 sm:px-6 pb-4 sm:pb-6">
@@ -95,7 +106,7 @@ const EditPage: React.FC<EditPageProps> = ({
               onChange={onChange}
               rows={20}
               defaultValue={letterBody}
-              className="h-full w-full min-h-[100px] p-3 sm:p-4 border-2 border-border rounded-md text-sm sm:text-base leading-relaxed font-secondary resize-y focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-ring transition-colors duration-200 placeholder:text-text-muted hover:border-border-hover"
+              className="shake h-full w-full min-h-[100px] p-3 sm:p-4 border-2 border-border rounded-md text-sm sm:text-base leading-relaxed font-secondary resize-y focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-ring transition-colors duration-200 placeholder:text-text-muted hover:border-border-hover"
             ></textarea>
           )}
 
