@@ -32,7 +32,7 @@ interface SubmittedPageProps {
 }
 
 type TextRequest = {
-  message: string;
+  answers: Record<string, string>;
   altcha: string;
 };
 
@@ -78,22 +78,10 @@ async function generateText(
   formData: Record<string, string>,
   altchaPayload: string,
 ) {
-  let message = "";
-  const config = getConfig();
-  const keyToQuestion = Object.fromEntries(
-    config.formPages.flatMap((x) => x.questions).map((x) => [x.name, x.label]),
-  );
-  for (const [key, value] of Object.entries(formData)) {
-    const question = keyToQuestion[key];
-    if (question) {
-      message += `${question}\n${value}\n\n`;
-    }
-  }
-
   const textResponse = await fetch("/api/text", {
     method: "POST",
     body: JSON.stringify({
-      message,
+      answers: formData,
       altcha: altchaPayload,
     } satisfies TextRequest),
   });
