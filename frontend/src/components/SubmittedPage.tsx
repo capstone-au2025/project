@@ -286,7 +286,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
               {/* Edit button */}
               <button
                 onClick={() => editModalRef.current?.showModal()}
-                className="relative h-[56px] bg-primary text-white rounded-md font-bold text-sm sm:text-base hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase flex items-center justify-center"
+                className="absolute rounded-full p-2 bottom-4 right-4 w-max h-[56px] bg-primary text-white font-bold text-sm sm:text-base hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase flex items-center justify-center"
               >
                 Edit
               </button>
@@ -320,12 +320,12 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
                 href={pdf.blobUrl}
                 target="_blank"
                 download={config.submittedPage.downloadFilename}
-                className="h-[52px] box-border bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base align-middle flex items-center justify-center"
+                className="h-[52px] grow box-border bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base align-middle flex items-center justify-center"
               >
                 {config.submittedPage.downloadButton}
               </a>
             ) : (
-                <div className="basis-xs grow">
+                <div className="grow">
               <Skeleton className="h-[52px] box-border border-2 border-transparent rounded-md" />
                     </div>
             )}
