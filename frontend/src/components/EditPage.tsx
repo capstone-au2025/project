@@ -1,6 +1,5 @@
 import React from "react";
-import { useState } from "react";
-import type { RefObject, FormEvent } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import { getConfig } from "../config/configLoader";
 import { useQuery } from "@tanstack/react-query";
 import Skeleton from "react-loading-skeleton";
@@ -14,8 +13,8 @@ interface EditPageProps {
   formData: Record<string, string>;
   backPage: string;
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
-  onChange: (e) => void;
-  userLetter: string;
+  onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
+  userLetter: string | undefined;
   animationDirection: string;
 }
 
@@ -53,7 +52,6 @@ const EditPage: React.FC<EditPageProps> = ({
   onChange,
   animationDirection,
 }) => {
-
   const altchaPayload = formData.altchaPayload;
   const config = getConfig();
 
@@ -74,8 +72,6 @@ const EditPage: React.FC<EditPageProps> = ({
     return "";
   };
 
-
-
   return (
     <PageLayout>
       <div
@@ -84,10 +80,14 @@ const EditPage: React.FC<EditPageProps> = ({
         {/* Header */}
         <div className="px-4 sm:px-6 pb-4 sm:pb-6">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3 text-primary text-center uppercase leading-tight">
-            { letterBody == "" ? "Generating your letter" : config.submittedPage.editHeader }
+            {letterBody == ""
+              ? "Generating your letter"
+              : config.submittedPage.editHeader}
           </h1>
           <p className="text-base sm:text-lg text-text-primary text-center">
-            { letterBody == "" ? "This may take a while. In the meantime, feel free to review our legal disclaimers." : "Feel free to edit before continuing."}
+            {letterBody == ""
+              ? "This may take a while. In the meantime, feel free to review our legal disclaimers."
+              : "Feel free to edit before continuing."}
           </p>
         </div>
 
@@ -117,11 +117,10 @@ const EditPage: React.FC<EditPageProps> = ({
                 type="submit"
                 className="h-full basis-md grow flex-2 py-3 sm:py-4 px-6 sm:px-8 bg-primary text-white rounded-md font-bold text-base sm:text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase"
               >
-                Save
+                Generate Letter
               </button>
             </div>
           </div>
-
         </form>
       </div>
     </PageLayout>

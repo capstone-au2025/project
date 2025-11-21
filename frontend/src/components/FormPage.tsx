@@ -58,8 +58,6 @@ const FormPage: React.FC<FormPageProps> = ({
     }
   };
 
-
-
   const getAnimationName = () => {
     if (animationDirection == "normal") {
       return "animate-slide-in";
@@ -109,21 +107,23 @@ const FormPage: React.FC<FormPageProps> = ({
           </p>
         </div>
 
-        <form onSubmit={(e) => {
-          e.preventDefault();
-          if (captcha) {
-            if (!altchaPayload) {
-              alert(
-                "Please complete the verification before generating the letter.",
-              );
-              return;
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (captcha) {
+              if (!altchaPayload) {
+                alert(
+                  "Please complete the verification before generating the letter.",
+                );
+                return;
+              }
+
+              formData.altchaPayload = altchaPayload;
             }
 
-            formData.altchaPayload = altchaPayload;
-          }
-
-          onSubmit(e);
-        }}>
+            onSubmit(e);
+          }}
+        >
           {/* All Questions */}
           <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4 sm:space-y-5">
             {questions.map((question) => (
@@ -138,16 +138,17 @@ const FormPage: React.FC<FormPageProps> = ({
               />
             ))}
 
-
             {/* Buttons */}
             <div className="pt-4 sm:pt-6">
               <div className="flex flex-row flex-wrap gap-3 sm:gap-4">
                 {captcha && (
                   <div className="basis-full mb-4">
-                    <Altcha ref={altchaRef} onStateChange={handleAltchaStateChange} />
+                    <Altcha
+                      ref={altchaRef}
+                      onStateChange={handleAltchaStateChange}
+                    />
                   </div>
                 )}
-
 
                 <BackButton backPage={backPage} />
 

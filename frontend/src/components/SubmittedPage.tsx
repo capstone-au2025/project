@@ -1,5 +1,4 @@
-import React, { useState, useRef, useMemo } from "react";
-import type { FormEvent } from "react";
+import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   base64ToUint8Array,
@@ -19,11 +18,7 @@ import PageLayout from "./PageLayout";
 import { useLocation } from "wouter";
 import { getConfig } from "../config/configLoader";
 import BackButton from "./BackButton";
-import {
-  InfoIcon,
-  DownloadIcon,
-} from "./icons";
-
+import { InfoIcon, DownloadIcon } from "./icons";
 
 GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -164,9 +159,9 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
   }, [data]);
 
   const loadingSkeleton = (
-      <>
-          <Skeleton width={pdfWidth} height={pdfHeight} className="absolute" />
-          </>
+    <>
+      <Skeleton width={pdfWidth} height={pdfHeight} className="absolute" />
+    </>
   );
 
   console.log("RENDER");
@@ -176,6 +171,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
       pdf && (
         <a
           download="Letter.pdf"
+          role="link"
           target="_blank"
           href={pdf.blobUrl}
           className="absolute w-full cursor-pointer h-full"
@@ -198,8 +194,6 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
           >
             {DownloadIcon}
           </a>
-
-
         </a>
       )
     );
@@ -236,22 +230,23 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
       )}
       <div className="w-full max-w-[700px] lg:rounded-lg lg:shadow-lg lg:border lg:border-sky py-8 px-4">
         <div className="flex flex-col items-center gap-4 lg:gap-8 lg:px-4 leading-none">
-
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3 text-primary text-center uppercase leading-tight">
-            {pdf && (<h2 className="text-2xl">{config.submittedPage.heading}</h2>)}
+            {pdf && (
+              <h2 className="text-2xl">{config.submittedPage.heading}</h2>
+            )}
           </h1>
 
           {/* Loading tooltip */}
           {pdfLoading && (
-             <div className="bg-white p-4 sm:p-6 rounded-lg border-l-4 border-primary shadow-sm">
-                <h3 className="text-base sm:text-lg font-bold mb-2 text-indigo flex items-center gap-2 uppercase">
+            <div className="bg-white p-4 sm:p-6 rounded-lg border-l-4 border-primary shadow-sm">
+              <h3 className="text-base sm:text-lg font-bold mb-2 text-indigo flex items-center gap-2 uppercase">
                 {InfoIcon}
-             Generating your letter!
-            </h3>
-                <p className="text-sm sm:text-base text-text-primary leading-relaxed">
-                  This can take a little while so get comfy.
-            </p>
-           </div>
+                Generating your letter!
+              </h3>
+              <p className="text-sm sm:text-base text-text-primary leading-relaxed">
+                This can take a little while so get comfy.
+              </p>
+            </div>
           )}
 
           <div
@@ -262,7 +257,6 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
             {pdfLoading && loadingSkeleton}
           </div>
           <div className="flex w-full flex-wrap gap-2">
-
             {/* Back Button */}
             <BackButton backPage={backPage} />
 

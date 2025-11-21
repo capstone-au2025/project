@@ -94,7 +94,14 @@ const FormContainer = () => {
   const [userLetter, setUserLetter] = useState<string>();
 
   let direction = "normal";
-  const locationOrder = ["/", "/form1", "/form2", "/form3", "/edit", "/addresses"];
+  const locationOrder = [
+    "/",
+    "/form1",
+    "/form2",
+    "/form3",
+    "/edit",
+    "/addresses",
+  ];
   if (previousLocation) {
     const deltaLocation =
       locationOrder.indexOf(location) - locationOrder.indexOf(previousLocation);
@@ -208,12 +215,13 @@ const FormContainer = () => {
         <EditPage
           formData={formData}
           backPage="form3"
-          onChange={(e) => {setUserLetter(e.target.value);}}
+          onChange={(e) => {
+            setUserLetter(e.target.value);
+          }}
           userLetter={userLetter}
           animationDirection={direction}
           onSubmit={handlePageSubmit("addresses")}
         />
-
       </Route>
 
       <Route path="/addresses">
@@ -229,7 +237,7 @@ const FormContainer = () => {
       <Route path="/submitted">
         <SubmittedPage
           formData={formData}
-          letterBody={userLetter}
+          letterBody={userLetter ?? ""}
           backPage="addresses"
         />
       </Route>
