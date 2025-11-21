@@ -20,7 +20,7 @@ const LegalDisclaimer: React.FC<LegalDisclaimerProps> = () => {
       ))}
       <p>
         By using this tool, you acknowledge that you have read, understood, and
-        agreed to this disclaimer. 
+        agreed to this disclaimer.
       </p>
     </div>
   );

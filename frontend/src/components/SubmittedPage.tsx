@@ -171,7 +171,6 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
       pdf && (
         <a
           download="Letter.pdf"
-          role="link"
           target="_blank"
           href={pdf.blobUrl}
           className="absolute w-full cursor-pointer h-full"
