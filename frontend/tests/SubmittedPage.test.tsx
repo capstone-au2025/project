@@ -157,7 +157,11 @@ describe("SubmittedPage", () => {
 
   it("should send correct data to PDF API", async () => {
     renderWithQueryClient(
-      <SubmittedPage formData={mockFormData} letterBody={"Generated letter content from AI"} backPage="/form3" />,
+      <SubmittedPage
+        formData={mockFormData}
+        letterBody={"Generated letter content from AI"}
+        backPage="/form3"
+      />,
     );
 
     await waitFor(() => {
@@ -327,7 +331,11 @@ describe("SubmittedPage", () => {
     ) as unknown as typeof fetch;
 
     renderWithQueryClient(
-      <SubmittedPage formData={mockFormData} letterBody={"error"} backPage="/form3" />,
+      <SubmittedPage
+        formData={mockFormData}
+        letterBody={"error"}
+        backPage="/form3"
+      />,
     );
 
     // Should still render the page without crashing

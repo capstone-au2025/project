@@ -442,7 +442,9 @@ describe("FormContainer", () => {
       await user.click(screen.getByRole("button", { name: /continue/i }));
 
       // Edit Page
-      await user.click(screen.getByRole("button", { name: /generate letter/i }));
+      await user.click(
+        screen.getByRole("button", { name: /generate letter/i }),
+      );
 
       // Should navigate to addresses page
       await waitFor(() => {
