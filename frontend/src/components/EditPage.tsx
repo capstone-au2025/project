@@ -111,11 +111,11 @@ const EditPage: React.FC<EditPageProps> = ({
           )}
 
           <div className="pt-4 sm:pt-6">
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+            <div className="flex flex-row flex-wrap gap-3 sm:gap-4">
               <BackButton backPage={backPage} />
               <button
                 type="submit"
-                className="h-full flex-2 py-3 sm:py-4 px-6 sm:px-8 bg-primary text-white rounded-md font-bold text-base sm:text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase"
+                className="h-full basis-md grow flex-2 py-3 sm:py-4 px-6 sm:px-8 bg-primary text-white rounded-md font-bold text-base sm:text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase"
               >
                 Save
               </button>

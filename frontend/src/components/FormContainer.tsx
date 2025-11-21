@@ -7,7 +7,7 @@ import AddressPage from "./AddressPage";
 import SubmittedPage from "./SubmittedPage";
 import { Route, Switch, useLocation, useSearchParams } from "wouter";
 import { getConfig } from "../config/configLoader";
-import EditPage from "./EditModal";
+import EditPage from "./EditPage";
 
 export interface FormData extends Record<string, string> {
   mainProblem: string;

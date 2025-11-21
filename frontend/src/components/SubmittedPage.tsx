@@ -17,11 +17,11 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import PageLayout from "./PageLayout";
 import { useLocation } from "wouter";
-import EditModal from "./EditModal.tsx";
 import { getConfig } from "../config/configLoader";
 import BackButton from "./BackButton";
 import {
   InfoIcon,
+  DownloadIcon,
 } from "./icons";
 
 
@@ -178,7 +178,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
           download="Letter.pdf"
           target="_blank"
           href={pdf.blobUrl}
-          className="absolute w-full h-full"
+          className="absolute w-full cursor-pointer h-full"
         >
           <Document file={pdf.blobUrl} loading={loadingSkeleton}>
             <Page
@@ -189,6 +189,17 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
               loading={loadingSkeleton}
             />
           </Document>
+          {/* Download button */}
+          <a
+            href={pdf.blobUrl}
+            target="_blank"
+            download={config.submittedPage.downloadFilename}
+            className="absolute cursor-pointer transition-200 transition-transform bottom-4 right-4 bg-primary text-white p-4 rounded-full hover:scale-[1.1]"
+          >
+            {DownloadIcon}
+          </a>
+
+
         </a>
       )
     );
@@ -223,9 +234,12 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
           </div>
         </div>
       )}
-      <div className="w-full max-w-5xl lg:rounded-lg lg:shadow-lg lg:border lg:border-sky py-8 px-4">
+      <div className="w-full max-w-[700px] lg:rounded-lg lg:shadow-lg lg:border lg:border-sky py-8 px-4">
         <div className="flex flex-col items-center gap-4 lg:gap-8 lg:px-4 leading-none">
-          {pdf && (<h2 className="text-2xl">{config.submittedPage.heading}</h2>)}
+
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3 text-primary text-center uppercase leading-tight">
+            {pdf && (<h2 className="text-2xl">{config.submittedPage.heading}</h2>)}
+          </h1>
 
           {/* Loading tooltip */}
           {pdfLoading && (
@@ -247,44 +261,28 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
             {pdf && pdfElement}
             {pdfLoading && loadingSkeleton}
           </div>
-          <div className="flex w-full flex-wrap gap-2 self-stretch">
+          <div className="flex w-full flex-wrap gap-2">
+
+            {/* Back Button */}
+            <BackButton backPage={backPage} />
 
             {/* Mail Button */}
             {pdf ? (
               <button
                 onClick={pdf.handleCertifiedMail}
-                className="h-[56px] basis-md bg-primary text-white rounded-md font-bold text-sm sm:text-base hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase flex items-center justify-center"
+                className="h-[56px] grow basis-md bg-primary text-white rounded-md font-bold text-sm sm:text-base hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase flex items-center justify-center"
               >
                 {config.submittedPage.mailButton}
               </button>
             ) : (
-                <div className="basis-sm grow">
-              <Skeleton className="h-[56px] rounded-md" />
-                    </div>
-            )}
-
-            {/* Back Button */}
-            <BackButton backPage={backPage} />
-
-            {/* Download button */}
-            {pdf ? (
-              <a
-                href={pdf.blobUrl}
-                target="_blank"
-                download={config.submittedPage.downloadFilename}
-                className="h-[52px] grow box-border bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base align-middle flex items-center justify-center"
-              >
-                {config.submittedPage.downloadButton}
-              </a>
-            ) : (
-                <div className="grow">
-              <Skeleton className="h-[52px] box-border border-2 border-transparent rounded-md" />
-                    </div>
+              <div className="basis-sm grow">
+                <Skeleton className="h-[56px] rounded-md" />
+              </div>
             )}
 
             {/* Start Again */}
             <button
-              className="h-[52px] box-border bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base align-middle flex items-center justify-center"
+              className="h-[52px] box-border grow basis-auto bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base align-middle flex items-center justify-center"
               onClick={() => {
                 setModalDetails({
                   header: config.submittedPage.startAgainConfirmation.title,
