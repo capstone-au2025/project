@@ -42,20 +42,20 @@ termsOfServicePage:
   heading: "Terms of Service"
 
   terms: |
-    Last updated: November 11, 2025
+    **Last updated:** November 11, 2025
 
-    Welcome to the JusticeMobile Language Beautifier (“the Tool”). These Terms explain what the Tool does, how you can use it, and what you should know before using it.
+    Welcome to the **JusticeMobile Language Beautifier** (“the Tool”). These Terms explain what the Tool does, how you can use it, and what you should know before using it.
     
-    By using the Tool, you agree to these Terms. If you do not agree, do not use the tool.
+    By using the Tool, you agree to these Terms. *If you do not agree, do not use the tool.*
     
-    1. What the Tool Does
+    ## 1. What the Tool Does
     The Language Beautifier helps people write clearer and more respectful letters between landlords and tenants. You can use it to rewrite your message about things like:
     •	problems with your rental home (for example, no heat or leaks), or
     •	requests for changes because of a disability.
     The Tool can help you improve your letter’s wording, but it does not give legal advice.
     It does not take the place of talking to a lawyer.
     
-    2. How the Tool Works
+    ## 2. How the Tool Works
     You are responsible for reading the letter and deciding if it says what you want before you use it.
     •	You type information about your situation.
     •	The Tool uses technology to suggest a better-worded version of your message.
@@ -64,7 +64,7 @@ termsOfServicePage:
     Inputs and Outputs: Your Inputs are the words you type into the Tool. Output means the draft letter the Tool creates for you. You keep ownership of both your Inputs and the Output. By using the Tool, you give Justice Mobile permission to use your Inputs only as needed to operate the Tool and create your Output. We do not store your Inputs or Outputs, or use them to train any AI models.
     Artificial Intelligence Notice: This Tool uses artificial intelligence (AI) to generate suggestions based on what you type. AI systems may occasionally produce errors or outdated information.
     
-    3. What Information We Collect (and what we do not)
+    ## 3. What Information We Collect (and what we do not)
     When you use the Tool, you may type in details about your situation so it can create a draft letter. We do not save, store, or share what you type or the letter the Tool creates. Your data is stored on your device when you use the tool. Once you close, leave, or refresh the page, your information is not kept by us. Your data is stored on your device you get rid of it.
     We do not collect your name, address, contact information, or anything else that could identify you personally. We also do not sell your data or personal information to anyone.
     To understand how people use the Tool and to make it better over time, we may use aggregated, de-identified data—meaning it’s grouped together and contains no names or details that could identify you. This information helps us improve accuracy and support research on housing and access to justice. All data use and management follow applicable Ohio and federal privacy laws.
@@ -72,7 +72,7 @@ termsOfServicePage:
     •	The general type of issue (for example, heat, plumbing, accessibility, or safety); and
     •	Basic system details like your browser type or how long you used the Tool.
     
-    4. Using the Tool
+    ## 4. Using the Tool
     This Tool is not directed to or intended for use by children under the age of 13. We do not knowingly collect or store personal information from anyone under 13 years old. If we learn that we have inadvertently received information from a child under 13, we will delete it as soon as possible.
     You agree to:
     •	Use the Tool only for legal and respectful communication.
@@ -81,36 +81,38 @@ termsOfServicePage:
     If you misuse the Tool, we may block your access. “Misuse” means using the Tool in a way that breaks the law, harms others, or goes against these Terms—for example, using it to threaten, harass, discriminate, damage property, or send false or misleading information.
     You are responsible for how you use the Tool and for all Outputs you send using it. If you use the Tool in a way that breaks the law or harms someone else, JusticeMobile is not responsible for any legal or other consequences. You agree that you will be the one responsible (and not JusticeMobile) for any claims, costs, or damages that result from your use or misuse of the Tool.
     
-    5. No Legal Advice or Lawyer Relationship
+    ## 5. No Legal Advice or Lawyer Relationship
     The Tool is provided for informational and educational purposes only. It is not a substitute for legal advice, legal representation, or assistance from a lawyer. JusticeMobile and its partners do not guarantee that the Output ais legally sufficient, complete, or suitable for your specific situation. The content generated is based solely on user input and is not reviewed by any attorney or staff of the JusticeMobile. Using this tool does not create a lawyer-client relationship with JusticeMobile or any partner organization. If you have a legal problem, you should seek advice from a qualified attorney or legal aid provider.
 
-    6. Limits of the Tool
+    ## 6. Limits of the Tool
     The Tool may not always be perfect. It uses technology to suggest words and may make mistakes or miss details. Always review and edit your letter before you send it. JusticeMobile cannot promise that the Tool or its results will meet your needs or be error-free.
     Other services we rely on: The Tool works with other services, like website hosting, certified-mail providers, and the technology that helps improve your wording. We don’t own or control these services. If they have a problem, stop working, or change their terms, the Tool might not work the way you expect. We are not responsible for any delays, mistakes, or losses caused by those outside services.
     Certified Mail Option: If you choose to send your letter by certified mail, the Tool will help you prepare it and connect you with a third-party mail provider. Delivery times are not guaranteed. You are responsible for making sure the mailing address and other details are correct. JusticeMobile is not responsible for delivery problems, lost mail, or missed legal deadlines. The mail provider sets its own fees, and those fees may not be refundable.
     
-    7. No Warranties
+    ## 7. No Warranties
     The Tool is provided “as is”—that means we don’t make any promises about how well it will work.
     We aren’t responsible for any problems that come from using it or relying on what it produces.
     
-    8. Our Responsibility Is Limited
+    ## 8. Our Responsibility Is Limited
     JusticeMobile and its partners are not responsible for any loss or damage that happens because you used the Tool or relied on its output. 
     To the fullest extent allowed by law, we disclaim all liability for damages or losses, including indirect or consequential damages, that may result from the use of or reliance on this Tool. JusticeMobile’s total liability for any claims related to the Tool is limited to $100.
     
-    9. Ohio Law Applies
+    ## 9. Ohio Law Applies
     These Terms are governed by the laws of the State of Ohio. If there is a dispute about these Terms or your use of the Tool, it will be handled in a court located in Franklin County, Ohio.
     
-    10. Updates to These Terms
+    ## 10. Updates to These Terms
     We may change these Terms from time to time. If we do, we will post the updated version with a new date at the top. If the Terms of Service are updated, you will be required to agree again with those terms by using the checkbox again. 
 
-    Privacy Policy: 
-    Your Privacy Comes First
+    # Privacy Policy: 
+
+    ### Your Privacy Comes First
+
     We respect your privacy. This tool does not collect, store, or share any personal information about you. The text you enter is used only to generate your letter and is not saved once the letter is created.
 
-    No Accounts or Tracking
+    ### No Accounts or Tracking
     You don’t need an account to use this tool. We do not track your activity, location, or device information. We also do not use cookies or any other tracking technologies.
 
-    How Your Information Is Used
+    ### How Your Information Is Used
     When you type information into the form, that information is used only within your session to help prepare your letter. After your letter is generated, we do keep or maintain any of the information you entered.
 
     To improve this tool and support community housing efforts, we may collect aggregated, entirely anonymous data. For example, we may record the number or type of complaints that stem from a particular zip code. This completely anonymous data will only be used to:
@@ -118,28 +120,27 @@ termsOfServicePage:
     •	Improve the tool’s helpfulness for future users
     •	Support broader efforts to inform policy discussions
 
-    This data will never include your personal information.
+    **This data will never include your personal information.**
 
-    No Personal Data Is Saved
+    ### No Personal Data Is Saved
     This tool is designed to operate without storing personal data. When the letter generation request is processed, exists temporarily on our server and is automatically deleted immediately afterward. No copies of user data or generated letters are retained by us or permanently stored. If certified mail delivery is selected, address and letter information is sent securely to the mail provider and is not retained by this tool.
 
-    Security
+    ### Security
     Because we do not store or transmit personal data, there are no records to secure or retrieve. All letter creation happens in real time, and your information is never written to a database or shared with any other service. This tool follows all applicable federal and state laws requiring reasonable security measures for personal information
 
-    Third-Party Services
+    ### Third-Party Services
     This tool may connect to third-party providers. Information shared with these providers is transmitted securely and used only for that function. Each provider maintains its own privacy.  
 
-    Artificial Intelligence Use
+    ### Artificial Intelligence Use
     This tool uses artificial intelligence (AI) to help improve clarity and tone in written letters. The AI system processes text without identifying who you are, and prompts are not retained after processing. No human reviews your content.
 
-    Policy Updates
+    ### Policy Updates
     We may update this Privacy Statement periodically to reflect changes in technology, security practices, or features. The most recent version and update date will always be available here.
 
-    Contact Us
-    If you have questions about the Tool or these Terms, contact:
+    ### Contact Us
+    If you have questions about the Tool or these Terms, contact us here: 
 
-    Justice Mobile:
-    https://www.justicemobile.org
+    [https://www.justicemobile.org/contact](https://www.justicemobile.org/contact)
 
 
   continueButton: "Agree and Continue"
