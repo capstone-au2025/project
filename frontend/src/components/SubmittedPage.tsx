@@ -287,9 +287,9 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
                 {config.submittedPage.downloadButton}
               </a>
             ) : (
-                <div className="basis-xs grow">
-              <Skeleton className="h-[52px] box-border border-2 border-transparent rounded-md" />
-                    </div>
+              <div className="basis-xs grow">
+                <Skeleton className="h-[52px] box-border border-2 border-transparent rounded-md" />
+              </div>
             )}
             <EditModal
               modalRef={editModalRef}
