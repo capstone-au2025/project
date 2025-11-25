@@ -1,11 +1,8 @@
 import React from "react";
 import { getConfig } from "../config/configLoader";
 
-interface LegalDisclaimerProps {
-  /* Currently None */
-}
 
-const LegalDisclaimer: React.FC<LegalDisclaimerProps> = () => {
+const LegalDisclaimer: React.FC<null> = () => {
   const legalDisclaimers = getConfig().app.legalDisclaimers;
 
   return (
