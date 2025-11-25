@@ -29,7 +29,10 @@ const TOSPage: React.FC<TOSPageProps> = ({ nextPage, backPage, onAccept }) => {
             </h1>
           </header>
 
-          <section id="terms" className="prose prose-sm sm:prose-base max-w-none px-2 sm:px-0">
+          <section
+            id="terms"
+            className="prose prose-sm sm:prose-base max-w-none px-2 sm:px-0"
+          >
             <Markdown
               components={{
                 h1: ({ children }) => (
@@ -53,7 +56,9 @@ const TOSPage: React.FC<TOSPageProps> = ({ nextPage, backPage, onAccept }) => {
                   </p>
                 ),
                 strong: ({ children }) => (
-                  <strong className="font-bold text-text-primary">{children}</strong>
+                  <strong className="font-bold text-text-primary">
+                    {children}
+                  </strong>
                 ),
                 ul: ({ children }) => (
                   <ul className="list-disc ml-6 mb-4 text-sm sm:text-md text-text-primary">
