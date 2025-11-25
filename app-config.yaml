@@ -5,6 +5,17 @@ app:
   # Main application title
   title: "Landlord-Tenant Communication Tool"
 
+  legalDisclaimers:
+    - heading: "User Responsibility"
+      description: |
+        You are responsible for the content of the messages you create or send using this tool. Rentful614/JusticeMobile and its partners are not liable for any disputes or outcomes that result from the use of this tool. Users remain solely responsible for all decisions and actions taken based on communications generated through this tool.
+    - heading: "No Legal Advice"
+      description: |
+        This tool helps Ohio tenants and landlords communicate clearly but does not provide legal advice or representation. Using this tool does not create an attorney-client relationship. For legal advice about your situation, contact a licensed Ohio attorney or a local legal aid organization.
+
+
+
+
 introPage:
   # Main heading
   heading: "Landlord-Tenant Communication Tool"
@@ -144,6 +155,7 @@ common:
   # Required field indicator
   requiredIndicator: "*"
 
+
 submittedPage:
   # Main heading
   heading: "Here's your letter:"
@@ -169,7 +181,6 @@ submittedPage:
     body: "Your answers will be cleared, so make sure you download the PDF first."
     confirmButton: "Start again"
     cancelButton: "Cancel"
-
 
 inference:
   systemPrompt: "The current time is {{.CurrentTime}}. Resolve relative dates to be absolute if any dates are given. Your job is to rewrite the input into more formal language. It will be the body of a letter sent to the user's landlord, voicing their complaints. Do not include any heading or footer such as \"Dear X\" and \"Sincerely, Y\" because it is the body of the letter only."
