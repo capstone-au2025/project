@@ -273,9 +273,6 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
               </div>
             )}
 
-            {/* Back Button */}
-            <BackButton backPage={backPage} />
-
             {/* Download button */}
             {pdf ? (
               <a
@@ -291,13 +288,6 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
                 <Skeleton className="h-[52px] box-border border-2 border-transparent rounded-md" />
               </div>
             )}
-            <EditModal
-              modalRef={editModalRef}
-              textRef={editTextRef}
-              letterBody={letterBody}
-              onSubmit={editModalSubmit}
-            />
-            <BackButton backPage={backPage} />
 
             {/* Start Again */}
             <button

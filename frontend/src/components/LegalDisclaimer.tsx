@@ -1,7 +1,7 @@
 import React from "react";
 import { getConfig } from "../config/configLoader";
 
-const LegalDisclaimer: React.FC<null> = () => {
+const LegalDisclaimer: React.FC<object> = () => {
   const legalDisclaimers = getConfig().app.legalDisclaimers;
 
   return (
