@@ -31,7 +31,7 @@ type PageState =
 
 const STORAGE_KEY = "justiceFormData";
 const PAGE_STATE_KEY = "justiceFormPageState";
-const TOS_ACCEPTANCE_KEY = "justiceTosAccepted";
+const TOS_ACCEPTED_TERMS_KEY = "justiceTosAccepted";
 
 const INITIAL_FORM_DATA: FormData = {
   mainProblem: "",
@@ -79,12 +79,15 @@ const usePreviousLocation = () => {
 
 const FormContainer = () => {
   const config = getConfig();
+  const terms: string = config.termsOfServicePage.terms;
+
   const [formData, setFormData] = useState<FormData>(() =>
     loadFromLocalStorage(STORAGE_KEY, INITIAL_FORM_DATA),
   );
-  const [tosAccepted, setTosAccepted] = useState<boolean>(() =>
-    loadFromLocalStorage(TOS_ACCEPTANCE_KEY, false),
+  const [tosAcceptedTerms, setTosAcceptedTerms] = useState<string | null>(() =>
+    loadFromLocalStorage(TOS_ACCEPTED_TERMS_KEY, null),
   );
+  const tosAccepted = tosAcceptedTerms === terms;
   const [location, setLocation] = useLocation();
   const previousLocation = usePreviousLocation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -110,8 +113,8 @@ const FormContainer = () => {
   }, [location]);
 
   useEffect(() => {
-    saveToLocalStorage(TOS_ACCEPTANCE_KEY, tosAccepted);
-  }, [tosAccepted]);
+    saveToLocalStorage(TOS_ACCEPTED_TERMS_KEY, tosAcceptedTerms);
+  }, [tosAcceptedTerms]);
 
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -130,7 +133,7 @@ const FormContainer = () => {
       return undefined;
     });
     setFormData(INITIAL_FORM_DATA);
-    setTosAccepted(false);
+    setTosAcceptedTerms(null);
     localStorage.clear();
     setLocation("/");
   }
@@ -142,7 +145,7 @@ const FormContainer = () => {
     };
 
   const handleTosAccept = () => {
-    setTosAccepted(true);
+    setTosAcceptedTerms(terms);
   };
 
   // Route protection: redirect to intro if TOS not accepted
