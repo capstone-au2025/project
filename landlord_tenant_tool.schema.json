@@ -110,7 +110,10 @@
         "mailButton",
         "downloadButton",
         "backButton",
-        "downloadFilename"
+        "downloadFilename",
+        "startAgainButton",
+        "certifiedMailConfirmation",
+        "startAgainConfirmation"
       ],
       "properties": {
         "heading": { "type": "string" },
@@ -121,6 +124,39 @@
           "type": "string",
           "pattern": "^[^\\s]+\\.pdf$",
           "examples": ["Letter.pdf"]
+        },
+        "startAgainButton": { "type": "string" },
+        "certifiedMailConfirmation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "body",
+            "confirmButton",
+            "cancelButton"
+          ],
+          "properties": {
+            "title": { "type": "string" },
+            "body": { "type": "string" },
+            "confirmButton": { "type": "string" },
+            "cancelButton": { "type": "string" }
+          }
+        },
+        "startAgainConfirmation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "body",
+            "confirmButton",
+            "cancelButton"
+          ],
+          "properties": {
+            "title": { "type": "string" },
+            "body": { "type": "string" },
+            "confirmButton": { "type": "string" },
+            "cancelButton": { "type": "string" }
+          }
         }
       }
     },
