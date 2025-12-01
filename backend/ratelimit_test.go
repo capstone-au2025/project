@@ -13,12 +13,11 @@ func TestRateLimitedProvider(t *testing.T) {
 		rateLimitedProvider := NewRateLimitedProvider(provider)
 
 		ctx := context.Background()
-		t.Fatal("testing fatal error in test")
 
 		// First 3 requests should succeed (burst = 3)
 		for i := 0; i < 3; i++ {
 			_, err := rateLimitedProvider.Infer(ctx, "test")
-				if err != nil {
+			if err != nil {
 				t.Fatalf("Request %d should succeed, got error: %v", i+1, err)
 			}
 		}

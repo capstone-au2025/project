@@ -150,7 +150,7 @@ jobs:
         run: docker build . -t backend -f Dockerfile.backend-dev
 
   publish:
-    name: Build and Publish Containers
+    name: Build Production Containers
     runs-on: ubuntu-latest
     needs:
       - ts-build
