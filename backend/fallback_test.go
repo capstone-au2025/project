@@ -55,5 +55,3 @@ func TestFallbackProviderAllFail(t *testing.T) {
 		t.Fatalf("expected second provider to be called once, got %d", second.calls)
 	}
 }
-
-
