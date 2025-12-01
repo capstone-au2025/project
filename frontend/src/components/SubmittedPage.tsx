@@ -206,9 +206,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     editModalRef.current?.close();
   };
 
-  console.log("RENDER");
   const pdfElement = useMemo(() => {
-    console.log("USE MEMO", pdf?.blobUrl);
     return (
       pdf && (
         <a
