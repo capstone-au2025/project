@@ -232,20 +232,12 @@ func main() {
 		providers = append(providers, primary)
 	}
 
-	if p, err := inferenceProviders["openai"](maxInputTokens, maxOutputTokens); err != nil {
-		providers = append(providers, p)
-	}
-
-	if p, err := inferenceProviders["aws"](maxInputTokens, maxOutputTokens); err != nil {
-		providers = append(providers, p)
-	}
-
-	if p, err := inferenceProviders["ollama"](maxInputTokens, maxOutputTokens); err != nil {
-		providers = append(providers, p)
-	}
-
-	if p, err := inferenceProviders["mock"](maxInputTokens, maxOutputTokens); err != nil {
-		providers = append(providers, p)
+	if ipName != "mock" {
+		if p, err := inferenceProviders["mock"](maxInputTokens, maxOutputTokens); err == nil {
+			providers = append(providers, p)
+		} else {
+			slog.Warn("failed to init mock provider", "err", err)
+		}
 	}
 
 	ip := NewFallbackProvider(providers...)
