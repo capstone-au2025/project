@@ -110,6 +110,7 @@
         "mailButton",
         "downloadButton",
         "backButton",
+        "editHeader",
         "downloadFilename",
         "startAgainButton",
         "certifiedMailConfirmation",
@@ -120,6 +121,7 @@
         "mailButton": { "type": "string" },
         "downloadButton": { "type": "string" },
         "backButton": { "type": "string" },
+        "editHeader": { "type": "string" },
         "downloadFilename": {
           "type": "string",
           "pattern": "^[^\\s]+\\.pdf$",
