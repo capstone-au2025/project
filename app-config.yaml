@@ -7,7 +7,7 @@ app:
 
 introPage:
   # Main heading
-  heading: "Landlord-Tenant Communication Tool"
+  headinga: "Landlord-Tenant Communication Tool"
 
   # Introductory description paragraph
   description: |

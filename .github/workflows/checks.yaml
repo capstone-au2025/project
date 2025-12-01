@@ -149,6 +149,64 @@ jobs:
       - name: Build
         run: docker build . -t backend -f Dockerfile.backend-dev
 
+  validate-config:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml jsonschema
+
+      - name: Validate YAML files
+        run: |
+          python - <<'EOF'
+          import yaml
+          import json
+          import jsonschema
+          import sys
+          from pathlib import Path
+
+          YAML_FILE = "app-config.yaml"
+          SCHEMA_FILE = "landlord_tenant_tool.schema.json"
+
+          def validate_yaml(yaml_path, schema_path):
+              try:
+                  with open(yaml_path, 'r') as f:
+                      yaml_data = yaml.safe_load(f)
+                  
+                  with open(schema_path, 'r') as f:
+                      schema = json.load(f)
+                  
+                  jsonschema.validate(instance=yaml_data, schema=schema)
+                  print(f"✅ {yaml_path} is valid according to {schema_path}")
+                  return True
+              except yaml.YAMLError as e:
+                  print(f"❌ YAML parsing error in {yaml_path}:")
+                  print(f"   {e}")
+                  return False
+              except jsonschema.exceptions.ValidationError as e:
+                  print(f"❌ Validation error in {yaml_path}:")
+                  print(f"   {e.message}")
+                  print(f"   Path: {' -> '.join(str(p) for p in e.path)}")
+                  return False
+              except FileNotFoundError as e:
+                  print(f"❌ File not found: {e.filename}")
+                  return False
+              except Exception as e:
+                  print(f"❌ Unexpected error: {e}")
+                  return False
+
+          if not validate_yaml(YAML_FILE, SCHEMA_FILE):
+              sys.exit(1)
+          EOF
+
   publish:
     name: Build Production Containers
     runs-on: ubuntu-latest
