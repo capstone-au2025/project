@@ -2,15 +2,168 @@ name: Publish
 on:
   schedule:
     - cron: "0 4 * * 2" # Tuesdays at 4am UTC
+  pull_request:
+    branches:
+      - main
   push:
     branches:
       - main
   workflow_dispatch:
 
 jobs:
+  ts-build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build
+        working-directory: frontend
+        run: npm run build
+
+  ts-lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Lint
+        working-directory: frontend
+        run: npm run lint
+
+  ts-format:
+    name: Check Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Check format
+        working-directory: frontend
+        run: npm run check-format
+
+  ts-test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Test
+        working-directory: frontend
+        run: npm test
+
+  go-build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: backend/go.mod
+      - name: Build
+        working-directory: backend
+        run: go build
+
+  go-test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Test
+        run: docker build . -t backend -f Dockerfile.backend-dev && docker run backend go test -v
+
+  go-lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: backend/go.mod
+
+      - name: Lint
+        uses: golangci/golangci-lint-action@v8
+        with:
+          working-directory: backend
+
+  go-format:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: backend/go.mod
+
+      - name: Check Format
+        working-directory: backend
+        run: |
+          diff=$(gofmt -e -d .)
+          if [[ -n "$diff" ]]; then
+            echo "$diff"
+            exit 1
+          fi
+
+  container-frontend:
+    name: Build Frontend Development Container
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Build
+        run: docker build . -t frontend -f Dockerfile.frontend-dev
+
+  container-backend:
+    name: Build Backend Development Container
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Build
+        run: docker build . -t backend -f Dockerfile.backend-dev
+
   publish:
     name: Publish
     runs-on: ubuntu-24.04
+    if: ${{ github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+    needs:
+      - ts-build
+      - ts-lint
+      - ts-format
+      - ts-test
+      - go-build
+      - go-test
+      - go-lint
+      - go-format
+      - container-frontend
+      - container-backend
     permissions:
       contents: read
       packages: write
