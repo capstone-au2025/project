@@ -150,6 +150,7 @@ jobs:
         run: docker build . -t backend -f Dockerfile.backend-dev
 
   validate-config:
+    name: Validate Configuration
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
