@@ -61,7 +61,7 @@ const EditPage: React.FC<EditPageProps> = ({
     queryFn: () => generateText(formData, altchaPayload),
   });
 
-  const letterBody: string = userLetter ?? textQuery.data?.content ?? "";
+  const letterBody: string | undefined = userLetter ?? textQuery.data?.content;
 
   const getAnimationName = () => {
     if (animationDirection == "normal") {
@@ -98,7 +98,7 @@ const EditPage: React.FC<EditPageProps> = ({
           onSubmit={onSubmit}
           method="dialog"
         >
-          {letterBody == "" ? (
+          {letterBody == null? (
             <Skeleton height="40ch" />
           ) : (
             <textarea
