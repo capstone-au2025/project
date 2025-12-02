@@ -1,0 +1,273 @@
+name: Checks
+on:
+  schedule:
+    - cron: "0 4 * * 2" # Tuesdays at 4am UTC
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  ts-build:
+    name: Build TypeScript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build
+        working-directory: frontend
+        run: npm run build
+
+  ts-lint:
+    name: Lint TypeScript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Lint TypeScript
+        working-directory: frontend
+        run: npm run lint
+
+  ts-format:
+    name: Check Format TypeScript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Check format
+        working-directory: frontend
+        run: npm run check-format
+
+  ts-test:
+    name: Test TypeScript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Test
+        working-directory: frontend
+        run: npm test
+
+  go-build:
+    name: Build Go
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: backend/go.mod
+      - name: Build
+        working-directory: backend
+        run: go build
+
+  go-test:
+    name: Test Go
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Test
+        run: docker build . -t backend -f Dockerfile.backend-dev && docker run backend go test -v
+
+  go-lint:
+    name: Lint Go
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: backend/go.mod
+
+      - name: Lint
+        uses: golangci/golangci-lint-action@v8
+        with:
+          working-directory: backend
+
+  go-format:
+    name: Format Go
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: backend/go.mod
+
+      - name: Check Format
+        working-directory: backend
+        run: |
+          diff=$(gofmt -e -d .)
+          if [[ -n "$diff" ]]; then
+            echo "$diff"
+            exit 1
+          fi
+
+  container-frontend:
+    name: Build Frontend Development Container
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Build
+        run: docker build . -t frontend -f Dockerfile.frontend-dev
+
+  container-backend:
+    name: Build Backend Development Container
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Build
+        run: docker build . -t backend -f Dockerfile.backend-dev
+
+  validate-config:
+    name: Validate Configuration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml jsonschema
+
+      - name: Validate YAML files
+        run: |
+          python - <<'EOF'
+          import yaml
+          import json
+          import jsonschema
+          import sys
+          from pathlib import Path
+
+          YAML_FILE = "app-config.yaml"
+          SCHEMA_FILE = "landlord_tenant_tool.schema.json"
+
+          def validate_yaml(yaml_path, schema_path):
+              try:
+                  with open(yaml_path, 'r') as f:
+                      yaml_data = yaml.safe_load(f)
+                  
+                  with open(schema_path, 'r') as f:
+                      schema = json.load(f)
+                  
+                  jsonschema.validate(instance=yaml_data, schema=schema)
+                  print(f"✅ {yaml_path} is valid according to {schema_path}")
+                  return True
+              except yaml.YAMLError as e:
+                  print(f"❌ YAML parsing error in {yaml_path}:")
+                  print(f"   {e}")
+                  return False
+              except jsonschema.exceptions.ValidationError as e:
+                  print(f"❌ Validation error in {yaml_path}:")
+                  print(f"   {e.message}")
+                  print(f"   Path: {' -> '.join(str(p) for p in e.path)}")
+                  return False
+              except FileNotFoundError as e:
+                  print(f"❌ File not found: {e.filename}")
+                  return False
+              except Exception as e:
+                  print(f"❌ Unexpected error: {e}")
+                  return False
+
+          if not validate_yaml(YAML_FILE, SCHEMA_FILE):
+              sys.exit(1)
+          EOF
+
+  publish:
+    name: Build Production Containers
+    runs-on: ubuntu-latest
+    needs:
+      - ts-build
+      - ts-lint
+      - ts-format
+      - ts-test
+      - go-build
+      - go-test
+      - go-lint
+      - go-format
+      - container-frontend
+      - container-backend
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    strategy:
+      matrix:
+        build_tags: [aws, ollama, openai]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Generate variables
+        id: vars
+        run: |
+          echo "date=$(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
+          echo "repo=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
+      - name: Build images
+        run: |
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            --build-arg BUILD_TAGS="${{ matrix.build_tags }}" \
+            --tag ghcr.io/${{ steps.vars.outputs.repo }}/${{ github.event.repository.name }}:${{ matrix.build_tags }}-${{ steps.vars.outputs.date }} \
+            --tag ghcr.io/${{ steps.vars.outputs.repo }}/${{ github.event.repository.name }}:${{ matrix.build_tags }} \
+            .
+
+      - name: Login to ghcr
+        uses: docker/login-action@v3
+        if: ${{ github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Push images
+        if: ${{ github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+        run: |
+          docker buildx build --push \
+            --platform linux/amd64,linux/arm64 \
+            --build-arg BUILD_TAGS="${{ matrix.build_tags }}" \
+            --tag ghcr.io/${{ steps.vars.outputs.repo }}/${{ github.event.repository.name }}:${{ matrix.build_tags }}-${{ steps.vars.outputs.date }} \
+            --tag ghcr.io/${{ steps.vars.outputs.repo }}/${{ github.event.repository.name }}:${{ matrix.build_tags }} \
+            .
