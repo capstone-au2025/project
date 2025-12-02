@@ -20,6 +20,7 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-loading-skeleton": "^3.5.0",
+    "react-markdown": "^10.1.0",
     "react-pdf": "^10.2.0",
     "react-resize-detector": "^12.3.0",
     "wouter": "^3.7.1",

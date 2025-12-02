@@ -2,6 +2,7 @@ import React from "react";
 import PageLayout from "./PageLayout";
 import { useLocation } from "wouter";
 import { getConfig } from "../config/configLoader";
+import Markdown from "react-markdown";
 
 interface TOSPageProps {
   nextPage: string;
@@ -28,16 +29,54 @@ const TOSPage: React.FC<TOSPageProps> = ({ nextPage, backPage, onAccept }) => {
             </h1>
           </header>
 
-          <section id="terms" className="flex flex-col gap-2 sm:gap-2">
-            {/* Surround the terms in p tags */}
-            {terms.split("\n").map((s, index) => (
-              <p
-                key={index}
-                className="text-left text-sm sm:text-md text-text-primary leading-relaxed px-2 sm:px-0"
-              >
-                {s}
-              </p>
-            ))}
+          <section
+            id="terms"
+            className="prose prose-sm sm:prose-base max-w-none px-2 sm:px-0"
+          >
+            <Markdown
+              components={{
+                h1: ({ children }) => (
+                  <h1 className="text-2xl sm:text-3xl font-bold mb-4 text-text-primary">
+                    {children}
+                  </h1>
+                ),
+                h2: ({ children }) => (
+                  <h2 className="text-xl sm:text-2xl font-bold mb-3 mt-6 text-text-primary">
+                    {children}
+                  </h2>
+                ),
+                h3: ({ children }) => (
+                  <h3 className="text-lg sm:text-xl font-semibold mb-2 mt-4 text-text-primary">
+                    {children}
+                  </h3>
+                ),
+                p: ({ children }) => (
+                  <p className="text-left text-sm sm:text-md text-text-primary leading-relaxed mb-4">
+                    {children}
+                  </p>
+                ),
+                strong: ({ children }) => (
+                  <strong className="font-bold text-text-primary">
+                    {children}
+                  </strong>
+                ),
+                ul: ({ children }) => (
+                  <ul className="list-disc ml-6 mb-4 text-sm sm:text-md text-text-primary">
+                    {children}
+                  </ul>
+                ),
+                ol: ({ children }) => (
+                  <ol className="list-decimal ml-6 mb-4 text-sm sm:text-md text-text-primary">
+                    {children}
+                  </ol>
+                ),
+                li: ({ children }) => (
+                  <li className="mb-1 leading-relaxed">{children}</li>
+                ),
+              }}
+            >
+              {terms}
+            </Markdown>
           </section>
 
           {/* Button */}

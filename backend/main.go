@@ -223,10 +223,24 @@ func main() {
 
 	slog.Info("Using inference provider", "name", ipName)
 
-	ip, err := inferenceProviders[ipName](maxInputTokens, maxOutputTokens)
+	var providers []InferenceProvider
+
+	primary, err := inferenceProviders[ipName](maxInputTokens, maxOutputTokens)
 	if err != nil {
-		slog.Error("Failed to initialize inference provider", "name", ipName, "err", err)
+		slog.Error("Failed to initialize inference provider", "err", err)
+	} else {
+		providers = append(providers, primary)
 	}
+
+	if ipName != "mock" {
+		if p, err := inferenceProviders["mock"](maxInputTokens, maxOutputTokens); err == nil {
+			providers = append(providers, p)
+		} else {
+			slog.Warn("failed to init mock provider", "err", err)
+		}
+	}
+
+	ip := NewFallbackProvider(providers...)
 
 	// Wrapped provider with rate limiting
 	rateLimitedIP := NewRateLimitedProvider(ip)

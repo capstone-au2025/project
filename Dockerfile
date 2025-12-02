@@ -16,8 +16,6 @@ RUN go mod tidy
 ENV CGO_ENABLED=0
 RUN go build -tags=$BUILD_TAGS
 
-
-
 FROM golang:latest AS typst-wrapper
 WORKDIR /app
 COPY backend/typst-wrapper /app
