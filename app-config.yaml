@@ -10,9 +10,6 @@ app:
       description: |
         This tool helps Ohio tenants and landlords communicate clearly but does not provide legal advice or representation. Using this tool does not create an attorney-client relationship. For legal advice about your situation, contact a licensed Ohio attorney or a local legal aid organization.
 
-
-
-
 introPage:
   heading: Landlord-Tenant Communication Tool
 
@@ -237,7 +234,6 @@ common:
 
   # Required field indicator
   requiredIndicator: "*"
-
 
 submittedPage:
   heading: "Here's your letter:"

@@ -98,7 +98,7 @@ const EditPage: React.FC<EditPageProps> = ({
           onSubmit={onSubmit}
           method="dialog"
         >
-          {letterBody == null? (
+          {letterBody == null ? (
             <Skeleton height="590px" />
           ) : (
             <textarea

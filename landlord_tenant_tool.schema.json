@@ -24,6 +24,23 @@
         "title": {
           "type": "string",
           "description": "Main application title displayed in the browser tab and header"
+        },
+        "legalDisclaimers": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "properties": {
+              "heading": {
+                "type": "string",
+                "description": "Summary of the legal disclaimer"
+              },
+              "description": {
+                "type": "string",
+                "description": "Information in detail of the disclaimer"
+              }
+            }
+          }
         }
       }
     },
@@ -208,12 +225,7 @@
           "type": "object",
           "description": "Modal dialog content shown when user attempts to send letter via certified mail",
           "additionalProperties": false,
-          "required": [
-            "title",
-            "body",
-            "confirmButton",
-            "cancelButton"
-          ],
+          "required": ["title", "body", "confirmButton", "cancelButton"],
           "properties": {
             "title": {
               "type": "string",
@@ -237,12 +249,7 @@
           "type": "object",
           "description": "Modal dialog content shown when user attempts to start over and clear their data",
           "additionalProperties": false,
-          "required": [
-            "title",
-            "body",
-            "confirmButton",
-            "cancelButton"
-          ],
+          "required": ["title", "body", "confirmButton", "cancelButton"],
           "properties": {
             "title": {
               "type": "string",
