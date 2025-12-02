@@ -203,7 +203,10 @@ const FormContainer = () => {
         <FormPage
           formData={formData}
           onInputChange={handleInputChange}
-          onSubmit={handlePageSubmit("edit")}
+          onSubmit={(e: FormEvent<HTMLFormElement>) => {
+            setUserLetter(undefined);
+            handlePageSubmit("edit")(e);
+          }}
           backPage="/form2"
           pageConfig={config.formPages[2]}
           animationDirection={direction}
