@@ -99,7 +99,7 @@ const EditPage: React.FC<EditPageProps> = ({
           method="dialog"
         >
           {letterBody == null? (
-            <Skeleton height="40ch" />
+            <Skeleton height="590px" />
           ) : (
             <textarea
               autoFocus
