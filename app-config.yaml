@@ -6,9 +6,15 @@ app:
     - heading: "User Responsibility"
       description: |
         You are responsible for the content of the messages you create or send using this tool. Rentful614/JusticeMobile and its partners are not liable for any disputes or outcomes that result from the use of this tool. Users remain solely responsible for all decisions and actions taken based on communications generated through this tool.
-    - heading: "No Legal Advice"
+    - heading: "Not Legal Advice"
       description: |
         This tool helps Ohio tenants and landlords communicate clearly but does not provide legal advice or representation. Using this tool does not create an attorney-client relationship. For legal advice about your situation, contact a licensed Ohio attorney or a local legal aid organization.
+    - heading: "Unauthorized Practice of Law"
+      description: |
+        Rentful614/JusticeMobile is not a law firm and does not practice law. All messages and templates are based on general information, not tailored to your case. Please review and edit generated letters before sending.
+    - heading: "Liability Limitations"
+      description: |
+        Letters generated here are user-drafted. We are not responsible for the results of landlord-tenant disputes or third-party services (like mail providers).
 
 introPage:
   heading: Landlord-Tenant Communication Tool
