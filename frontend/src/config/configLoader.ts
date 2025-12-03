@@ -73,9 +73,15 @@ export interface TermsOfServicePageConfig {
   continueButton: string;
 }
 
+export interface Disclaimer {
+  heading: string;
+  description: string;
+}
+
 export interface UIConfig {
   app: {
     title: string;
+    legalDisclaimers: Disclaimer[];
   };
   introPage: IntroPageConfig;
   termsOfServicePage: TermsOfServicePageConfig;

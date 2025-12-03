@@ -401,7 +401,7 @@ describe("FormContainer", () => {
   });
 
   describe("Form submission to submitted page", () => {
-    it("should navigate to submitted page after form3 submission", async () => {
+    it("should navigate to submitted page after address submission", async () => {
       const user = userEvent.setup();
 
       // Mock fetch for PDF API
@@ -438,7 +438,13 @@ describe("FormContainer", () => {
       );
       await user.click(screen.getByRole("button", { name: /continue/i }));
 
+      // Form 3
       await user.click(screen.getByRole("button", { name: /continue/i }));
+
+      // Edit Page
+      await user.click(
+        screen.getByRole("button", { name: /generate letter/i }),
+      );
 
       // Should navigate to addresses page
       await waitFor(() => {
@@ -473,7 +479,7 @@ describe("FormContainer", () => {
 
       // Should show submitted page
       await waitFor(() => {
-        expect(screen.getByText("Here's your letter:")).toBeInTheDocument();
+        expect(screen.getByText("Generating your letter!")).toBeInTheDocument();
       });
     });
   });
