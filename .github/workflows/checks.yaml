@@ -17,15 +17,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v5
-
-      - name: Install dependencies
-        working-directory: frontend
-        run: npm ci
-
       - name: Build
-        working-directory: frontend
-        run: npm run build
+        run: docker build . -t frontend -f Dockerfile.frontend-dev && docker run frontend npm run build
 
   ts-lint:
     name: Lint TypeScript
@@ -67,13 +60,8 @@ jobs:
 
       - uses: actions/setup-node@v5
 
-      - name: Install dependencies
-        working-directory: frontend
-        run: npm ci
-
       - name: Test
-        working-directory: frontend
-        run: npm test
+        run: docker build . -t frontend -f Dockerfile.frontend-dev && docker run frontend npm run test
 
   go-build:
     name: Build Go
