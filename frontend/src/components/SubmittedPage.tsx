@@ -164,9 +164,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
     </>
   );
 
-  console.log("RENDER");
   const pdfElement = useMemo(() => {
-    console.log("USE MEMO", pdf?.blobUrl);
     return (
       pdf && (
         <a

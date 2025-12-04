@@ -8,6 +8,7 @@ import SubmittedPage from "./SubmittedPage";
 import { Route, Switch, useLocation, useSearchParams } from "wouter";
 import { getConfig } from "../config/configLoader";
 import EditPage from "./EditPage";
+import { fnv1a32 } from "../fnv1a32";
 
 export interface FormData extends Record<string, string> {
   mainProblem: string;
@@ -33,7 +34,7 @@ type PageState =
 
 const STORAGE_KEY = "justiceFormData";
 const PAGE_STATE_KEY = "justiceFormPageState";
-const TOS_ACCEPTANCE_KEY = "justiceTosAccepted";
+const TOS_ACCEPTED_TERMS_KEY = "justiceTosAccepted";
 
 const INITIAL_FORM_DATA: FormData = {
   mainProblem: "",
@@ -81,12 +82,16 @@ const usePreviousLocation = () => {
 
 const FormContainer = () => {
   const config = getConfig();
+  const terms: string = config.termsOfServicePage.terms;
+
   const [formData, setFormData] = useState<FormData>(() =>
     loadFromLocalStorage(STORAGE_KEY, INITIAL_FORM_DATA),
   );
-  const [tosAccepted, setTosAccepted] = useState<boolean>(() =>
-    loadFromLocalStorage(TOS_ACCEPTANCE_KEY, false),
+  const [tosAcceptedHash, setTosAcceptedHash] = useState<string | null>(() =>
+    loadFromLocalStorage(TOS_ACCEPTED_TERMS_KEY, null),
   );
+  const termsHash = fnv1a32(terms);
+  const tosAccepted = tosAcceptedHash === termsHash;
 
   const [location, setLocation] = useLocation();
   const previousLocation = usePreviousLocation();
@@ -121,8 +126,8 @@ const FormContainer = () => {
   }, [location]);
 
   useEffect(() => {
-    saveToLocalStorage(TOS_ACCEPTANCE_KEY, tosAccepted);
-  }, [tosAccepted]);
+    saveToLocalStorage(TOS_ACCEPTED_TERMS_KEY, tosAcceptedHash);
+  }, [tosAcceptedHash]);
 
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -141,7 +146,7 @@ const FormContainer = () => {
       return undefined;
     });
     setFormData(INITIAL_FORM_DATA);
-    setTosAccepted(false);
+    setTosAcceptedHash(null);
     localStorage.clear();
     setLocation("/");
   }
@@ -153,7 +158,7 @@ const FormContainer = () => {
     };
 
   const handleTosAccept = () => {
-    setTosAccepted(true);
+    setTosAcceptedHash(termsHash);
   };
 
   // Route protection: redirect to intro if TOS not accepted

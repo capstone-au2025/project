@@ -6,6 +6,8 @@ import FormContainer from "../src/components/FormContainer";
 import "@testing-library/jest-dom";
 import { Router } from "wouter";
 import { memoryLocation } from "wouter/memory-location";
+import { getConfig } from "../src/config/configLoader";
+import { fnv1a32 } from "../src/fnv1a32";
 
 describe("FormContainer", () => {
   let queryClient: QueryClient;
@@ -303,8 +305,12 @@ describe("FormContainer", () => {
         solutionDate: "",
         additionalInformation: "",
       };
+
       localStorage.setItem("justiceFormData", JSON.stringify(savedData));
-      localStorage.setItem("justiceTosAccepted", JSON.stringify(true));
+      localStorage.setItem(
+        "justiceTosAccepted",
+        JSON.stringify(fnv1a32(getConfig().termsOfServicePage.terms)),
+      );
 
       renderWithQueryClient(<FormContainer />, "/form1");
 
