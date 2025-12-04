@@ -2,11 +2,12 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import FormContainer, { fnv1a32 } from "../src/components/FormContainer";
+import FormContainer from "../src/components/FormContainer";
 import "@testing-library/jest-dom";
 import { Router } from "wouter";
 import { memoryLocation } from "wouter/memory-location";
 import { getConfig } from "../src/config/configLoader";
+import { fnv1a32 } from "../src/fnv1a32";
 
 describe("FormContainer", () => {
   let queryClient: QueryClient;
