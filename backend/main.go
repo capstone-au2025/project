@@ -9,9 +9,8 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
-	"path/filepath"
+	"path"
 	"strconv"
-	"strings"
 	"time"
 
 	_ "embed"
@@ -224,10 +223,24 @@ func main() {
 
 	slog.Info("Using inference provider", "name", ipName)
 
-	ip, err := inferenceProviders[ipName](maxInputTokens, maxOutputTokens)
+	var providers []InferenceProvider
+
+	primary, err := inferenceProviders[ipName](maxInputTokens, maxOutputTokens)
 	if err != nil {
-		slog.Error("Failed to initialize inference provider", "name", ipName, "err", err)
+		slog.Error("Failed to initialize inference provider", "err", err)
+	} else {
+		providers = append(providers, primary)
 	}
+
+	if ipName != "mock" {
+		if p, err := inferenceProviders["mock"](maxInputTokens, maxOutputTokens); err == nil {
+			providers = append(providers, p)
+		} else {
+			slog.Warn("failed to init mock provider", "err", err)
+		}
+	}
+
+	ip := NewFallbackProvider(providers...)
 
 	// Wrapped provider with rate limiting
 	rateLimitedIP := NewRateLimitedProvider(ip)
@@ -237,6 +250,9 @@ func main() {
 		ip:     rateLimitedIP,
 	}
 
+	// Start analytics webhook scheduler (sends stats every week)
+	StartAnalyticsWebhookScheduler(7 * 24 * time.Hour)
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /api/pdf", rt.pdf)
 	mux.HandleFunc("POST /api/text", rt.text)
@@ -245,16 +261,16 @@ func main() {
 	mux.HandleFunc("GET /api/altcha/challenge", rt.altcha.altchaChallengeHandler)
 	mux.HandleFunc("POST /api/altcha/verify", rt.altcha.altchaVerifyHandler)
 
-	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ext := filepath.Ext(r.URL.Path)
+	fs := http.Dir("frontend")
+	fileServer := http.FileServer(fs)
 
-		// If there is no file extension, and it does not end with a slash,
-		// assume it's an HTML file and append .html
-		if ext == "" && !strings.HasSuffix(r.URL.Path, "/") {
-			r.URL.Path += ".html"
+	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, err := fs.Open(path.Clean(r.URL.Path))
+		if os.IsNotExist(err) {
+			r.URL.Path = "/"
 		}
 
-		http.FileServer(http.Dir("frontend")).ServeHTTP(w, r)
+		fileServer.ServeHTTP(w, r)
 	}))
 
 	fmt.Println("Listening on :3001")
@@ -265,5 +281,11 @@ func main() {
 		ReadTimeout:    ServerTimeout,
 		WriteTimeout:   ServerTimeout,
 	}
-	log.Fatal(server.ListenAndServe())
+
+	// Setup graceful shutdown to send final analytics before stopping
+	setupGracefulShutdown(server)
+
+	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		log.Fatal(err)
+	}
 }

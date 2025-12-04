@@ -1,4 +1,5 @@
 import React from "react";
+import { useRef, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import QuestionBox from "./QuestionBox";
 import BackButton from "./BackButton";
@@ -7,6 +8,7 @@ import PageLayout from "./PageLayout";
 import { useLocation } from "wouter";
 import type { PageConfig } from "../config/configLoader";
 import { getConfig } from "../config/configLoader";
+import Altcha from "./Altcha";
 
 interface FormPageProps {
   formData: Record<string, string>;
@@ -17,6 +19,7 @@ interface FormPageProps {
   backPage: string;
   pageConfig: PageConfig;
   animationDirection: string;
+  captcha: boolean;
 }
 
 const FormPage: React.FC<FormPageProps> = ({
@@ -26,6 +29,7 @@ const FormPage: React.FC<FormPageProps> = ({
   pageConfig,
   backPage,
   animationDirection,
+  captcha = false,
 }) => {
   const {
     pageNumber,
@@ -39,6 +43,20 @@ const FormPage: React.FC<FormPageProps> = ({
   } = pageConfig;
 
   const location = useLocation()[0];
+
+  const altchaRef = useRef<{ value: string | null } | null>(null);
+  const [altchaPayload, setAltchaPayload] = useState<string | null>(null);
+  const handleAltchaStateChange = (ev: Event | CustomEvent) => {
+    if ("detail" in ev) {
+      const detail = (ev as CustomEvent<{ payload?: string; state?: string }>)
+        .detail;
+      if (detail?.state === "verified" && detail?.payload) {
+        setAltchaPayload(detail.payload);
+      } else {
+        setAltchaPayload(null);
+      }
+    }
+  };
 
   const getAnimationName = () => {
     if (animationDirection == "normal") {
@@ -89,7 +107,23 @@ const FormPage: React.FC<FormPageProps> = ({
           </p>
         </div>
 
-        <form onSubmit={onSubmit}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (captcha) {
+              if (!altchaPayload) {
+                alert(
+                  "Please complete the verification before generating the letter.",
+                );
+                return;
+              }
+
+              formData.altchaPayload = altchaPayload;
+            }
+
+            onSubmit(e);
+          }}
+        >
           {/* All Questions */}
           <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4 sm:space-y-5">
             {questions.map((question) => (
@@ -106,12 +140,21 @@ const FormPage: React.FC<FormPageProps> = ({
 
             {/* Buttons */}
             <div className="pt-4 sm:pt-6">
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <div className="flex flex-row flex-wrap gap-3 sm:gap-4">
+                {captcha && (
+                  <div className="basis-full mb-4">
+                    <Altcha
+                      ref={altchaRef}
+                      onStateChange={handleAltchaStateChange}
+                    />
+                  </div>
+                )}
+
                 <BackButton backPage={backPage} />
 
                 <button
                   type="submit"
-                  className="flex-1 py-3 sm:py-4 px-6 sm:px-8 bg-primary text-white rounded-md font-bold text-base sm:text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase"
+                  className="flex-1 py-3 grow basis-sm sm:py-4 px-6 sm:px-8 bg-primary text-white rounded-md font-bold text-base sm:text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase"
                 >
                   {submitButtonText}
                 </button>

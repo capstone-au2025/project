@@ -1,0 +1,373 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/landlord_tenant_tool.schema.json",
+  "title": "Landlord Tenant Communication Tool Configuration",
+  "description": "Configuration schema for the JusticeTech landlord-tenant communication tool, defining all UI text, form structure, and AI inference prompts",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "app",
+    "introPage",
+    "termsOfServicePage",
+    "formPages",
+    "common",
+    "submittedPage",
+    "inference"
+  ],
+  "properties": {
+    "app": {
+      "type": "object",
+      "description": "Application-level configuration and metadata",
+      "additionalProperties": false,
+      "required": ["title"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Main application title displayed in the browser tab and header"
+        },
+        "legalDisclaimers": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "properties": {
+              "heading": {
+                "type": "string",
+                "description": "Summary of the legal disclaimer"
+              },
+              "description": {
+                "type": "string",
+                "description": "Information in detail of the disclaimer"
+              }
+            }
+          }
+        }
+      }
+    },
+    "introPage": {
+      "type": "object",
+      "description": "Content and configuration for the initial landing page shown to users",
+      "additionalProperties": false,
+      "required": [
+        "heading",
+        "description",
+        "features",
+        "infoBox",
+        "getStartedButton",
+        "footerText"
+      ],
+      "properties": {
+        "heading": {
+          "type": "string",
+          "description": "Main heading title displayed prominently at the top of the intro page"
+        },
+        "description": {
+          "type": "string",
+          "description": "Introductory description paragraph explaining the tool's purpose and how it helps users"
+        },
+        "features": {
+          "description": "Feature cards highlighting key benefits of the tool (displayed in 2x2 grid layout)",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "description": "Individual feature card with title and description",
+            "additionalProperties": false,
+            "required": ["title", "description"],
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "Bold title heading of the feature card"
+              },
+              "description": {
+                "type": "string",
+                "description": "Short paragraph description explaining the feature's benefit"
+              }
+            }
+          }
+        },
+        "infoBox": {
+          "description": "Highlighted information box callout with preparation instructions",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["title", "description"],
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "Title heading of the information callout box"
+            },
+            "description": {
+              "type": "string",
+              "description": "Short paragraph description of what users should prepare before starting"
+            }
+          }
+        },
+        "getStartedButton": {
+          "type": "string",
+          "description": "Text label for the primary call-to-action button that begins the form process"
+        },
+        "footerText": {
+          "type": "string",
+          "description": "Small footer text displayed under the get started button"
+        }
+      }
+    },
+    "termsOfServicePage": {
+      "description": "Content for the terms of service agreement page that users must accept before proceeding",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["heading", "terms", "continueButton"],
+      "properties": {
+        "heading": {
+          "type": "string",
+          "description": "Page heading displayed at the top of the terms of service page"
+        },
+        "terms": {
+          "type": "string",
+          "description": "Full text of the terms of service and privacy policy in markdown format"
+        },
+        "continueButton": {
+          "type": "string",
+          "description": "Text label for the button users click to accept terms and proceed to the form"
+        }
+      }
+    },
+    "formPages": {
+      "type": "array",
+      "description": "Array of form pages that collect user information, displayed sequentially",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/formPage"
+      }
+    },
+    "common": {
+      "type": "object",
+      "description": "Common text elements and labels reused across multiple pages and components",
+      "additionalProperties": false,
+      "required": [
+        "pageLabel",
+        "backButton",
+        "tipPrefix",
+        "successTipPrefix",
+        "requiredIndicator"
+      ],
+      "properties": {
+        "pageLabel": {
+          "type": "string",
+          "description": "Template for page progress label with placeholder for step number (e.g., 'Page {stepNumber}')",
+          "pattern": "Page \\{stepNumber\\}"
+        },
+        "backButton": {
+          "type": "string",
+          "description": "Text label for navigation button that returns to the previous page"
+        },
+        "tipPrefix": {
+          "type": "string",
+          "description": "Prefix text displayed before tip content when tipType is 'default'"
+        },
+        "successTipPrefix": {
+          "type": "string",
+          "description": "Prefix text displayed before tip content when tipType is 'success'"
+        },
+        "requiredIndicator": {
+          "type": "string",
+          "description": "Symbol or text (typically '*') displayed next to required field labels"
+        }
+      }
+    },
+    "submittedPage": {
+      "type": "object",
+      "description": "Configuration for the final page shown after form submission, displaying the generated letter",
+      "additionalProperties": false,
+      "required": [
+        "heading",
+        "mailButton",
+        "downloadButton",
+        "backButton",
+        "editHeader",
+        "downloadFilename",
+        "startAgainButton",
+        "certifiedMailConfirmation",
+        "startAgainConfirmation"
+      ],
+      "properties": {
+        "heading": {
+          "type": "string",
+          "description": "Main heading displayed above the generated letter content"
+        },
+        "mailButton": {
+          "type": "string",
+          "description": "Text label for button that initiates the certified mail sending process"
+        },
+        "downloadButton": {
+          "type": "string",
+          "description": "Text label for button that downloads the letter as a PDF file"
+        },
+        "backButton": {
+          "type": "string",
+          "description": "Text label for button that returns to the form to make changes"
+        },
+        "editHeader": {
+          "type": "string",
+          "description": "Section header text displayed above the editable letter content area"
+        },
+        "downloadFilename": {
+          "type": "string",
+          "description": "Default filename used when user downloads the letter as PDF (must end in .pdf)",
+          "pattern": "^[^\\s]+\\.pdf$",
+          "examples": ["Letter.pdf"]
+        },
+        "startAgainButton": {
+          "type": "string",
+          "description": "Text label for button that clears all data and restarts the form from the beginning"
+        },
+        "certifiedMailConfirmation": {
+          "type": "object",
+          "description": "Modal dialog content shown when user attempts to send letter via certified mail",
+          "additionalProperties": false,
+          "required": ["title", "body", "confirmButton", "cancelButton"],
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "Title heading of the certified mail confirmation dialog"
+            },
+            "body": {
+              "type": "string",
+              "description": "Explanatory text describing what happens when user proceeds with certified mail"
+            },
+            "confirmButton": {
+              "type": "string",
+              "description": "Text label for button that confirms and proceeds to mail service"
+            },
+            "cancelButton": {
+              "type": "string",
+              "description": "Text label for button that cancels the certified mail action"
+            }
+          }
+        },
+        "startAgainConfirmation": {
+          "type": "object",
+          "description": "Modal dialog content shown when user attempts to start over and clear their data",
+          "additionalProperties": false,
+          "required": ["title", "body", "confirmButton", "cancelButton"],
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "Title heading of the start over confirmation dialog"
+            },
+            "body": {
+              "type": "string",
+              "description": "Warning text explaining that data will be lost and suggesting to download first"
+            },
+            "confirmButton": {
+              "type": "string",
+              "description": "Text label for button that confirms clearing all data and restarting"
+            },
+            "cancelButton": {
+              "type": "string",
+              "description": "Text label for button that cancels the restart action"
+            }
+          }
+        }
+      }
+    },
+    "inference": {
+      "type": "object",
+      "description": "Configuration for AI inference that generates the formal letter from user inputs",
+      "additionalProperties": false,
+      "required": ["systemPrompt", "userPrompt"],
+      "properties": {
+        "systemPrompt": {
+          "type": "string",
+          "description": "System-level instructions for the AI model, including template variables like {{.CurrentTime}} and formatting guidelines"
+        },
+        "userPrompt": {
+          "type": "string",
+          "description": "User prompt template that incorporates form answers using template variables (e.g., {{.mainProblem}}) to provide context to the AI"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "formPage": {
+      "type": "object",
+      "description": "Individual form page configuration containing questions and display settings",
+      "additionalProperties": false,
+      "required": [
+        "pageNumber",
+        "title",
+        "subtitle",
+        "tipText",
+        "tipType",
+        "submitButtonText",
+        "pageInfoText",
+        "questions"
+      ],
+      "properties": {
+        "pageNumber": {
+          "type": "integer",
+          "description": "Sequential page number used for ordering and progress tracking",
+          "minimum": 1
+        },
+        "title": {
+          "type": "string",
+          "description": "Main page title heading displayed at the top of the form page"
+        },
+        "subtitle": {
+          "type": "string",
+          "description": "Secondary heading providing additional context below the main title"
+        },
+        "tipText": {
+          "type": "string",
+          "description": "Helpful guidance text displayed in a tip box to assist users with filling out the form"
+        },
+        "tipType": {
+          "type": "string",
+          "description": "Visual style of the tip box, affecting color and prefix text",
+          "enum": ["default", "success"]
+        },
+        "submitButtonText": {
+          "type": "string",
+          "description": "Text label for the button that submits the current page and proceeds to the next"
+        },
+        "pageInfoText": {
+          "type": "string",
+          "description": "Informational text showing progress and encouragement (e.g., 'Page 1 of 3 - Let's get started!')"
+        },
+        "questions": {
+          "type": "array",
+          "description": "Array of form questions/fields to be displayed on this page",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/question"
+          }
+        }
+      }
+    },
+    "question": {
+      "type": "object",
+      "description": "Individual form question/field definition with input properties",
+      "additionalProperties": false,
+      "required": ["name", "label", "placeholder", "required"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Unique identifier for the question, used as variable name in the user prompt template",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
+        },
+        "label": {
+          "type": "string",
+          "description": "Question text displayed to the user above the input field"
+        },
+        "placeholder": {
+          "type": "string",
+          "description": "Placeholder text shown inside the input field to provide examples or guidance"
+        },
+        "required": {
+          "type": "boolean",
+          "description": "Whether the field must be filled before the user can proceed to the next page"
+        }
+      }
+    }
+  }
+}

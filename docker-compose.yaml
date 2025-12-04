@@ -16,11 +16,15 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - OPENAI_MODEL_ID=${OPENAI_MODEL_ID}
       - OPENAI_BASE_URL=${OPENAI_BASE_URL}
+      - TEAMS_WEBHOOK_URL=${TEAMS_WEBHOOK_URL}
     develop:
       watch:
         - action: sync
           path: ./backend
           target: /app
+        - action: rebuild
+          path: ./app-config.yaml
+          target: /app/app-config.yaml
         - action: rebuild
           path: go.mod
         - action: rebuild
@@ -41,6 +45,9 @@ services:
           target: /app
           ignore:
             - node_modules/
+        - action: sync
+          path: ./app-config.yaml
+          target: /app/app-config.yaml
         - action: rebuild
           path: frontend/package.json
         - action: rebuild
