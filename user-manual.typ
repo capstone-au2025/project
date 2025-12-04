@@ -195,6 +195,8 @@ The website will then be available at #link("https://letter-generator.nrp-nautil
         - #item(`FormPage.tsx`, [Generic form page component for rendering configurable questions])
         - #item(`IntroPage.tsx`, [Landing page introducing features and getting started])
         - #item(`AddressPage.tsx`, [Form page for collecting sender and recipient addresses])
+        - #item(`EditPage.tsx`, [Form page for allowing tenants to edit letter before generation])
+        - #item(`LegalDisclaimer.tsx`, [Component for displaying legal disclaimers])
         - #item(`TOSPage.tsx`, [Terms of Service display and acceptance page])
         - #item(`SubmittedPage.tsx`, [Success page with PDF download and certified mail options])
         - #item(`PageLayout.tsx`, [Common layout wrapper for consistent page structure])
@@ -331,3 +333,11 @@ The frontend uses Vitest as its testing framework paired with React Testing Libr
 == `/api/text`
 
 = User (Tenant Using Tool) Manual
+
+*The general user flow will be as follows: *
+  1. User lands on the landing page - they receive basic information about the website like the title, a quick summary of what the tool does, some information about how long it takes to use and that it is completely free, and some information about what they may need to answer the questions in the following section. Additionally, they are presented with an option to agree to the terms of service or click into the terms of service to read them and agree there. This tool only takes around 3 - 5 minutes to use. 
+  2. Once the user has agreed to the terms of service and clicked get started, they are presented with the first page of questions. This page of questions asks them critical information like what problems are occurring with their house, where these problems are happening, and when each problem started. Users are also presented with a tip at the top telling them to be specific, and example text in the boxes that disappears when they start typing, but gives them an idea of what is expected out of each answer. '
+  3. Users will progress through 2 more pages of questions, with the last page of questions allowing them to continue and generate the text output that will be placed in their letter. They must also do a Captcha before progressing here, to protect the inference endpoint in the next portion of the tool from bots. 
+  4. Upon landing on the text edit page, the user can proof read and edit the text that will become part of their letter, or go back and provide new answers to questions if they feel that this is easier. 
+  5. Once the user feels that the generated and edited text fits their requirements, they can click generate letter. They will be redirected to a page asking them to answer basic address information about themselves and their landlord, which goes into the final PDF version of the letter and is passed to the certified mail provider if they choose to use that option. 
+  6. Finally, the user can decide to download the letter, or progress to the certified mail provider's website, where their information is already filled out. The user can create an account here by entering their email, and only has to enter payment information to send their letter. They can also access proofs of their letter, and will receive receipts through email, as with any other certified mail service. 
