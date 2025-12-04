@@ -7,6 +7,7 @@ import AddressPage from "./AddressPage";
 import SubmittedPage from "./SubmittedPage";
 import { Route, Switch, useLocation, useSearchParams } from "wouter";
 import { getConfig } from "../config/configLoader";
+import EditPage from "./EditPage";
 
 export interface FormData extends Record<string, string> {
   mainProblem: string;
@@ -26,6 +27,7 @@ type PageState =
   | "form1"
   | "form2"
   | "form3"
+  | "edit"
   | "addresses"
   | "submitted";
 
@@ -99,12 +101,21 @@ const FormContainer = () => {
   );
   const termsHash = fnv1a32(terms);
   const tosAccepted = tosAcceptedHash === termsHash;
+
   const [location, setLocation] = useLocation();
   const previousLocation = usePreviousLocation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [userLetter, setUserLetter] = useState<string>();
 
   let direction = "normal";
-  const locationOrder = ["/", "/form1", "/form2", "/form3", "/addresses"];
+  const locationOrder = [
+    "/",
+    "/form1",
+    "/form2",
+    "/form3",
+    "/edit",
+    "/addresses",
+  ];
   if (previousLocation) {
     const deltaLocation =
       locationOrder.indexOf(location) - locationOrder.indexOf(previousLocation);
@@ -165,6 +176,7 @@ const FormContainer = () => {
     "/form2",
     "/form3",
     "/addresses",
+    "/edit",
     "/submitted",
   ];
   useEffect(() => {
@@ -185,6 +197,7 @@ const FormContainer = () => {
           }
           pageConfig={config.formPages[0]}
           animationDirection={direction}
+          captcha={false}
         />
       </Route>
 
@@ -196,6 +209,7 @@ const FormContainer = () => {
           backPage="/form1"
           pageConfig={config.formPages[1]}
           animationDirection={direction}
+          captcha={false}
         />
       </Route>
 
@@ -203,10 +217,27 @@ const FormContainer = () => {
         <FormPage
           formData={formData}
           onInputChange={handleInputChange}
-          onSubmit={handlePageSubmit("addresses")}
+          onSubmit={(e: FormEvent<HTMLFormElement>) => {
+            setUserLetter(undefined);
+            handlePageSubmit("edit")(e);
+          }}
           backPage="/form2"
           pageConfig={config.formPages[2]}
           animationDirection={direction}
+          captcha={true}
+        />
+      </Route>
+
+      <Route path="/edit">
+        <EditPage
+          formData={formData}
+          backPage="form3"
+          onChange={(e) => {
+            setUserLetter(e.target.value);
+          }}
+          userLetter={userLetter}
+          animationDirection={direction}
+          onSubmit={handlePageSubmit("addresses")}
         />
       </Route>
 
@@ -215,13 +246,17 @@ const FormContainer = () => {
           formData={formData}
           onInputChange={handleInputChange}
           onSubmit={handlePageSubmit("submitted")}
-          backPage="/form3"
+          backPage="/edit"
           animationDirection={direction}
         />
       </Route>
 
       <Route path="/submitted">
-        <SubmittedPage formData={formData} backPage="addresses" />
+        <SubmittedPage
+          formData={formData}
+          letterBody={userLetter ?? ""}
+          backPage="addresses"
+        />
       </Route>
 
       <Route path="/termsofservice">

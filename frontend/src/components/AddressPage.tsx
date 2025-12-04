@@ -1,13 +1,7 @@
-import React, {
-  useRef,
-  useState,
-  type ChangeEvent,
-  type FormEvent,
-} from "react";
+import React, { type ChangeEvent, type FormEvent } from "react";
 import { useLocation } from "wouter";
 import { STATES } from "../certifiedmail";
 import PageLayout from "./PageLayout";
-import Altcha from "./Altcha";
 import BackButton from "./BackButton";
 
 interface AddressInfoProps {
@@ -177,20 +171,6 @@ const AddressPage: React.FC<AddressPageProps> = ({
   animationDirection,
 }) => {
   const location = useLocation()[0];
-  const altchaRef = useRef<{ value: string | null } | null>(null);
-  const [altchaPayload, setAltchaPayload] = useState<string | null>(null);
-
-  const handleAltchaStateChange = (ev: Event | CustomEvent) => {
-    if ("detail" in ev) {
-      const detail = (ev as CustomEvent<{ payload?: string; state?: string }>)
-        .detail;
-      if (detail?.state === "verified" && detail?.payload) {
-        setAltchaPayload(detail.payload);
-      } else {
-        setAltchaPayload(null);
-      }
-    }
-  };
 
   const getAnimationName = () => {
     if (animationDirection === "normal") return "animate-slide-in";
@@ -224,15 +204,6 @@ const AddressPage: React.FC<AddressPageProps> = ({
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            if (!altchaPayload) {
-              alert(
-                "Please complete the verification before generating the letter.",
-              );
-              return;
-            }
-
-            formData.altchaPayload = altchaPayload;
-
             onSubmit(e);
           }}
         >
@@ -248,16 +219,12 @@ const AddressPage: React.FC<AddressPageProps> = ({
               onChange={onInputChange}
             />
 
-            <div className="w-full mb-4">
-              <Altcha ref={altchaRef} onStateChange={handleAltchaStateChange} />
-            </div>
-
             <div className="pt-4 sm:pt-6">
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <div className="flex flex-row flex-wrap gap-3 sm:gap-4">
                 <BackButton backPage={backPage} />
                 <button
                   type="submit"
-                  className="flex-1 py-3 sm:py-4 px-6 sm:px-8 bg-primary text-white rounded-md font-bold text-base sm:text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase"
+                  className="flex-1 py-3 grow basis-md sm:py-4 px-6 sm:px-8 bg-primary text-white rounded-md font-bold text-base sm:text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase"
                 >
                   Generate Letter
                 </button>

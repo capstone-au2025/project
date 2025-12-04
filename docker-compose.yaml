@@ -23,6 +23,9 @@ services:
           path: ./backend
           target: /app
         - action: rebuild
+          path: ./app-config.yaml
+          target: /app/app-config.yaml
+        - action: rebuild
           path: go.mod
         - action: rebuild
           path: go.sum
@@ -42,6 +45,9 @@ services:
           target: /app
           ignore:
             - node_modules/
+        - action: sync
+          path: ./app-config.yaml
+          target: /app/app-config.yaml
         - action: rebuild
           path: frontend/package.json
         - action: rebuild

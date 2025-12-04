@@ -11,7 +11,7 @@ const QuestionBox: React.FC<BackButtonProps> = ({ backPage }) => {
     <Link
       href={backPage}
       type="button"
-      className="px-6 sm:px-8 py-3 bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base grid items-center text-center"
+      className="px-6 sm:px-8 grow basis-auto py-3 bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base grid items-center text-center"
     >
       {getConfig().common.backButton}
     </Link>

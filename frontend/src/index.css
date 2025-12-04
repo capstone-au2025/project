@@ -105,3 +105,26 @@ dialog::backdrop {
   backdrop-filter: blur(2px);
   background-color: #000000aa;
 }
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-2%);
+  }
+  50% {
+    transform: translateX(0);
+  }
+  75% {
+    transform: translateX(2%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.shake {
+  animation: 200ms ease-in shake;
+  animation-iteration-count: 2;
+}
