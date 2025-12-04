@@ -80,7 +80,7 @@ const usePreviousLocation = () => {
 };
 
 // hash string to 32 bit integer
-function fnv1a32(str: string): string {
+export function fnv1a32(str: string): string {
   let h = 0x811c9dc5 >>> 0;
   for (let i = 0; i < str.length; i++) {
     h ^= str.charCodeAt(i);
