@@ -1,5 +1,5 @@
 import React from "react";
-import type { ChangeEvent, FormEvent } from "react";
+import type { FormEvent } from "react";
 import { getConfig } from "../config/configLoader";
 import { useQuery } from "@tanstack/react-query";
 import Skeleton from "react-loading-skeleton";
@@ -8,12 +8,13 @@ import z from "zod";
 import PageLayout from "./PageLayout";
 import BackButton from "./BackButton";
 import LegalDisclaimer from "./LegalDisclaimer";
+import { useLocation } from "wouter";
 
 interface EditPageProps {
   formData: Record<string, string>;
   backPage: string;
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
-  onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
+  setUserLetter: (letter: string) => void;
   userLetter: string | undefined;
   animationDirection: string;
 }
@@ -23,10 +24,16 @@ type TextRequest = {
   altcha: string;
 };
 
-const textResponseSchema = z.object({
-  status: z.literal("success"),
-  content: z.string(),
-});
+const textResponseSchema = z.union([
+  z.object({
+    status: z.literal("success"),
+    content: z.string(),
+  }),
+  z.object({
+    status: z.literal("error"),
+    message: z.string(),
+  }),
+]);
 
 async function generateText(
   formData: Record<string, string>,
@@ -40,6 +47,7 @@ async function generateText(
     } satisfies TextRequest),
   });
   const textJson = await textResponse.json();
+  console.log(textJson);
   const text = textResponseSchema.parse(textJson);
   return text;
 }
@@ -49,19 +57,28 @@ const EditPage: React.FC<EditPageProps> = ({
   backPage,
   onSubmit,
   userLetter,
-  onChange,
+  setUserLetter,
   animationDirection,
 }) => {
   const altchaPayload = formData.altchaPayload;
   const config = getConfig();
 
+  const [, setLocation] = useLocation();
+
   const textQuery = useQuery({
     queryKey: ["text", formData],
     staleTime: Infinity,
     queryFn: () => generateText(formData, altchaPayload),
+    enabled: userLetter === undefined,
   });
 
-  const letterBody: string | undefined = userLetter ?? textQuery.data?.content;
+  if (userLetter === undefined) {
+    if (textQuery.data?.status === "success") {
+      setUserLetter(textQuery.data.content);
+    } else if (textQuery.data?.status === "error") {
+      setLocation("/form3");
+    }
+  }
 
   const getAnimationName = () => {
     if (animationDirection == "normal") {
@@ -80,12 +97,12 @@ const EditPage: React.FC<EditPageProps> = ({
         {/* Header */}
         <div className="px-4 sm:px-6 pb-4 sm:pb-6">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3 text-primary text-center uppercase leading-tight">
-            {letterBody == ""
+            {userLetter === undefined
               ? "Generating your letter"
               : config.submittedPage.editHeader}
           </h1>
           <p className="text-base sm:text-lg text-text-primary text-center">
-            {letterBody == ""
+            {userLetter === undefined
               ? "This may take a while. In the meantime, feel free to review our legal disclaimers."
               : "Feel free to edit before continuing."}
           </p>
@@ -98,14 +115,14 @@ const EditPage: React.FC<EditPageProps> = ({
           onSubmit={onSubmit}
           method="dialog"
         >
-          {letterBody == null ? (
+          {userLetter === undefined ? (
             <Skeleton height="590px" />
           ) : (
             <textarea
               autoFocus
-              onChange={onChange}
+              onChange={(e) => setUserLetter(e.target.value)}
               rows={20}
-              defaultValue={letterBody}
+              defaultValue={userLetter}
               className="shake h-full w-full min-h-[100px] p-3 sm:p-4 border-2 border-border rounded-md text-sm sm:text-base leading-relaxed font-secondary resize-y focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-ring transition-colors duration-200 placeholder:text-text-muted hover:border-border-hover"
             ></textarea>
           )}
