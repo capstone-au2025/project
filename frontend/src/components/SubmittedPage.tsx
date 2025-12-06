@@ -194,7 +194,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
         </a>
       )
     );
-  }, [pdf?.blobUrl]);
+  }, [pdf?.blobUrl, pdfWidth]);
 
   return (
     <PageLayout>
@@ -253,7 +253,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
             {pdf && pdfElement}
             {pdfLoading && loadingSkeleton}
           </div>
-          <div className="flex w-full flex-wrap gap-2">
+          <div className="grid grid-cols-[180px_1fr] w-full gap-2">
             {/* Back Button */}
             <BackButton backPage={backPage} />
 
@@ -277,7 +277,7 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
                 href={pdf.blobUrl}
                 target="_blank"
                 download={config.submittedPage.downloadFilename}
-                className="h-[52px] box-border bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base align-middle flex items-center justify-center"
+                className="h-[52px] px-4 box-border bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base align-middle flex items-center justify-center"
               >
                 {config.submittedPage.downloadButton}
               </a>
