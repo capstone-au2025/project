@@ -47,7 +47,6 @@ async function generateText(
     } satisfies TextRequest),
   });
   const textJson = await textResponse.json();
-  console.log(textJson);
   const text = textResponseSchema.parse(textJson);
   return text;
 }
