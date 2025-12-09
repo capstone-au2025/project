@@ -35,6 +35,7 @@ type PageState =
 const STORAGE_KEY = "justiceFormData";
 const PAGE_STATE_KEY = "justiceFormPageState";
 const TOS_ACCEPTED_TERMS_KEY = "justiceTosAccepted";
+const USER_LETTER_KEY = "justiceUserLetter";
 
 const INITIAL_FORM_DATA: FormData = {
   mainProblem: "",
@@ -96,7 +97,9 @@ const FormContainer = () => {
   const [location, setLocation] = useLocation();
   const previousLocation = usePreviousLocation();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [userLetter, setUserLetter] = useState<string>();
+  const [userLetter, setUserLetter] = useState<string | undefined>(() =>
+    loadFromLocalStorage(USER_LETTER_KEY, undefined),
+  );
 
   let direction = "normal";
   const locationOrder = [
@@ -128,6 +131,10 @@ const FormContainer = () => {
   useEffect(() => {
     saveToLocalStorage(TOS_ACCEPTED_TERMS_KEY, tosAcceptedHash);
   }, [tosAcceptedHash]);
+
+  useEffect(() => {
+    saveToLocalStorage(USER_LETTER_KEY, userLetter);
+  }, [userLetter]);
 
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -223,10 +230,8 @@ const FormContainer = () => {
         <EditPage
           formData={formData}
           backPage="form3"
-          onChange={(e) => {
-            setUserLetter(e.target.value);
-          }}
           userLetter={userLetter}
+          setUserLetter={setUserLetter}
           animationDirection={direction}
           onSubmit={handlePageSubmit("addresses")}
         />
