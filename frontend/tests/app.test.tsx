@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import App from "../src/App.tsx";
+import { getConfig } from "../src/config/configLoader";
 import "@testing-library/jest-dom";
 import { Router } from "wouter";
 import { memoryLocation } from "wouter/memory-location";
@@ -11,12 +12,14 @@ describe("App", () => {
     localStorage.clear();
   });
 
+  const config = getConfig();
+
   it("should render the App component", async () => {
     render(<App />);
 
     await waitFor(() => {
       expect(
-        screen.getByText("Landlord-Tenant Communication Tool"),
+        screen.getByText(config.introPage.heading),
       ).toBeInTheDocument();
     });
   });

@@ -32,7 +32,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
       {icon}
     </div>
     <h3 className="text-xl font-bold mb-2 text-primary uppercase">{title}</h3>
-    <p className="text-text-primary">{description}</p>
+    <p className="text-text-primary" dangerouslySetInnerHTML={{__html: description}}></p>
   </div>
 );
 

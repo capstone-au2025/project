@@ -29,7 +29,7 @@ introPage:
       description: Answer just a few questions about your situation. The process takes less than 5 minutes.
 
     - title: Free to Use
-      description: This tool is completely free. No registration or payment required to get started. Improve it on <a href="https://github.com/capstone-au2025/project">github</a>.
+      description: This tool is completely free. No registration or payment required to get started. Improve it on <a class="text-indigo underline hover:text-primary" href="https://github.com/capstone-au2025/project">github</a>.
 
   infoBox:
     title: What you'll need
