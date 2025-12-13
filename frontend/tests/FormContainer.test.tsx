@@ -8,6 +8,7 @@ import { Router } from "wouter";
 import { memoryLocation } from "wouter/memory-location";
 import { getConfig } from "../src/config/configLoader";
 import { fnv1a32 } from "../src/fnv1a32";
+import { getConfig } from "../src/config/configLoader";
 
 describe("FormContainer", () => {
   let queryClient: QueryClient;
@@ -65,10 +66,9 @@ describe("FormContainer", () => {
   describe("Initial rendering", () => {
     it("should render IntroPage by default", () => {
       renderWithQueryClient(<FormContainer />);
+      const config = getConfig();
 
-      expect(
-        screen.getByText("Landlord-Tenant Communication Tool"),
-      ).toBeInTheDocument();
+      expect(screen.getByText(config.introPage.heading)).toBeInTheDocument();
       expect(
         screen.getByRole("button", { name: /get started/i }),
       ).toBeInTheDocument();
@@ -86,6 +86,8 @@ describe("FormContainer", () => {
   });
 
   describe("Navigation flow", () => {
+    const config = getConfig();
+
     it("should navigate from intro to form1 when Get Started is clicked", async () => {
       const user = userEvent.setup();
       renderWithQueryClient(<FormContainer />);
@@ -166,9 +168,7 @@ describe("FormContainer", () => {
       // Click back
       await user.click(screen.getByRole("link", { name: /back/i }));
 
-      expect(
-        screen.getByText("Landlord-Tenant Communication Tool"),
-      ).toBeInTheDocument();
+      expect(screen.getByText(config.introPage.heading)).toBeInTheDocument();
     });
 
     it("should navigate back from form2 to form1", async () => {
@@ -324,6 +324,8 @@ describe("FormContainer", () => {
   });
 
   describe("URL reset parameter", () => {
+    const config = getConfig();
+
     it("should clear localStorage and return to intro when ?reset=true", () => {
       // Pre-populate localStorage
       const savedData = {
@@ -348,9 +350,7 @@ describe("FormContainer", () => {
       renderWithQueryClient(<FormContainer />);
 
       // Should render intro
-      expect(
-        screen.getByText("Landlord-Tenant Communication Tool"),
-      ).toBeInTheDocument();
+      expect(screen.getByText(config.introPage.heading)).toBeInTheDocument();
 
       // LocalStorage should be cleared
       const storedData = localStorage.getItem("justiceFormData");

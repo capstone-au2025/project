@@ -1,10 +1,12 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import IntroPage from "../src/components/IntroPage";
+import { getConfig } from "../src/config/configLoader";
 import "@testing-library/jest-dom";
 
 describe("IntroPage", () => {
   const mockOnTosAccept = vi.fn();
+  const config = getConfig();
 
   it("should render the main title", () => {
     render(
@@ -15,9 +17,7 @@ describe("IntroPage", () => {
       />,
     );
 
-    expect(
-      screen.getByText("Landlord-Tenant Communication Tool"),
-    ).toBeInTheDocument();
+    expect(screen.getByText(config.introPage.heading)).toBeInTheDocument();
   });
 
   it("should render the main description", () => {
