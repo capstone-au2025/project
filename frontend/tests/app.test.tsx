@@ -18,9 +18,7 @@ describe("App", () => {
     render(<App />);
 
     await waitFor(() => {
-      expect(
-        screen.getByText(config.introPage.heading),
-      ).toBeInTheDocument();
+      expect(screen.getByText(config.introPage.heading)).toBeInTheDocument();
     });
   });
 

@@ -17,9 +17,7 @@ describe("IntroPage", () => {
       />,
     );
 
-    expect(
-      screen.getByText(config.introPage.heading),
-    ).toBeInTheDocument();
+    expect(screen.getByText(config.introPage.heading)).toBeInTheDocument();
   });
 
   it("should render the main description", () => {

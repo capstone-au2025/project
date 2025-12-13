@@ -10,7 +10,6 @@ import { getConfig } from "../src/config/configLoader";
 import { fnv1a32 } from "../src/fnv1a32";
 import { getConfig } from "../src/config/configLoader";
 
-
 describe("FormContainer", () => {
   let queryClient: QueryClient;
 
@@ -69,9 +68,7 @@ describe("FormContainer", () => {
       renderWithQueryClient(<FormContainer />);
       const config = getConfig();
 
-      expect(
-        screen.getByText(config.introPage.heading),
-      ).toBeInTheDocument();
+      expect(screen.getByText(config.introPage.heading)).toBeInTheDocument();
       expect(
         screen.getByRole("button", { name: /get started/i }),
       ).toBeInTheDocument();
@@ -171,9 +168,7 @@ describe("FormContainer", () => {
       // Click back
       await user.click(screen.getByRole("link", { name: /back/i }));
 
-      expect(
-        screen.getByText(config.introPage.heading),
-      ).toBeInTheDocument();
+      expect(screen.getByText(config.introPage.heading)).toBeInTheDocument();
     });
 
     it("should navigate back from form2 to form1", async () => {
@@ -355,9 +350,7 @@ describe("FormContainer", () => {
       renderWithQueryClient(<FormContainer />);
 
       // Should render intro
-      expect(
-        screen.getByText(config.introPage.heading),
-      ).toBeInTheDocument();
+      expect(screen.getByText(config.introPage.heading)).toBeInTheDocument();
 
       // LocalStorage should be cleared
       const storedData = localStorage.getItem("justiceFormData");
