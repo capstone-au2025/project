@@ -133,7 +133,7 @@ const EditPage: React.FC<EditPageProps> = ({
                 type="submit"
                 className="h-full basis-md grow flex-2 py-3 sm:py-4 px-6 sm:px-8 bg-primary text-white rounded-md font-bold text-base sm:text-lg hover:bg-primary-hover transition-all duration-200 shadow-md hover:shadow-lg uppercase"
               >
-                Generate Letter
+                Continue To Address
               </button>
             </div>
           </div>

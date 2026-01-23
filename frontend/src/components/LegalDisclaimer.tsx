@@ -16,7 +16,7 @@ const LegalDisclaimer: React.FC<object> = () => {
       ))}
       <p>
         By using this tool, you acknowledge that you have read, understood, and
-        agreed to this disclaimer.
+        agreed to these disclaimers.
       </p>
     </div>
   );
