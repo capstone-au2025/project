@@ -150,7 +150,7 @@ const FormPage: React.FC<FormPageProps> = ({
                   </div>
                 )}
 
-                <BackButton backPage={backPage} label={pageConfig.backButtonText ?? getConfig().common.backButton} />
+                <BackButton backPage={backPage} />
 
                 <button
                   type="submit"

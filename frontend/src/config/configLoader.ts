@@ -16,7 +16,6 @@ export interface PageConfig {
   tipText: string;
   tipType: "default" | "success";
   questions: QuestionConfig[];
-  backButtonText?: string;
   submitButtonText: string;
   pageInfoText: string;
 }

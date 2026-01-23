@@ -4,17 +4,16 @@ import { Link } from "wouter";
 
 interface BackButtonProps {
   backPage: string;
-  label?: string;
 }
 
-const QuestionBox: React.FC<BackButtonProps> = ({ backPage, label }) => {
+const QuestionBox: React.FC<BackButtonProps> = ({ backPage }) => {
   return (
     <Link
       href={backPage}
       type="button"
       className="px-6 sm:px-8 grow basis-auto py-3 bg-white border-2 border-border rounded-md font-semibold hover:bg-white hover:border-border-hover transition-all duration-200 uppercase text-sm sm:text-base grid items-center text-center"
     >
-      {label ?? getConfig().common.backButton}
+      {getConfig().common.backButton}
     </Link>
   );
 };
