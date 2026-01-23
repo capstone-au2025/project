@@ -303,6 +303,9 @@
         "pageInfoText",
         "questions"
       ],
+      "optional": [
+        "backButtonText"
+      ],
       "properties": {
         "pageNumber": {
           "type": "integer",
@@ -325,6 +328,10 @@
           "type": "string",
           "description": "Visual style of the tip box, affecting color and prefix text",
           "enum": ["default", "success"]
+        },
+        "backButtonText": {
+          "type": "string",
+          "description": "Text label for the button that goes back to the last page"
         },
         "submitButtonText": {
           "type": "string",

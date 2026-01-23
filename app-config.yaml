@@ -20,8 +20,9 @@ introPage:
   heading: "Better-Said: Tenant Request Tool"
 
   description: >
-    This tool helps tenants communicate issues and concerns to their landlords in a clear and organized way.
-    By answering a few simple questions, we'll help facilitate better communication and understanding between you and your landlord.
+    <p>This tool helps you explain problems or concerns to your landlord in a clear, organized way. You will answer a six simple questions, and the tool will help you put your message together so it is easier for your landlord to understand and respond.</p>
+    
+    <p>Watch the short video below to see how it works – <a href="https://youtu.be/Jpmm5YxihPA">https://youtu.be/Jpmm5YxihPA</a></p>
 
   # Feature cards (displayed in 2x2 grid)
   features:
@@ -194,7 +195,7 @@ formPages:
         required: true
 
       - name: whatTheyTried
-        label: Have you informed your landlord about these problems and have they replied?
+        label: Have you informed your landlord about these problems? If so, when?  Has your landlord replied to your request?
         placeholder: >
           Please include details about communications and replies from your landlord...
         required: false
@@ -216,6 +217,7 @@ formPages:
     subtitle: One last thing before we generate your letter
     tipText: This final question helps us add context and information to your letter!
     tipType: success
+    backButtonText: REVIEW ANSWERS
     submitButtonText: Continue
     pageInfoText: Page 3 of 3 - Ready to submit!
     questions:
