@@ -103,7 +103,7 @@ const EditPage: React.FC<EditPageProps> = ({
           <p className="text-base sm:text-lg text-text-primary text-center">
             {userLetter === undefined
               ? "This may take a while. In the meantime, feel free to review our legal disclaimers."
-              : "Feel free to edit before continuing."}
+              : config.submittedPage.editDescription }
           </p>
         </div>
 

@@ -6,7 +6,7 @@ const LegalDisclaimer: React.FC<object> = () => {
 
   return (
     <div className="flex flex-col duration-150 gap-4 mx-4 sm:mx-6 mb-4 sm:mb-6 border-l-4 p-3 sm:p-4 rounded-r-lg shadow-sm bg-white border-primary">
-      <h2> Legal Disclaimer </h2>
+      <h2> Legal Disclaimers </h2>
       {legalDisclaimers.map((disclaimer) => (
         <LegalPoint
           key={disclaimer.heading}

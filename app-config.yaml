@@ -248,7 +248,9 @@ submittedPage:
   mailButton: Mail to your Landlord
   downloadButton: Download PDF
   backButton: Back
-  editHeader: Edit your letter
+  editHeader: Review and edit your letter
+  editDescription: >
+    You can change, add, or remove anything in the letter below. Please review it carefully to make sure the information is accurate. The next step will generate your final PDF letter.
   downloadFilename: Letter.pdf
   startAgainButton: Start again
   certifiedMailConfirmation:

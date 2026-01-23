@@ -185,6 +185,7 @@
         "downloadButton",
         "backButton",
         "editHeader",
+        "editDescription",
         "downloadFilename",
         "startAgainButton",
         "certifiedMailConfirmation",
@@ -210,6 +211,10 @@
         "editHeader": {
           "type": "string",
           "description": "Section header text displayed above the editable letter content area"
+        },
+        "editDescription": {
+          "type": "string",
+          "description": "Description text displayed above the editable letter content area"
         },
         "downloadFilename": {
           "type": "string",
