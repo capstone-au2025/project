@@ -24,8 +24,14 @@ type router struct {
 type PdfRequest struct {
 	SenderName       string `json:"senderName"`
 	SenderAddress    string `json:"senderAddress"`
+	SenderCity       string `json:"senderCity"`
+	SenderState      string `json:"senderState"`
+	SenderZip        string `json:"senderZip"`
 	ReceiverName     string `json:"receiverName"`
 	ReceiverAddress  string `json:"receiverAddress"`
+    ReceiverCity     string `json:"ReceiverCity"`
+    ReceiverState    string `json:"ReceiverState"`
+    ReceiverZip      string `json:"ReceiverZip"`
 	ComplaintSummary string `json:"complaintSummary"`
 	Body             string `json:"body"`
 }
