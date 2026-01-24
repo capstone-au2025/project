@@ -22,7 +22,7 @@ introPage:
   description: >
     <p>This tool helps you explain problems or concerns to your landlord in a clear, organized way. You will answer a six simple questions, and the tool will help you put your message together so it is easier for your landlord to understand and respond.</p>
     
-    <p>Watch the short video below to see how it works – <a href="https://youtu.be/Jpmm5YxihPA">https://youtu.be/Jpmm5YxihPA</a></p>
+    <p>Watch the short video below to see how it works – <a class="text-indigo underline hover:text-primary" href="https://youtu.be/Jpmm5YxihPA">https://youtu.be/Jpmm5YxihPA</a></p>
 
   # Feature cards (displayed in 2x2 grid)
   features:
@@ -244,6 +244,9 @@ common:
 
 submittedPage:
   heading: "Here's your letter:"
+  pdfDescription: >
+    You can download your letter and send it yourself or use the certified mail option to create a delivery record. Be sure to save a copy for your records.
+    For more information about rent escrow and what to do if repairs are not made, <a class="text-indigo underline hover:text-primary" href="https://irp.cdn-website.com/201ef22d/files/uploaded/Rent_Escrow_Guide_-_Ohio_-_LASCO_-_04.23.pdf"> click here</a>.
   mailButton: Mail to your Landlord
   downloadButton: Download PDF
   backButton: Back

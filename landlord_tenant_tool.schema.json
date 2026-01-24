@@ -181,6 +181,7 @@
       "additionalProperties": false,
       "required": [
         "heading",
+        "pdfDescription",
         "mailButton",
         "downloadButton",
         "backButton",
@@ -195,6 +196,10 @@
         "heading": {
           "type": "string",
           "description": "Main heading displayed above the generated letter content"
+        },
+        "pdfDescription": {
+          "type": "string",
+          "description": "Description displayed above the generated letter content"
         },
         "mailButton": {
           "type": "string",

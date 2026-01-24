@@ -47,6 +47,7 @@ export interface CommonConfig {
 
 export interface SubmittedPageConfig {
   heading: string;
+  pdfDescription: string;
   mailButton: string;
   downloadButton: string;
   backButton: string;

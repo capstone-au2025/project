@@ -232,6 +232,9 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
               <h2 className="text-2xl">{config.submittedPage.heading}</h2>
             )}
           </h1>
+          <p className="text-base sm:text-lg text-text-primary text-center"
+             dangerouslySetInnerHTML={{ __html: config.submittedPage.pdfDescription }} >
+          </p>
 
           {/* Loading tooltip */}
           {pdfLoading && (
