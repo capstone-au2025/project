@@ -12,8 +12,14 @@ import (
 type LetterParams struct {
 	SenderName       string `json:"sender_name"`
 	SenderAddress    string `json:"sender_address"`
+	SenderCity       string `json:"sender_city"`
+	SenderState      string `json:"sender_state"`
+	SenderZip        string `json:"sender_zip"`
 	ReceiverName     string `json:"receiver_name"`
 	ReceiverAddress  string `json:"receiver_address"`
+	ReceiverCity     string `json:"receiver_city"`
+	ReceiverState    string `json:"receiver_state"`
+	ReceiverZip      string `json:"receiver_zip"`
 	ComplaintSummary string `json:"complaint_summary"`
 	LetterContent    string `json:"letter_content"`
 	Date             string `json:"date"`

@@ -27,9 +27,15 @@ paths:
               $ref: '#/components/schemas/PdfRequest'
             example:
               senderName: "John Doe"
-              senderAddress: "123 Main St, City, State 12345"
+              senderAddress: "123 Main St"
+              senderCity: "City"
+              senderState: "ST"
+              senderZip: "12345"
               receiverName: "Customer Service Manager"
-              receiverAddress: "456 Business Ave, City, State 67890"
+              receiverAddress: "456 Business Ave"
+              receiverCity: "City"
+              receiverState: "ST"
+              receiverZip: "67890";
               complaintSummary: "Rental Service Issue"
               body: "I am writing to express my dissatisfaction with my rental unit"
       responses:
@@ -122,8 +128,14 @@ components:
       required:
         - senderName
         - senderAddress
+        - senderCity
+        - senderState
+        - senderZip
         - receiverName
         - receiverAddress
+        - receiverCity
+        - receiverState
+        - receiverZip
         - complaintSummary
         - body
       properties:
@@ -136,9 +148,27 @@ components:
         senderAddress:
           type: string
           description: Address of the sender
-          example: "123 Main St, City, State 12345"
+          example: "123 Main St"
           minLength: 1
           maxLength: 500
+        senderCity:
+          type: string
+          description: City of the sender
+          example: "City"
+          minLength: 1
+          maxLength: 500
+        senderState:
+          type: string
+          description: State of the sender
+          example: "State"
+          minLength: 1
+          maxLength: 60
+        senderZip:
+          type: string
+          description: Zip of the sender
+          example: "12345"
+          minLength: 3
+          maxLength: 7
         receiverName:
           type: string
           description: Name of the person or organization receiving the complaint
@@ -148,9 +178,27 @@ components:
         receiverAddress:
           type: string
           description: Address of the receiver
-          example: "456 Business Ave, City, State 67890"
+          example: "456 Business Ave"
           minLength: 1
           maxLength: 500
+        receiverCity:
+          type: string
+          description: City of the receiver
+          example: "City"
+          minLength: 1
+          maxLength: 500
+        receiverState:
+          type: string
+          description: State of the receiver
+          example: "State"
+          minLength: 1
+          maxLength: 60
+        receiverZip:
+          type: string
+          description: Zip of the receiver
+          example: "67890"
+          minLength: 3
+          maxLength: 7
         complaintSummary:
           type: string
           description: Brief summary of the complaint

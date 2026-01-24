@@ -12,6 +12,8 @@
     #linebreak()
     #params.sender_address
     #linebreak()
+    #params.sender_city, #params.sender_state, #params.sender_zip 
+    #linebreak()
     #v(2pt)
     #params.date
   ])
@@ -21,6 +23,8 @@
     #params.receiver_name
     #linebreak()
     #params.receiver_address
+    #linebreak()
+    #params.receiver_city, #params.receiver_state, #params.receiver_zip
     #linebreak()
 ])
 
