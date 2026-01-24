@@ -190,7 +190,7 @@ const AddressPage: React.FC<AddressPageProps> = ({
             Addresses
           </h1>
           <p className="text-base sm:text-lg text-text-primary text-center">
-            Please enter your address and your landlord's address.
+            Please enter your address and your landlord’s address as listed in your lease or where you normally send rent payments. These addresses will appear in your letter and may be used to send it by certified mail if you choose that option. This information is not stored.
           </p>
         </div>
 
