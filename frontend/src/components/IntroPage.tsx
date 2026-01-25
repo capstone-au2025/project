@@ -72,9 +72,10 @@ const IntroPage: React.FC<IntroPageProps> = ({
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-indigo tracking-wide uppercase leading-tight">
             {config.introPage.heading}
           </h1>
-          <p className="text-left text-sm sm:text-md text-text-primary leading-relaxed px-2 sm:px-0"
-             dangerouslySetInnerHTML={{ __html: config.introPage.description }}>
-          </p>
+          <p
+            className="text-left text-sm sm:text-md text-text-primary leading-relaxed px-2 sm:px-0"
+            dangerouslySetInnerHTML={{ __html: config.introPage.description }}
+          ></p>
         </header>
 
         <main className="flex lg:flex-col flex-col-reverse gap-8 sm:gap-10">

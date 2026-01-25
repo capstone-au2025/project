@@ -449,7 +449,7 @@ describe("FormContainer", () => {
 
       // Edit Page
       await user.click(
-        screen.getByRole("button", { name: /generate letter/i }),
+        screen.getByRole("button", { name: /continue to address/i }),
       );
 
       // Should navigate to addresses page

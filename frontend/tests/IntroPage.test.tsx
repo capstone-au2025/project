@@ -30,7 +30,9 @@ describe("IntroPage", () => {
     );
 
     expect(
-      screen.getByText(/This tool helps you explain problems or concerns to your landlord in a clear/i),
+      screen.getByText(
+        /This tool helps you explain problems or concerns to your landlord in a clear/i,
+      ),
     ).toBeInTheDocument();
   });
 
