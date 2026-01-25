@@ -6,8 +6,8 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
-	"os"
 	"fmt"
+	"os"
 	"path/filepath"
 	"testing"
 )
@@ -83,20 +83,20 @@ func TestRenderPdfWithDirectiveLikeContentDoesNotExecute(t *testing.T) {
 		pdf = normalizePdf(pdf)
 
 		if os.Getenv("UPDATE_GOLDEN") == "1" {
-		    // 2) Also write PDFs for manual verification
-            outDir := "goldenPDFs"
-            if err := os.MkdirAll(outDir, 0o755); err != nil {
-                t.Fatalf("failed to create output dir %s: %v", outDir, err)
-            }
+			// 2) Also write PDFs for manual verification
+			outDir := "goldenPDFs"
+			if err := os.MkdirAll(outDir, 0o755); err != nil {
+				t.Fatalf("failed to create output dir %s: %v", outDir, err)
+			}
 
-            // Choose stable, descriptive names. Adjust "special" to your test case label if needed.
-            rawPath := filepath.Join(outDir, fmt.Sprintf("malicious_%d.pdf", i))
+			// Choose stable, descriptive names. Adjust "special" to your test case label if needed.
+			rawPath := filepath.Join(outDir, fmt.Sprintf("malicious_%d.pdf", i))
 
-            if err := os.WriteFile(rawPath, pdf, 0o644); err != nil {
-                t.Fatalf("failed to write raw PDF to %s: %v", rawPath, err)
-            }
-            t.Logf("wrote raw PDF to %s", rawPath)
-        }
+			if err := os.WriteFile(rawPath, pdf, 0o644); err != nil {
+				t.Fatalf("failed to write raw PDF to %s: %v", rawPath, err)
+			}
+			t.Logf("wrote raw PDF to %s", rawPath)
+		}
 
 		h := sha256.Sum256(pdf)
 		computed = append(computed, hex.EncodeToString(h[:]))
@@ -189,20 +189,19 @@ func TestRenderPdfWithSpecialCharsQuotingAndEscaping(t *testing.T) {
 
 		t.Logf("updated golden hashes at %s", goldenPath)
 
+		// 2) Also write PDFs for manual verification
+		outDir := "goldenPDFs"
+		if err := os.MkdirAll(outDir, 0o755); err != nil {
+			t.Fatalf("failed to create output dir %s: %v", outDir, err)
+		}
 
-        // 2) Also write PDFs for manual verification
-        outDir := "goldenPDFs"
-        if err := os.MkdirAll(outDir, 0o755); err != nil {
-            t.Fatalf("failed to create output dir %s: %v", outDir, err)
-        }
+		// Choose stable, descriptive names. Adjust "special" to your test case label if needed.
+		rawPath := filepath.Join(outDir, "special.pdf")
 
-        // Choose stable, descriptive names. Adjust "special" to your test case label if needed.
-        rawPath := filepath.Join(outDir, "special.pdf")
-
-        if err := os.WriteFile(rawPath, pdf, 0o644); err != nil {
-            t.Fatalf("failed to write raw PDF to %s: %v", rawPath, err)
-        }
-        t.Logf("wrote raw PDF to %s", rawPath)
+		if err := os.WriteFile(rawPath, pdf, 0o644); err != nil {
+			t.Fatalf("failed to write raw PDF to %s: %v", rawPath, err)
+		}
+		t.Logf("wrote raw PDF to %s", rawPath)
 
 		return
 	}

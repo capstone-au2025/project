@@ -29,9 +29,9 @@ type PdfRequest struct {
 	SenderZip        string `json:"senderZip"`
 	ReceiverName     string `json:"receiverName"`
 	ReceiverAddress  string `json:"receiverAddress"`
-    ReceiverCity     string `json:"ReceiverCity"`
-    ReceiverState    string `json:"ReceiverState"`
-    ReceiverZip      string `json:"ReceiverZip"`
+	ReceiverCity     string `json:"ReceiverCity"`
+	ReceiverState    string `json:"ReceiverState"`
+	ReceiverZip      string `json:"ReceiverZip"`
 	ComplaintSummary string `json:"complaintSummary"`
 	Body             string `json:"body"`
 }
@@ -159,8 +159,8 @@ func (rt *router) pdf(w http.ResponseWriter, r *http.Request) {
 		ReceiverName:     req.ReceiverName,
 		ReceiverAddress:  req.ReceiverAddress,
 		ReceiverCity:     req.ReceiverCity,
-        ReceiverState:    req.ReceiverState,
-        ReceiverZip:      req.ReceiverZip,
+		ReceiverState:    req.ReceiverState,
+		ReceiverZip:      req.ReceiverZip,
 		ComplaintSummary: req.ComplaintSummary,
 		LetterContent:    req.Body,
 		Date:             time.Now().Format("Mon, 02 Jan 2006"),
