@@ -174,8 +174,14 @@ describe("SubmittedPage", () => {
       const body = JSON.parse(pdfCall![1].body as string);
       expect(body).toHaveProperty("senderName");
       expect(body).toHaveProperty("senderAddress");
+      expect(body).toHaveProperty("senderCity");
+      expect(body).toHaveProperty("senderState");
+      expect(body).toHaveProperty("senderZip");
       expect(body).toHaveProperty("receiverName");
       expect(body).toHaveProperty("receiverAddress");
+      expect(body).toHaveProperty("receiverCity");
+      expect(body).toHaveProperty("receiverState");
+      expect(body).toHaveProperty("receiverZip");
       expect(body).toHaveProperty("body");
       expect(body.body).toBe("Generated letter content from AI");
     });

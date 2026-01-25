@@ -20,8 +20,9 @@ introPage:
   heading: "Better-Said: Tenant Request Tool"
 
   description: >
-    This tool helps tenants communicate issues and concerns to their landlords in a clear and organized way.
-    By answering a few simple questions, we'll help facilitate better communication and understanding between you and your landlord.
+    <p>This tool helps you explain problems or concerns to your landlord in a clear, organized way. You will answer a six simple questions, and the tool will help you put your message together so it is easier for your landlord to understand and respond.</p>
+    
+    <p>Watch the short video below to see how it works – <a class="text-indigo underline hover:text-primary" href="https://youtu.be/Jpmm5YxihPA">https://youtu.be/Jpmm5YxihPA</a></p>
 
   # Feature cards (displayed in 2x2 grid)
   features:
@@ -194,7 +195,7 @@ formPages:
         required: true
 
       - name: whatTheyTried
-        label: Have you informed your landlord about these problems and have they replied?
+        label: Have you informed your landlord about these problems? If so, when?  Has your landlord replied to your request?
         placeholder: >
           Please include details about communications and replies from your landlord...
         required: false
@@ -216,7 +217,7 @@ formPages:
     subtitle: One last thing before we generate your letter
     tipText: This final question helps us add context and information to your letter!
     tipType: success
-    submitButtonText: Continue
+    submitButtonText: Continue to review
     pageInfoText: Page 3 of 3 - Ready to submit!
     questions:
       - name: additionalInformation
@@ -243,10 +244,15 @@ common:
 
 submittedPage:
   heading: "Here's your letter:"
+  pdfDescription: >
+    You can download your letter and send it yourself or use the certified mail option to create a delivery record. Be sure to save a copy for your records.
+    For more information about rent escrow and what to do if repairs are not made, <a class="text-indigo underline hover:text-primary" href="https://irp.cdn-website.com/201ef22d/files/uploaded/Rent_Escrow_Guide_-_Ohio_-_LASCO_-_04.23.pdf"> click here</a>.
   mailButton: Mail to your Landlord
   downloadButton: Download PDF
   backButton: Back
-  editHeader: Edit your letter
+  editHeader: Review and edit your letter
+  editDescription: >
+    You can change, add, or remove anything in the letter below. Please review it carefully to make sure the information is accurate. The next step will generate your final PDF letter.
   downloadFilename: Letter.pdf
   startAgainButton: Start again
   certifiedMailConfirmation:

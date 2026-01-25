@@ -34,8 +34,14 @@ interface SubmittedPageProps {
 type PdfRequest = {
   senderName: string;
   senderAddress: string;
+  senderCity: string;
+  senderState: string;
+  senderZip: string;
   receiverName: string;
   receiverAddress: string;
+  receiverCity: string;
+  receiverState: string;
+  receiverZip: string;
   body: string;
   altcha: string;
 };
@@ -55,9 +61,15 @@ async function generatePdf(
     method: "POST",
     body: JSON.stringify({
       senderName: sender.name,
-      senderAddress: `${sender.address}, ${sender.city}, ${sender.state} ${sender.zip} `,
+      senderAddress: sender.address,
+      senderCity: sender.city,
+      senderState: sender.state,
+      senderZip: sender.zip,
       receiverName: destination.name,
-      receiverAddress: `${destination.address}, ${destination.city}, ${destination.state} ${destination.zip} `,
+      receiverAddress: destination.address,
+      receiverCity: destination.city,
+      receiverState: destination.state,
+      receiverZip: destination.zip,
       body: text,
       altcha: payload,
     } satisfies PdfRequest),
@@ -232,6 +244,12 @@ const SubmittedPage: React.FC<SubmittedPageProps> = ({
               <h2 className="text-2xl">{config.submittedPage.heading}</h2>
             )}
           </h1>
+          <p
+            className="text-base sm:text-lg text-text-primary text-center"
+            dangerouslySetInnerHTML={{
+              __html: config.submittedPage.pdfDescription,
+            }}
+          ></p>
 
           {/* Loading tooltip */}
           {pdfLoading && (
