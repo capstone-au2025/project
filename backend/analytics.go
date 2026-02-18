@@ -40,7 +40,7 @@ func (a *Analytics) GetStats() AnalyticsStats {
 }
 
 type AnalyticsStats struct {
-	InferencesRun int64 `json:"inferences_run"`
-	PDFsGenerated int64 `json:"pdfs_generated"`
+	InferencesRun int64     `json:"inferences_run"`
+	PDFsGenerated int64     `json:"pdfs_generated"`
 	StartedAt     time.Time `json:"started_at"`
 }
