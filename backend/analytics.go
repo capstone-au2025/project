@@ -2,15 +2,19 @@ package main
 
 import (
 	"sync"
+	"time"
 )
 
 type Analytics struct {
 	mu            sync.RWMutex
 	inferencesRun int64
 	pdfsGenerated int64
+	StartedAt     time.Time
 }
 
-var analytics = &Analytics{}
+var analytics = &Analytics{
+	StartedAt: time.Now(),
+}
 
 func (a *Analytics) IncrementInferences() {
 	a.mu.Lock()
@@ -31,10 +35,12 @@ func (a *Analytics) GetStats() AnalyticsStats {
 	return AnalyticsStats{
 		InferencesRun: a.inferencesRun,
 		PDFsGenerated: a.pdfsGenerated,
+		StartedAt:     a.StartedAt,
 	}
 }
 
 type AnalyticsStats struct {
-	InferencesRun int64 `json:"inferences_run"`
-	PDFsGenerated int64 `json:"pdfs_generated"`
+	InferencesRun int64     `json:"inferences_run"`
+	PDFsGenerated int64     `json:"pdfs_generated"`
+	StartedAt     time.Time `json:"started_at"`
 }

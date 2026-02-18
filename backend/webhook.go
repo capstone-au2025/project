@@ -81,6 +81,10 @@ func SendAnalyticsToTeams(ctx context.Context, stats AnalyticsStats) error {
 							Type: "FactSet",
 							Facts: []Fact{
 								{
+									Title: "Collection started at",
+									Value: stats.StartedAt.Format("2006-01-02 15:04:05 MST"),
+								},
+								{
 									Title: "Inferences Run",
 									Value: fmt.Sprintf("%d", stats.InferencesRun),
 								},
