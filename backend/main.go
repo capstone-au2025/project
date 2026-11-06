@@ -75,6 +75,12 @@ type Form struct {
 	}
 }
 
+func (rt *routes) trackUserStarted(w http.ResponseWriter, r *http.Request) {
+	analytics.IncrementUserStarted()
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
 // Given a message, get the body of a letter from LLM inference
 func (rt *router) text(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -266,6 +272,9 @@ func main() {
 	StartAnalyticsWebhookScheduler(7 * 24 * time.Hour)
 
 	mux := http.NewServeMux()
+
+	mux.HandleFunc("POST /api/start", rt.trackUserStarted)
+
 	mux.HandleFunc("POST /api/pdf", rt.pdf)
 	mux.HandleFunc("POST /api/text", rt.text)
 	mux.HandleFunc("GET /healthz", healthcheck)

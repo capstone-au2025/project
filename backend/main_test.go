@@ -250,3 +250,30 @@ func TestTextHandlerInferenceError(t *testing.T) {
 		}
 	})
 }
+
+func TestTrackUserStarted(t *testing.T) {
+	// Reset counter for isolated test
+	analytics.mu.Lock()
+	analytics.getStarted = 0
+	analytics.mu.Unlock()
+
+	r := router{}
+
+	req := httptest.NewRequest(http.MethodPost, "/api/start", nil)
+	w := httptest.NewRecorder()
+
+	r.trackUserStarted(w, req)
+
+	resp := w.Result()
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusNoContent {
+		t.Fatalf("expected %d, got %d", http.StatusNoContent, resp.StatusCode)
+	}
+
+	stats := analytics.GetStats()
+
+	if stats.UserStarted != 1 {
+		t.Fatalf("expected get_started to be 1, got %d", stats.GetStarted)
+	}
+}
