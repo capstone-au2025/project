@@ -50,6 +50,6 @@ func (a *Analytics) GetStats() AnalyticsStats {
 type AnalyticsStats struct {
 	InferencesRun int64     `json:"inferences_run"`
 	PDFsGenerated int64     `json:"pdfs_generated"`
-	UserStarted    int64    `json:"user_started"`
+	UserStarted   int64     `json:"user_started"`
 	StartedAt     time.Time `json:"started_at"`
 }
