@@ -60,6 +60,17 @@ const IntroPage: React.FC<IntroPageProps> = ({
 
   const handleGetStarted = () => {
     if (isChecked) {
+      try {
+        const response = await fetch("/api/start", {
+          method: "POST",
+        });
+
+        if (!response.ok) {
+          console.error("Analytics tracking failed:", response.status);
+        }
+      } catch (error) {
+        console.error("Analytics request failed:", error);
+      }
       onTosAccept();
       setLocation(nextPage);
     }
