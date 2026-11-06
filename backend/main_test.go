@@ -265,7 +265,11 @@ func TestTrackUserStarted(t *testing.T) {
 	r.trackUserStarted(w, req)
 
 	resp := w.Result()
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			t.Errorf("failed to close response body: %v", err)
+		}
+	}()
 
 	if resp.StatusCode != http.StatusNoContent {
 		t.Fatalf("expected %d, got %d", http.StatusNoContent, resp.StatusCode)
