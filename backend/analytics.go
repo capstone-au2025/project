@@ -9,6 +9,7 @@ type Analytics struct {
 	mu            sync.RWMutex
 	inferencesRun int64
 	pdfsGenerated int64
+	userStarted   int64
 	StartedAt     time.Time
 }
 
@@ -28,6 +29,12 @@ func (a *Analytics) IncrementPDFs() {
 	a.pdfsGenerated++
 }
 
+func (a *Analytics) IncrementUserStarted() {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.userStarted++
+}
+
 func (a *Analytics) GetStats() AnalyticsStats {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
@@ -35,6 +42,7 @@ func (a *Analytics) GetStats() AnalyticsStats {
 	return AnalyticsStats{
 		InferencesRun: a.inferencesRun,
 		PDFsGenerated: a.pdfsGenerated,
+		UserStarted:   a.userStarted,
 		StartedAt:     a.StartedAt,
 	}
 }
@@ -42,5 +50,6 @@ func (a *Analytics) GetStats() AnalyticsStats {
 type AnalyticsStats struct {
 	InferencesRun int64     `json:"inferences_run"`
 	PDFsGenerated int64     `json:"pdfs_generated"`
+	UserStarted   int64     `json:"user_started"`
 	StartedAt     time.Time `json:"started_at"`
 }
