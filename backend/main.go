@@ -75,7 +75,7 @@ type Form struct {
 	}
 }
 
-func (rt *routes) trackUserStarted(w http.ResponseWriter, r *http.Request) {
+func (rt *router) trackUserStarted(w http.ResponseWriter, r *http.Request) {
 	analytics.IncrementUserStarted()
 
 	w.WriteHeader(http.StatusNoContent)

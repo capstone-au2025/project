@@ -58,7 +58,7 @@ const IntroPage: React.FC<IntroPageProps> = ({
     setIsChecked(e.target.checked);
   };
 
-  const handleGetStarted = () => {
+  const handleGetStarted = async () => {
     if (isChecked) {
       try {
         const response = await fetch("/api/start", {
