@@ -85,6 +85,10 @@ func SendAnalyticsToTeams(ctx context.Context, stats AnalyticsStats) error {
 									Value: stats.StartedAt.Format("2006-01-02 15:04:05 MST"),
 								},
 								{
+									Title: "Forms started",
+									Value: fmt.Sprintf("%d", stats.UserStarted),
+								},
+								{
 									Title: "Inferences Run",
 									Value: fmt.Sprintf("%d", stats.InferencesRun),
 								},
